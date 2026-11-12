@@ -1,0 +1,638 @@
+id,clase,primer_frame,ultimo_frame,detecciones,frames_en_movimiento,frames_paralaje,cambios_de_estado,desplazamiento_max_px,estado_final
+1,small vehicle,0,275,270,253,0,1,34.8,movimiento
+2,small vehicle,0,28,29,0,0,0,1.4,estatico
+3,small vehicle,0,182,179,0,0,0,3.5,estatico
+4,small vehicle,0,202,201,0,0,0,3.1,estatico
+5,small vehicle,0,24,25,12,0,1,59.7,movimiento
+6,small vehicle,0,29,28,0,0,0,2.6,estatico
+7,small vehicle,0,56,57,0,0,0,3.1,estatico
+8,small vehicle,0,387,359,0,0,0,6.2,estatico
+9,small vehicle,0,74,75,0,0,0,3.0,estatico
+10,small vehicle,0,90,90,0,0,0,4.0,estatico
+11,small vehicle,0,220,219,0,0,0,3.4,estatico
+13,small vehicle,0,179,179,0,0,0,4.0,estatico
+14,large vehicle,0,58,52,0,0,0,3.3,estatico
+15,small vehicle,0,239,240,0,0,0,3.3,estatico
+16,small vehicle,0,271,268,0,0,0,3.5,estatico
+17,large vehicle,0,148,148,5,0,1,9.5,movimiento
+18,small vehicle,0,70,43,26,0,1,35.7,movimiento
+19,large vehicle,0,235,227,0,0,0,3.9,estatico
+20,large vehicle,0,148,146,0,0,0,3.9,estatico
+21,large vehicle,0,207,192,178,0,1,33.2,movimiento
+22,large vehicle,0,76,70,0,0,0,3.8,estatico
+23,small vehicle,0,192,186,0,0,0,2.4,estatico
+24,large vehicle,0,387,387,374,0,1,31.9,movimiento
+25,large vehicle,0,387,363,350,0,1,72.9,movimiento
+26,small vehicle,0,387,326,312,0,1,75.7,movimiento
+27,small vehicle,0,200,161,0,0,0,5.2,estatico
+28,large vehicle,0,144,143,0,0,0,3.7,estatico
+29,small vehicle,0,216,191,0,0,0,4.7,estatico
+30,small vehicle,0,256,256,0,0,0,3.1,estatico
+31,small vehicle,0,331,313,0,0,0,2.9,estatico
+32,small vehicle,0,160,156,0,0,0,2.1,estatico
+33,large vehicle,0,14,15,0,0,0,2.2,estatico
+34,large vehicle,0,387,381,368,0,1,44.6,movimiento
+35,small vehicle,0,123,62,0,0,0,6.9,estatico
+36,large vehicle,0,163,160,0,0,0,3.6,estatico
+37,large vehicle,0,387,382,308,0,2,35.2,estatico
+38,small vehicle,0,25,21,0,0,0,2.0,estatico
+39,large vehicle,0,102,103,0,0,0,3.6,estatico
+40,large vehicle,0,96,70,0,0,0,60.9,estatico
+41,large vehicle,0,132,81,63,0,1,45.3,movimiento
+42,large vehicle,0,32,12,0,0,0,148.5,estatico
+43,small vehicle,0,58,39,10,0,1,10.3,movimiento
+44,small vehicle,0,108,98,0,0,0,2.8,estatico
+45,small vehicle,0,20,19,6,0,1,22.1,movimiento
+46,large vehicle,0,103,96,74,0,1,32.2,movimiento
+47,small vehicle,0,227,167,0,0,0,6.7,estatico
+48,small vehicle,0,274,275,0,0,0,2.8,estatico
+49,small vehicle,0,18,13,0,0,0,2.2,estatico
+50,large vehicle,0,296,263,250,0,1,72.0,movimiento
+51,small vehicle,0,365,289,236,0,2,117.1,estatico
+52,small vehicle,0,205,185,0,0,0,3.0,estatico
+53,large vehicle,0,125,63,48,0,1,99.1,movimiento
+54,large vehicle,0,60,60,0,0,0,3.0,estatico
+55,large vehicle,0,32,19,6,0,1,31.4,movimiento
+56,large vehicle,0,248,162,11,0,1,65.4,movimiento
+57,small vehicle,0,80,79,0,0,0,2.1,estatico
+58,large vehicle,0,387,374,361,0,1,58.8,movimiento
+59,small vehicle,1,17,11,0,0,0,0.0,estatico
+62,large vehicle,2,173,160,0,0,0,6.0,estatico
+65,small vehicle,3,385,320,305,0,1,60.3,movimiento
+67,small vehicle,4,43,17,0,0,0,1.3,estatico
+69,desconocido,4,176,122,29,86,1,53.5,movimiento
+70,desconocido,4,117,85,0,74,0,22.5,estatico
+71,desconocido,4,71,25,0,14,0,24.9,estatico
+73,desconocido,4,176,116,28,81,1,56.5,movimiento
+76,desconocido,4,7,4,0,0,0,0.0,estatico
+77,desconocido,4,7,4,0,0,0,0.0,estatico
+78,desconocido,4,28,13,0,2,0,9.6,estatico
+82,desconocido,4,9,6,0,0,0,0.0,estatico
+84,desconocido,4,102,38,0,25,0,24.6,estatico
+89,desconocido,4,131,56,0,45,0,21.8,estatico
+91,desconocido,4,39,11,0,0,0,0.0,estatico
+100,desconocido,4,175,103,55,47,3,53.0,movimiento
+101,desconocido,4,15,10,0,0,0,0.0,estatico
+88,desconocido,4,129,47,0,36,0,22.5,estatico
+110,desconocido,5,52,19,0,6,0,17.1,estatico
+66,small vehicle,4,36,18,5,0,1,76.8,movimiento
+68,large vehicle,4,244,216,203,0,1,51.7,movimiento
+79,desconocido,4,117,67,0,56,0,18.5,estatico
+99,desconocido,4,76,27,14,0,1,67.9,movimiento
+103,desconocido,5,40,12,0,0,0,36.4,estatico
+108,desconocido,5,84,35,0,22,0,28.0,estatico
+112,large vehicle,6,144,132,115,0,1,22.1,movimiento
+113,desconocido,6,25,9,0,0,0,0.0,estatico
+115,desconocido,6,64,13,0,2,0,22.6,estatico
+119,desconocido,6,68,23,0,12,0,24.3,estatico
+60,desconocido,1,13,6,0,0,0,0.0,estatico
+74,desconocido,4,144,37,0,26,0,35.9,estatico
+114,desconocido,6,90,24,0,13,0,30.8,estatico
+118,desconocido,6,10,4,0,0,0,0.0,estatico
+123,large vehicle,7,103,84,0,0,0,2.5,estatico
+124,large vehicle,7,159,107,0,0,0,5.1,estatico
+125,small vehicle,7,387,381,0,0,0,4.3,estatico
+126,large vehicle,7,42,36,23,0,1,159.9,movimiento
+127,desconocido,7,89,25,0,14,0,25.6,estatico
+129,desconocido,7,46,18,0,7,0,14.2,estatico
+64,small vehicle,3,18,10,0,0,0,0.0,estatico
+131,large vehicle,8,159,87,0,0,0,7.7,estatico
+102,large vehicle,5,56,43,0,0,0,15.5,estatico
+136,large vehicle,9,120,111,0,0,0,3.7,estatico
+137,large vehicle,9,387,325,310,0,1,75.9,movimiento
+72,desconocido,4,176,98,52,46,3,69.5,movimiento
+92,desconocido,4,144,57,44,0,1,85.7,movimiento
+106,desconocido,5,115,37,0,26,0,29.8,estatico
+109,desconocido,5,64,22,0,11,0,21.3,estatico
+122,desconocido,6,14,5,0,0,0,0.0,estatico
+130,large vehicle,8,26,17,4,0,1,25.0,movimiento
+135,desconocido,8,16,7,0,0,0,0.0,estatico
+97,desconocido,4,22,8,0,0,0,0.0,estatico
+107,desconocido,5,25,5,0,0,0,0.0,estatico
+147,large vehicle,11,186,176,163,0,1,25.0,movimiento
+87,desconocido,4,34,9,0,0,0,0.0,estatico
+142,desconocido,9,62,28,15,0,1,44.7,movimiento
+148,small vehicle,13,378,348,0,0,0,3.6,estatico
+151,desconocido,15,24,6,0,0,0,0.0,estatico
+158,desconocido,17,72,15,0,0,0,22.4,estatico
+61,desconocido,1,30,11,0,0,0,0.0,estatico
+85,desconocido,4,72,22,0,11,0,23.5,estatico
+138,desconocido,9,147,31,0,20,0,42.7,estatico
+157,desconocido,15,26,8,0,0,0,0.0,estatico
+161,large vehicle,19,113,77,0,0,0,1.4,estatico
+96,desconocido,4,64,17,0,6,0,21.9,estatico
+111,desconocido,5,32,9,0,0,0,0.0,estatico
+156,desconocido,15,38,9,0,0,0,0.0,estatico
+163,large vehicle,21,81,44,0,0,0,2.9,estatico
+164,large vehicle,21,387,358,345,0,1,61.9,movimiento
+105,desconocido,5,174,51,0,40,0,25.7,estatico
+160,large vehicle,18,93,54,0,0,0,2.2,estatico
+149,desconocido,13,80,19,0,8,0,17.0,estatico
+139,desconocido,9,176,46,0,35,0,41.6,estatico
+168,small vehicle,24,387,364,0,0,0,10.2,estatico
+169,small vehicle,24,387,364,11,0,2,10.7,estatico
+141,desconocido,9,56,7,0,0,0,0.0,estatico
+145,desconocido,10,29,4,0,0,0,0.0,estatico
+175,large vehicle,26,40,12,0,0,0,3.8,estatico
+86,desconocido,4,84,15,0,4,0,20.6,estatico
+181,desconocido,27,33,7,0,0,0,0.0,estatico
+185,large vehicle,28,44,9,0,0,0,0.0,estatico
+63,desconocido,2,32,4,0,0,0,0.0,estatico
+189,small vehicle,29,387,333,0,0,0,4.1,estatico
+190,small vehicle,29,298,270,0,0,0,3.4,estatico
+194,small vehicle,30,127,22,0,0,0,26.7,estatico
+150,desconocido,14,82,16,0,5,0,24.1,estatico
+183,desconocido,27,94,23,0,12,0,25.1,estatico
+95,desconocido,4,35,4,0,0,0,0.0,estatico
+143,desconocido,9,37,6,0,0,0,0.0,estatico
+152,desconocido,15,35,4,0,0,0,0.0,estatico
+191,desconocido,29,40,7,0,0,0,0.0,estatico
+200,small vehicle,34,387,349,0,0,0,4.6,estatico
+193,large vehicle,30,38,4,0,0,0,0.0,estatico
+195,desconocido,31,79,8,0,0,0,0.0,estatico
+198,desconocido,33,38,4,0,0,0,0.0,estatico
+120,desconocido,6,39,4,0,0,0,0.0,estatico
+184,desconocido,28,48,6,0,0,0,0.0,estatico
+199,large vehicle,34,51,6,0,0,0,0.0,estatico
+202,desconocido,36,164,85,24,51,1,127.6,movimiento
+201,desconocido,34,45,8,0,0,0,0.0,estatico
+213,small vehicle,39,387,349,0,0,0,4.2,estatico
+216,desconocido,39,84,8,0,0,0,0.0,estatico
+222,desconocido,41,100,28,13,11,2,12.3,estatico
+182,desconocido,27,57,10,0,0,0,0.0,estatico
+221,desconocido,41,48,6,0,0,0,0.0,estatico
+205,large vehicle,37,50,6,0,0,0,0.0,estatico
+218,desconocido,40,72,7,0,0,0,0.0,estatico
+210,desconocido,38,47,4,0,0,0,0.0,estatico
+177,desconocido,26,175,22,9,2,1,51.0,movimiento
+229,desconocido,44,164,70,27,33,1,139.5,movimiento
+196,desconocido,32,175,55,0,44,0,24.6,estatico
+223,large vehicle,42,139,61,0,0,0,6.6,estatico
+232,desconocido,45,112,20,0,9,0,18.8,estatico
+176,desconocido,26,176,31,0,20,0,42.8,estatico
+241,large vehicle,51,256,179,154,11,1,37.1,movimiento
+203,desconocido,36,112,7,0,0,0,0.0,estatico
+250,desconocido,53,66,10,0,0,0,0.0,estatico
+252,desconocido,55,59,5,0,0,0,0.0,estatico
+219,large vehicle,41,134,72,0,0,0,2.7,estatico
+220,desconocido,41,72,7,0,0,0,0.0,estatico
+235,desconocido,45,89,7,0,0,0,0.0,estatico
+192,desconocido,29,72,6,0,0,0,0.0,estatico
+244,desconocido,52,117,12,0,1,0,22.4,estatico
+206,desconocido,37,66,6,0,0,0,0.0,estatico
+259,desconocido,60,104,15,0,4,0,14.7,estatico
+263,small vehicle,62,156,75,0,0,0,6.7,estatico
+264,large vehicle,62,387,304,0,0,0,4.8,estatico
+240,desconocido,50,176,57,0,46,0,18.9,estatico
+265,small vehicle,63,365,242,0,0,0,6.6,estatico
+255,desconocido,57,174,30,0,19,0,31.3,estatico
+261,desconocido,61,158,20,0,9,0,36.6,estatico
+267,small vehicle,64,91,28,0,0,0,4.8,estatico
+251,desconocido,54,68,4,0,0,0,0.0,estatico
+257,desconocido,57,102,15,0,4,0,8.6,estatico
+262,desconocido,61,111,23,0,12,0,16.3,estatico
+224,desconocido,42,115,8,0,0,0,0.0,estatico
+260,desconocido,60,72,4,0,0,0,0.0,estatico
+284,small vehicle,70,131,62,0,0,0,1.8,estatico
+254,desconocido,56,140,15,0,0,0,3.5,estatico
+248,desconocido,53,104,14,1,0,1,17.9,movimiento
+237,large vehicle,49,79,4,0,0,0,0.0,estatico
+276,desconocido,66,92,7,0,0,0,0.0,estatico
+294,desconocido,77,152,32,0,19,0,22.1,estatico
+273,desconocido,66,100,7,0,0,0,0.0,estatico
+295,small vehicle,78,260,130,0,0,0,8.7,estatico
+281,desconocido,68,147,13,0,2,0,24.7,estatico
+282,desconocido,68,112,13,0,0,0,44.4,estatico
+289,desconocido,73,88,5,0,0,0,0.0,estatico
+268,large vehicle,64,168,20,0,0,0,1.7,estatico
+279,desconocido,67,84,4,0,0,0,0.0,estatico
+301,large vehicle,82,121,39,26,0,1,230.6,movimiento
+298,small vehicle,80,387,299,0,0,0,5.6,estatico
+288,desconocido,72,136,14,1,0,1,57.6,movimiento
+296,desconocido,78,152,27,14,0,1,70.8,movimiento
+306,small vehicle,85,387,287,0,0,0,2.8,estatico
+304,small vehicle,84,387,205,0,0,0,4.9,estatico
+256,desconocido,57,111,6,0,0,0,0.0,estatico
+305,desconocido,84,100,5,0,0,0,0.0,estatico
+308,desconocido,85,91,4,0,0,0,0.0,estatico
+310,desconocido,88,111,11,0,0,0,0.0,estatico
+269,desconocido,64,135,11,0,0,0,0.0,estatico
+315,desconocido,89,164,10,0,0,0,0.0,estatico
+322,small vehicle,93,387,287,0,0,0,5.0,estatico
+292,large vehicle,75,187,28,15,0,1,197.8,movimiento
+275,desconocido,66,104,5,0,0,0,0.0,estatico
+316,desconocido,90,100,4,0,0,0,0.0,estatico
+321,desconocido,92,104,7,0,0,0,0.0,estatico
+329,small vehicle,97,387,290,0,0,0,4.0,estatico
+286,desconocido,71,129,10,0,0,0,0.0,estatico
+293,small vehicle,76,124,12,0,0,0,21.7,estatico
+303,desconocido,83,175,23,0,12,0,25.2,estatico
+327,small vehicle,96,102,4,0,0,0,0.0,estatico
+326,desconocido,94,137,11,0,0,0,0.0,estatico
+330,small vehicle,100,162,36,0,0,0,4.7,estatico
+334,desconocido,100,143,12,0,0,0,41.5,estatico
+335,small vehicle,101,160,33,20,0,1,50.5,movimiento
+312,small vehicle,89,119,10,0,0,0,0.0,estatico
+331,desconocido,100,230,41,21,0,2,33.6,estatico
+341,small vehicle,103,185,34,0,0,0,5.1,estatico
+309,large vehicle,88,116,5,0,0,0,0.0,estatico
+319,desconocido,92,116,4,0,0,0,0.0,estatico
+337,desconocido,102,175,9,0,0,0,0.0,estatico
+347,desconocido,104,175,14,0,3,0,28.1,estatico
+351,desconocido,111,176,35,22,6,1,44.6,movimiento
+356,large vehicle,113,381,157,6,0,1,12.1,movimiento
+271,desconocido,65,133,6,0,0,0,0.0,estatico
+307,desconocido,85,150,7,0,0,0,0.0,estatico
+325,desconocido,94,157,13,0,2,0,22.9,estatico
+354,desconocido,112,176,34,21,6,1,42.1,movimiento
+355,desconocido,112,132,8,0,0,0,0.0,estatico
+364,large vehicle,116,387,218,0,0,0,5.8,estatico
+365,desconocido,116,120,5,0,0,0,0.0,estatico
+367,small vehicle,118,387,270,0,0,0,4.0,estatico
+368,large vehicle,118,159,28,0,0,0,3.6,estatico
+369,large vehicle,119,358,182,0,0,0,2.3,estatico
+350,desconocido,109,144,14,0,0,0,13.0,estatico
+372,small vehicle,123,387,235,0,0,0,5.0,estatico
+373,small vehicle,125,255,59,46,0,1,107.7,movimiento
+340,desconocido,102,133,5,0,0,0,0.0,estatico
+357,desconocido,115,158,29,0,16,0,25.4,estatico
+360,desconocido,115,129,4,0,0,0,0.0,estatico
+362,desconocido,115,158,29,0,17,0,25.5,estatico
+374,desconocido,126,159,19,3,0,1,15.5,movimiento
+317,desconocido,91,158,6,0,0,0,0.0,estatico
+352,desconocido,111,152,16,3,0,1,33.9,movimiento
+375,small vehicle,128,222,82,0,0,0,3.9,estatico
+318,desconocido,91,164,24,0,13,0,18.4,estatico
+353,desconocido,112,132,4,0,0,0,0.0,estatico
+381,desconocido,129,164,21,0,6,0,11.0,estatico
+383,desconocido,129,158,26,0,15,0,17.0,estatico
+320,desconocido,92,164,15,2,0,1,25.9,movimiento
+346,desconocido,104,152,8,0,0,0,0.0,estatico
+349,desconocido,108,133,4,0,0,0,0.0,estatico
+359,desconocido,115,164,13,0,2,0,15.8,estatico
+376,desconocido,129,157,12,0,1,0,13.1,estatico
+377,desconocido,129,176,27,0,12,0,19.0,estatico
+323,desconocido,93,134,4,0,0,0,0.0,estatico
+386,desconocido,131,176,12,0,1,0,21.4,estatico
+387,desconocido,131,137,6,0,0,0,0.0,estatico
+391,desconocido,131,152,19,0,2,0,6.7,estatico
+399,desconocido,133,174,11,0,0,0,0.0,estatico
+379,desconocido,129,175,11,0,0,0,0.0,estatico
+380,desconocido,129,148,7,0,0,0,0.0,estatico
+392,desconocido,131,157,11,0,0,0,0.0,estatico
+396,desconocido,132,152,17,0,6,0,19.0,estatico
+405,large vehicle,135,164,19,0,0,0,4.4,estatico
+361,desconocido,115,157,8,0,0,0,0.0,estatico
+388,desconocido,131,176,10,0,0,0,0.0,estatico
+400,desconocido,133,174,13,0,2,0,16.1,estatico
+404,large vehicle,135,212,77,64,0,1,25.8,movimiento
+336,small vehicle,101,387,250,21,0,2,52.4,estatico
+384,desconocido,130,141,4,0,0,0,0.0,estatico
+410,small vehicle,138,387,250,0,0,0,5.1,estatico
+363,desconocido,116,175,8,0,0,0,0.0,estatico
+401,desconocido,133,164,7,0,0,0,0.0,estatico
+345,desconocido,104,158,8,0,0,0,0.0,estatico
+394,desconocido,132,164,8,0,0,0,0.0,estatico
+395,desconocido,132,175,8,0,0,0,0.0,estatico
+406,desconocido,135,174,9,0,0,0,0.0,estatico
+411,desconocido,138,174,8,0,0,0,0.0,estatico
+413,desconocido,138,164,11,0,0,0,0.0,estatico
+424,desconocido,141,186,22,0,6,0,33.3,estatico
+378,desconocido,129,146,4,0,0,0,0.0,estatico
+423,desconocido,140,148,5,0,0,0,0.0,estatico
+430,desconocido,143,174,12,0,1,0,12.2,estatico
+389,desconocido,131,152,7,0,0,0,0.0,estatico
+409,desconocido,137,151,6,0,0,0,0.0,estatico
+431,desconocido,143,158,5,0,0,0,0.0,estatico
+432,large vehicle,145,387,174,161,0,1,85.6,movimiento
+415,desconocido,139,176,7,0,0,0,0.0,estatico
+417,desconocido,139,176,8,0,0,0,0.0,estatico
+435,desconocido,145,157,7,0,0,0,0.0,estatico
+437,large vehicle,146,199,40,1,0,1,23.4,movimiento
+407,desconocido,136,175,6,0,0,0,0.0,estatico
+440,desconocido,146,152,6,0,0,0,0.0,estatico
+443,desconocido,147,152,5,0,0,0,0.0,estatico
+427,desconocido,142,175,8,0,0,0,0.0,estatico
+441,desconocido,146,174,6,0,0,0,0.0,estatico
+436,desconocido,145,174,5,0,0,0,0.0,estatico
+402,desconocido,133,174,6,0,0,0,0.0,estatico
+442,desconocido,147,176,8,0,0,0,0.0,estatico
+451,large vehicle,156,194,19,0,0,0,4.0,estatico
+459,small vehicle,160,387,225,0,0,0,3.1,estatico
+463,small vehicle,166,286,92,49,0,1,45.5,movimiento
+426,desconocido,141,175,5,0,0,0,0.0,estatico
+433,desconocido,145,174,4,0,0,0,0.0,estatico
+444,desconocido,149,174,4,0,0,0,0.0,estatico
+466,small vehicle,171,277,66,0,0,0,35.0,estatico
+462,desconocido,164,176,4,0,0,0,0.0,estatico
+464,small vehicle,169,178,4,0,0,0,0.0,estatico
+471,large vehicle,175,387,173,160,0,1,61.2,movimiento
+478,small vehicle,176,243,60,0,0,0,1.3,estatico
+486,small vehicle,179,218,39,26,0,1,240.0,movimiento
+488,desconocido,180,234,13,0,0,0,108.2,estatico
+490,large vehicle,182,387,206,0,0,0,3.1,estatico
+491,small vehicle,183,293,35,4,0,1,26.8,movimiento
+485,small vehicle,177,192,7,0,0,0,0.0,estatico
+495,small vehicle,189,253,36,23,0,1,64.2,movimiento
+496,small vehicle,190,387,191,0,0,0,5.0,estatico
+498,small vehicle,191,387,197,0,0,0,3.0,estatico
+499,small vehicle,193,387,178,0,0,0,5.4,estatico
+487,desconocido,179,224,21,7,0,1,43.8,movimiento
+502,small vehicle,196,387,177,10,0,2,16.7,estatico
+503,small vehicle,200,386,146,0,0,0,2.9,estatico
+504,small vehicle,201,387,184,0,0,0,2.5,estatico
+506,desconocido,202,387,159,46,116,4,48.8,estatico
+511,desconocido,202,291,61,0,50,0,16.2,estatico
+517,desconocido,202,386,146,54,95,4,62.6,estatico
+518,desconocido,202,322,50,37,3,1,96.1,movimiento
+522,desconocido,202,283,45,0,34,0,28.0,estatico
+523,large vehicle,202,380,41,24,0,2,42.6,estatico
+524,desconocido,202,220,8,0,0,0,0.0,estatico
+532,desconocido,202,264,48,20,24,2,37.1,estatico
+542,desconocido,202,290,30,17,0,1,90.3,movimiento
+543,desconocido,202,302,69,28,37,2,58.9,estatico
+525,desconocido,202,243,11,0,0,0,0.0,estatico
+526,desconocido,202,251,13,0,2,0,23.1,estatico
+530,desconocido,202,370,78,57,18,3,87.1,movimiento
+531,desconocido,202,207,4,0,0,0,0.0,estatico
+533,desconocido,202,248,27,0,16,0,19.7,estatico
+551,desconocido,203,233,8,0,0,0,0.0,estatico
+556,desconocido,203,277,30,0,19,0,25.6,estatico
+509,desconocido,202,254,16,0,5,0,22.1,estatico
+529,desconocido,202,287,29,0,18,0,32.2,estatico
+541,desconocido,202,220,5,0,0,0,0.0,estatico
+554,desconocido,203,219,5,0,0,0,0.0,estatico
+570,large vehicle,207,245,38,0,0,0,3.8,estatico
+501,small vehicle,195,251,11,0,0,0,0.0,estatico
+575,large vehicle,208,218,10,0,0,0,0.0,estatico
+544,large vehicle,203,257,28,15,0,1,34.9,movimiento
+505,large vehicle,202,302,60,0,0,0,4.4,estatico
+520,desconocido,202,235,11,0,0,0,0.0,estatico
+527,desconocido,202,276,29,0,18,0,25.4,estatico
+528,desconocido,202,285,13,0,2,0,31.1,estatico
+537,desconocido,202,220,5,0,0,0,0.0,estatico
+510,desconocido,202,290,24,0,13,0,34.0,estatico
+536,desconocido,202,253,10,0,0,0,0.0,estatico
+559,desconocido,203,220,4,0,0,0,0.0,estatico
+583,large vehicle,216,382,109,0,0,0,5.8,estatico
+571,desconocido,207,221,4,0,0,0,0.0,estatico
+581,small vehicle,210,268,51,21,0,2,28.7,estatico
+521,desconocido,202,331,42,0,31,0,31.1,estatico
+534,desconocido,202,243,11,0,0,0,0.0,estatico
+550,desconocido,203,227,5,0,0,0,0.0,estatico
+553,desconocido,203,269,21,0,10,0,23.7,estatico
+558,desconocido,203,274,16,0,5,0,32.2,estatico
+561,desconocido,205,355,32,0,21,0,29.7,estatico
+576,desconocido,208,286,65,21,40,2,33.4,estatico
+579,desconocido,208,274,46,0,35,0,13.6,estatico
+515,desconocido,202,278,15,0,4,0,27.6,estatico
+569,desconocido,206,387,78,65,1,1,104.7,movimiento
+577,desconocido,208,293,31,0,20,0,23.7,estatico
+578,desconocido,208,369,66,0,55,0,24.4,estatico
+586,desconocido,219,242,20,0,9,0,10.2,estatico
+587,desconocido,219,314,35,0,24,0,20.3,estatico
+588,desconocido,219,264,39,0,28,0,25.7,estatico
+591,desconocido,219,264,42,0,31,0,23.8,estatico
+546,desconocido,203,270,18,0,7,0,28.1,estatico
+547,desconocido,203,380,77,0,66,0,31.8,estatico
+589,desconocido,219,270,22,0,11,0,19.0,estatico
+595,desconocido,220,285,23,10,0,1,30.6,movimiento
+596,desconocido,225,249,8,0,0,0,0.0,estatico
+535,desconocido,202,248,13,0,2,0,23.0,estatico
+552,desconocido,203,251,10,0,0,0,0.0,estatico
+590,desconocido,219,242,6,0,0,0,0.0,estatico
+592,desconocido,220,309,28,0,17,0,23.3,estatico
+594,desconocido,220,290,19,0,8,0,26.2,estatico
+519,desconocido,202,250,6,0,0,0,0.0,estatico
+603,large vehicle,227,387,161,0,0,0,2.5,estatico
+564,desconocido,206,231,4,0,0,0,0.0,estatico
+601,desconocido,226,261,13,0,2,0,16.2,estatico
+516,desconocido,202,255,9,0,0,0,0.0,estatico
+598,desconocido,225,352,55,21,30,2,33.1,estatico
+609,large vehicle,229,386,80,0,0,0,10.3,estatico
+611,desconocido,229,284,28,8,7,1,59.0,movimiento
+557,desconocido,203,272,27,14,1,1,34.9,movimiento
+567,desconocido,206,236,5,0,0,0,0.0,estatico
+604,desconocido,227,258,12,0,1,0,11.5,estatico
+563,desconocido,206,284,13,0,2,0,25.3,estatico
+580,desconocido,208,266,14,0,3,0,26.2,estatico
+573,desconocido,207,245,7,0,0,0,0.0,estatico
+600,desconocido,226,235,4,0,0,0,0.0,estatico
+602,small vehicle,227,387,150,0,0,0,30.9,estatico
+619,desconocido,233,382,71,0,60,0,33.5,estatico
+605,desconocido,227,240,4,0,0,0,0.0,estatico
+584,small vehicle,218,260,7,0,0,0,0.0,estatico
+615,desconocido,231,243,5,0,0,0,0.0,estatico
+633,large vehicle,238,336,45,0,0,0,3.9,estatico
+634,desconocido,238,340,37,0,25,0,31.4,estatico
+597,desconocido,225,291,15,2,0,1,58.0,movimiento
+630,desconocido,236,247,5,0,0,0,0.0,estatico
+635,desconocido,238,352,19,0,8,0,48.7,estatico
+643,desconocido,239,341,40,0,28,0,31.2,estatico
+545,desconocido,203,245,4,0,0,0,0.0,estatico
+631,desconocido,237,246,5,0,0,0,0.0,estatico
+639,desconocido,239,287,14,0,3,0,16.8,estatico
+640,desconocido,239,333,41,0,30,0,32.7,estatico
+644,desconocido,240,348,54,24,26,2,42.9,estatico
+652,small vehicle,242,318,29,16,0,1,98.2,movimiento
+650,desconocido,241,290,32,0,12,0,11.7,estatico
+660,large vehicle,244,387,144,0,0,0,2.5,estatico
+608,desconocido,228,248,4,0,0,0,0.0,estatico
+663,desconocido,244,249,5,0,0,0,0.0,estatico
+649,desconocido,241,275,12,0,1,0,13.2,estatico
+637,desconocido,239,350,20,0,9,0,38.9,estatico
+651,small vehicle,242,387,128,0,0,0,2.5,estatico
+658,large vehicle,244,381,47,5,0,1,31.0,movimiento
+647,large vehicle,241,387,105,41,0,2,31.5,estatico
+653,desconocido,242,268,8,0,0,0,0.0,estatico
+669,desconocido,248,251,4,0,0,0,0.0,estatico
+641,desconocido,239,384,29,0,18,0,51.7,estatico
+623,desconocido,234,326,16,0,5,0,37.6,estatico
+632,desconocido,237,287,11,0,0,0,0.0,estatico
+613,desconocido,231,263,7,0,0,0,0.0,estatico
+670,desconocido,248,269,12,0,1,0,7.6,estatico
+671,desconocido,248,294,12,0,1,0,22.1,estatico
+661,desconocido,244,270,9,0,0,0,0.0,estatico
+683,large vehicle,253,327,74,0,0,0,3.1,estatico
+610,desconocido,229,257,4,0,0,0,0.0,estatico
+614,desconocido,231,271,7,0,0,0,0.0,estatico
+676,desconocido,250,272,9,0,0,0,0.0,estatico
+681,desconocido,252,380,46,0,35,0,38.9,estatico
+612,desconocido,230,279,10,0,0,0,0.0,estatico
+565,desconocido,206,382,31,17,10,2,56.1,estatico
+677,desconocido,250,302,10,0,0,0,0.0,estatico
+695,small vehicle,259,387,129,0,0,0,1.7,estatico
+628,desconocido,236,264,4,0,0,0,0.0,estatico
+701,desconocido,261,372,100,22,74,2,46.3,estatico
+703,small vehicle,262,352,23,5,0,1,105.0,movimiento
+668,desconocido,248,267,5,0,0,0,0.0,estatico
+704,desconocido,262,287,17,0,2,0,8.1,estatico
+689,large vehicle,256,269,6,0,0,0,0.0,estatico
+698,desconocido,260,312,9,0,0,0,0.0,estatico
+712,small vehicle,264,367,101,88,0,1,35.9,movimiento
+713,desconocido,264,284,7,0,0,0,0.0,estatico
+722,large vehicle,267,340,63,44,0,1,27.9,movimiento
+714,desconocido,264,287,7,0,0,0,0.0,estatico
+715,desconocido,265,380,59,0,48,0,18.9,estatico
+721,small vehicle,267,350,71,0,0,0,7.4,estatico
+726,desconocido,268,272,5,0,0,0,0.0,estatico
+699,desconocido,260,294,14,0,3,0,11.5,estatico
+710,desconocido,263,294,11,0,0,0,0.0,estatico
+665,desconocido,246,294,9,0,0,0,0.0,estatico
+717,desconocido,265,366,47,0,36,0,21.5,estatico
+730,large vehicle,270,294,16,3,0,1,280.8,movimiento
+738,large vehicle,273,308,17,4,0,1,46.8,movimiento
+723,desconocido,267,386,40,0,29,0,27.1,estatico
+737,desconocido,272,289,7,0,0,0,0.0,estatico
+705,desconocido,263,281,4,0,0,0,0.0,estatico
+706,desconocido,263,290,12,0,1,0,9.3,estatico
+743,small vehicle,279,387,109,0,0,0,1.8,estatico
+724,desconocido,268,324,9,0,0,0,0.0,estatico
+746,small vehicle,281,387,104,0,0,0,4.2,estatico
+741,large vehicle,277,308,14,0,0,0,2.6,estatico
+719,desconocido,266,290,6,0,0,0,0.0,estatico
+667,desconocido,247,294,6,0,0,0,0.0,estatico
+711,desconocido,263,328,14,0,3,0,29.2,estatico
+749,desconocido,284,302,9,0,0,0,0.0,estatico
+709,desconocido,263,308,8,0,0,0,0.0,estatico
+751,desconocido,284,354,23,0,12,0,29.5,estatico
+762,desconocido,287,334,36,23,5,1,39.8,movimiento
+718,desconocido,266,371,18,0,7,0,35.4,estatico
+720,desconocido,267,302,7,0,0,0,0.0,estatico
+742,desconocido,278,378,45,0,34,0,20.8,estatico
+748,desconocido,283,382,32,0,21,0,26.3,estatico
+732,large vehicle,271,294,4,0,0,0,0.0,estatico
+759,desconocido,287,384,23,0,12,0,33.7,estatico
+766,small vehicle,291,342,52,39,0,1,179.1,movimiento
+774,small vehicle,292,387,67,54,0,1,97.3,movimiento
+782,small vehicle,298,387,90,0,0,0,5.5,estatico
+739,desconocido,273,313,7,0,0,0,0.0,estatico
+764,desconocido,288,387,85,23,58,2,44.0,estatico
+783,large vehicle,301,387,79,0,0,0,8.9,estatico
+780,large vehicle,296,317,5,0,0,0,0.0,estatico
+791,small vehicle,303,387,76,0,0,0,2.2,estatico
+733,desconocido,271,325,6,0,0,0,0.0,estatico
+763,desconocido,288,382,47,0,36,0,21.5,estatico
+798,desconocido,307,322,9,0,0,0,0.0,estatico
+800,small vehicle,308,375,48,0,0,0,4.0,estatico
+788,desconocido,302,330,14,0,3,0,8.3,estatico
+794,desconocido,307,338,18,0,7,0,9.5,estatico
+804,desconocido,309,362,15,0,4,0,20.9,estatico
+801,desconocido,308,382,23,0,12,0,24.1,estatico
+802,desconocido,308,378,49,0,38,0,11.5,estatico
+761,desconocido,287,330,6,0,0,0,0.0,estatico
+758,desconocido,286,326,5,0,0,0,0.0,estatico
+777,desconocido,294,315,4,0,0,0,0.0,estatico
+767,desconocido,291,383,13,0,0,0,39.7,estatico
+797,desconocido,307,322,6,0,0,0,0.0,estatico
+807,desconocido,310,327,8,0,0,0,0.0,estatico
+811,desconocido,311,385,20,0,9,0,28.4,estatico
+808,desconocido,311,353,12,0,0,0,2.1,estatico
+809,desconocido,311,333,6,0,0,0,0.0,estatico
+819,desconocido,317,324,5,0,0,0,0.0,estatico
+785,desconocido,302,378,22,0,11,0,20.7,estatico
+820,desconocido,317,384,37,0,25,0,14.7,estatico
+827,desconocido,319,385,50,0,34,0,11.6,estatico
+826,desconocido,319,344,13,0,0,0,9.8,estatico
+775,small vehicle,293,387,32,19,0,1,34.7,movimiento
+818,desconocido,316,375,41,11,26,2,12.3,estatico
+828,desconocido,319,378,18,0,7,0,19.1,estatico
+769,desconocido,291,379,14,0,3,0,29.8,estatico
+823,large vehicle,318,387,63,0,0,0,3.3,estatico
+790,desconocido,303,329,4,0,0,0,0.0,estatico
+806,desconocido,310,348,8,0,0,0,0.0,estatico
+830,desconocido,320,344,8,0,0,0,0.0,estatico
+824,desconocido,318,369,14,0,3,0,20.4,estatico
+841,desconocido,325,387,19,6,0,1,80.5,movimiento
+831,desconocido,321,381,16,0,5,0,21.9,estatico
+843,desconocido,325,379,20,0,9,0,15.6,estatico
+846,desconocido,326,342,5,0,0,0,0.0,estatico
+853,large vehicle,330,381,52,35,0,1,18.0,movimiento
+796,desconocido,307,379,16,0,5,0,21.6,estatico
+815,desconocido,313,366,22,0,11,0,18.0,estatico
+836,desconocido,323,346,5,0,0,0,0.0,estatico
+840,desconocido,325,385,34,0,23,0,12.9,estatico
+855,desconocido,330,371,25,0,14,0,12.3,estatico
+871,desconocido,335,387,37,0,0,0,2.1,estatico
+880,desconocido,336,387,25,12,0,1,60.8,movimiento
+858,desconocido,332,379,26,0,15,0,12.4,estatico
+881,desconocido,336,368,29,0,18,0,39.0,estatico
+784,large vehicle,301,385,26,13,0,1,30.7,movimiento
+859,desconocido,332,347,6,0,0,0,0.0,estatico
+876,desconocido,336,377,10,0,0,0,0.0,estatico
+848,desconocido,327,375,9,0,0,0,0.0,estatico
+863,desconocido,333,345,4,0,0,0,0.0,estatico
+884,large vehicle,338,387,36,0,0,0,1.0,estatico
+900,desconocido,343,379,12,0,0,0,50.4,estatico
+898,desconocido,342,362,7,0,0,0,0.0,estatico
+851,desconocido,328,348,4,0,0,0,0.0,estatico
+904,desconocido,344,386,26,0,15,0,14.4,estatico
+847,desconocido,326,363,8,0,0,0,0.0,estatico
+883,desconocido,337,381,15,0,4,0,16.3,estatico
+907,desconocido,345,382,24,0,12,0,14.5,estatico
+821,desconocido,317,352,5,0,0,0,0.0,estatico
+835,desconocido,322,354,6,0,0,0,0.0,estatico
+852,desconocido,329,367,7,0,0,0,0.0,estatico
+905,desconocido,344,385,11,0,0,0,0.0,estatico
+865,desconocido,333,383,18,0,7,0,13.8,estatico
+913,large vehicle,348,387,11,0,0,0,0.0,estatico
+916,small vehicle,349,387,37,0,0,0,1.0,estatico
+920,desconocido,349,368,20,0,9,0,28.7,estatico
+911,desconocido,347,381,10,0,0,0,0.0,estatico
+854,desconocido,330,359,5,0,0,0,0.0,estatico
+906,desconocido,344,373,15,2,0,1,35.9,movimiento
+923,small vehicle,351,376,26,0,0,0,4.6,estatico
+878,desconocido,336,377,6,0,0,0,0.0,estatico
+886,desconocido,338,371,5,0,0,0,0.0,estatico
+929,desconocido,352,386,35,0,24,0,13.3,estatico
+930,desconocido,352,387,36,0,24,0,13.0,estatico
+870,desconocido,334,384,15,0,4,0,18.5,estatico
+910,large vehicle,347,387,35,22,0,1,211.9,movimiento
+928,desconocido,352,385,21,0,10,0,10.8,estatico
+931,large vehicle,353,376,21,0,0,0,1.2,estatico
+882,desconocido,337,377,11,0,0,0,0.0,estatico
+908,small vehicle,346,387,29,16,0,1,50.1,movimiento
+935,desconocido,354,377,15,0,4,0,7.7,estatico
+894,small vehicle,341,387,14,0,0,0,3.4,estatico
+933,desconocido,353,373,10,0,0,0,0.0,estatico
+944,small vehicle,358,387,28,0,0,0,1.8,estatico
+936,desconocido,355,385,6,0,0,0,0.0,estatico
+889,desconocido,338,378,10,0,0,0,0.0,estatico
+914,desconocido,348,382,7,0,0,0,0.0,estatico
+949,desconocido,361,387,27,0,16,0,17.5,estatico
+844,desconocido,326,366,4,0,0,0,0.0,estatico
+946,desconocido,358,369,6,0,0,0,0.0,estatico
+950,desconocido,361,378,13,0,2,0,19.1,estatico
+943,desconocido,357,367,4,0,0,0,0.0,estatico
+838,desconocido,324,373,7,0,0,0,0.0,estatico
+940,desconocido,356,368,4,0,0,0,0.0,estatico
+956,desconocido,364,372,7,0,0,0,0.0,estatico
+960,desconocido,365,382,6,0,0,0,0.0,estatico
+892,desconocido,339,382,7,0,0,0,0.0,estatico
+938,desconocido,355,370,4,0,0,0,0.0,estatico
+927,desconocido,352,381,6,0,0,0,0.0,estatico
+955,desconocido,363,379,7,0,0,0,0.0,estatico
+917,desconocido,349,377,6,0,0,0,0.0,estatico
+942,small vehicle,357,375,4,0,0,0,0.0,estatico
+961,desconocido,368,376,4,0,0,0,0.0,estatico
+969,desconocido,373,387,14,0,0,0,0.4,estatico
+964,desconocido,370,386,7,0,0,0,0.0,estatico
+971,desconocido,373,386,12,0,0,0,3.5,estatico
+976,small vehicle,375,387,13,0,0,0,5.5,estatico
+979,large vehicle,376,380,5,0,0,0,0.0,estatico
+953,desconocido,362,382,6,0,0,0,0.0,estatico
+959,desconocido,365,380,4,0,0,0,0.0,estatico
+981,desconocido,377,384,8,0,0,0,0.0,estatico
+975,desconocido,374,381,4,0,0,0,0.0,estatico
+895,desconocido,341,382,4,0,0,0,0.0,estatico
+966,desconocido,371,382,4,0,0,0,0.0,estatico
+967,desconocido,372,384,5,0,0,0,0.0,estatico
+965,desconocido,371,387,5,0,0,0,0.0,estatico
+983,desconocido,378,383,4,0,0,0,0.0,estatico
+989,desconocido,380,384,5,0,0,0,0.0,estatico
+987,desconocido,380,387,5,0,0,0,0.0,estatico
+988,desconocido,380,384,4,0,0,0,0.0,estatico
+993,desconocido,381,385,5,0,0,0,0.0,estatico
+994,desconocido,381,384,4,0,0,0,0.0,estatico
+992,desconocido,381,387,5,0,0,0,0.0,estatico
+995,small vehicle,382,387,6,0,0,0,0.0,estatico

@@ -1,0 +1,5 @@
+video,detector,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable,ucmc_pitch_deg,ucmc_pitch_min,ucmc_pitch_max,ucmc_altura_m,ucmc_altura_min,ucmc_altura_max,ucmc_calib,ucmc_calib_cobertura,ucmc_dets_fuera
+vigia_5,obb,propio_kf,92,76,2.2,15.8,131.0,1.22,42.1,4.8,40.7,0.75,0.0,0.1,estacionario,0.01,0.03,0.4,0.0,,,,,,,,,
+vigia_5,obb,bytetrack,102,63,2.27,15.3,108.6,0.9,55.6,4.11,38.8,0.54,0.0,0.0,estacionario,0.01,0.03,0.4,0.0,,,,,,,,,
+vigia_5,obb,botsort,96,65,2.23,15.6,112.1,0.77,58.5,4.16,39.3,0.48,0.0,0.0,estacionario,0.01,0.03,0.4,0.0,,,,,,,,,
+vigia_5,obb,ucmc,88,54,2.87,12.1,93.1,1.35,35.2,4.46,43.5,0.8,0.0,0.0,estacionario,0.01,0.03,0.4,0.0,0.0,0.0,0.0,100.0,100.0,100.0,respaldo,1.5,0

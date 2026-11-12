@@ -1,0 +1,5 @@
+video,detector,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable,ucmc_pitch_deg,ucmc_altura_m,ucmc_dets_fuera
+vigia_8,coco,propio_kf,148,138,1.39,11.3,529.1,0.69,58.0,12.22,56.1,0.54,0.0,1.6,movimiento suave,0.95,1.01,0.0,0.0,,,
+vigia_8,coco,bytetrack,191,129,1.01,15.5,494.6,0.32,72.9,8.34,54.3,0.3,0.0,0.1,movimiento suave,0.95,1.01,0.0,0.0,,,
+vigia_8,coco,botsort,179,128,1.04,15.1,490.8,0.33,72.7,8.49,54.1,0.33,0.0,0.1,movimiento suave,0.95,1.01,0.0,0.0,,,
+vigia_8,coco,ucmc,142,73,2.36,6.6,279.9,1.58,32.9,11.01,63.8,0.79,0.0,0.0,movimiento suave,0.95,1.01,0.0,0.0,50,62.3,0

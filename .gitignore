@@ -1,0 +1,15 @@
+# Videos y pesos: demasiado grandes para GitHub (los videos VIGIA viven fuera del repo)
+*.mp4
+*.webm
+*.avi
+*.mov
+*.pt
+
+# Salidas de ejecución (se regeneran con los notebooks)
+salidas/
+
+# Basura del sistema / Jupyter / Python
+.DS_Store
+.ipynb_checkpoints/
+__pycache__/
+*.pyc

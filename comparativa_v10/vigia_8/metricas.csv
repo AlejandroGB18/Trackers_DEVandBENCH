@@ -1,0 +1,4 @@
+video,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_8,propio_kf,93,80,0.81,19.3,306.7,0.52,73.8,4.14,41.0,0.4,0.0,0.2,movimiento suave,0.95,1.01,0.0,0.0
+vigia_8,bytetrack,75,43,0.58,27.0,164.9,0.38,88.4,1.59,22.0,0.23,0.0,0.0,movimiento suave,0.95,1.01,0.0,0.0
+vigia_8,botsort,66,47,0.57,27.3,180.2,0.33,85.1,1.72,23.7,0.21,0.0,0.0,movimiento suave,0.95,1.01,0.0,0.0

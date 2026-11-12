@@ -1,0 +1,4 @@
+variante,ids_emitidos,tracks,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track
+propio,958,632,1244.6,0.53,65.3,48.0,41.7,0.42
+bytetrack,935,498,980.7,0.33,71.1,44.09,44.4,0.29
+botsort,913,489,963.0,0.37,70.1,44.17,44.4,0.3

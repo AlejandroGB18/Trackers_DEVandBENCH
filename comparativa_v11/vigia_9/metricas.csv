@@ -1,0 +1,4 @@
+video,detector,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_9,obb,propio_kf,826,694,0.95,22.7,1927.3,0.4,71.8,30.62,40.5,0.45,1.1,5.8,movimiento suave,0.51,0.57,0.0,0.0
+vigia_9,obb,bytetrack,1068,727,0.62,35.0,2019.0,0.33,81.7,20.78,32.5,0.26,1.1,4.6,movimiento suave,0.51,0.57,0.0,0.0
+vigia_9,obb,botsort,954,720,0.64,33.5,1999.5,0.35,80.7,21.47,32.1,0.27,1.5,5.3,movimiento suave,0.51,0.57,0.0,0.0

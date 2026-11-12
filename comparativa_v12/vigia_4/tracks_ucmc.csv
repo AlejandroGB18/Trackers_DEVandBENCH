@@ -1,0 +1,11 @@
+id,clase,primer_frame,ultimo_frame,detecciones,frames_en_movimiento,frames_paralaje,cambios_de_estado,desplazamiento_max_px,estado_final
+1,desconocido,7,26,15,0,0,0,225.4,estatico
+3,desconocido,13,31,14,0,0,0,0.0,estatico
+4,desconocido,34,195,113,72,10,3,21.4,movimiento
+11,desconocido,193,299,102,85,0,1,23.8,movimiento
+16,desconocido,256,388,78,42,0,1,19.8,movimiento
+18,desconocido,291,352,30,6,0,1,11.0,movimiento
+19,desconocido,354,416,33,8,0,1,10.1,movimiento
+20,desconocido,367,419,51,12,0,2,7.8,estatico
+21,desconocido,399,409,11,0,0,0,0.0,estatico
+23,desconocido,406,419,8,0,0,0,0.0,estatico

@@ -1,0 +1,22 @@
+video,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_1,propio_kf,641,455,2.41,15.5,730.4,1.08,46.6,29.38,47.0,0.58,8.2,23.2,movimiento suave,0.46,0.73,0.0,0.1
+vigia_1,bytetrack,695,422,2.09,17.9,677.5,0.81,53.1,23.56,43.0,0.5,6.1,26.7,movimiento suave,0.46,0.73,0.0,0.1
+vigia_1,botsort,582,384,2.36,15.9,616.5,1.04,48.2,24.2,45.3,0.55,6.5,26.8,movimiento suave,0.46,0.73,0.0,0.1
+vigia_2,propio_kf,640,524,2.42,6.7,1942.8,1.08,47.5,78.25,22.2,0.28,1.1,0.0,movimiento suave,1.05,2.26,0.0,0.0
+vigia_2,bytetrack,889,404,2.48,6.5,1497.9,0.63,58.7,61.91,22.1,0.19,0.9,0.0,movimiento suave,1.05,2.26,0.0,0.0
+vigia_2,botsort,800,454,2.35,6.9,1683.3,0.71,58.6,66.01,21.2,0.17,0.6,0.0,movimiento suave,1.05,2.26,0.0,0.0
+vigia_3,propio_kf,735,576,2.54,12.0,1134.4,0.47,67.9,48.0,44.0,0.39,0.5,1.1,estacionario,0.04,0.06,0.0,0.0
+vigia_3,bytetrack,902,462,2.87,10.6,909.8,0.3,70.1,43.48,44.6,0.3,0.3,0.7,estacionario,0.04,0.06,0.0,0.0
+vigia_3,botsort,872,452,2.94,10.4,890.2,0.37,69.2,43.57,44.6,0.3,0.3,0.7,estacionario,0.04,0.06,0.0,0.0
+vigia_4,propio_kf,34,11,1.24,11.3,47.0,0.33,63.6,0.97,55.0,1.09,0.0,1.6,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,bytetrack,34,21,0.39,35.8,89.8,0.27,95.2,0.59,24.8,0.05,0.0,5.2,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,botsort,33,17,0.6,23.5,72.7,0.27,76.5,0.72,38.8,0.35,0.0,0.0,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_5,propio_kf,92,76,2.2,15.8,131.0,1.22,42.1,4.8,40.7,0.75,0.0,0.1,estacionario,0.01,0.03,0.4,0.0
+vigia_5,bytetrack,102,63,2.27,15.3,108.6,0.9,55.6,4.11,38.8,0.54,0.0,0.0,estacionario,0.01,0.03,0.4,0.0
+vigia_5,botsort,96,65,2.23,15.6,112.1,0.77,58.5,4.16,39.3,0.48,0.0,0.0,estacionario,0.01,0.03,0.4,0.0
+vigia_6,propio_kf,67,55,1.86,10.1,176.8,1.5,40.0,5.47,75.7,0.69,0.0,0.1,estacionario,0.01,0.03,0.0,0.0
+vigia_6,bytetrack,71,48,1.7,11.0,154.3,1.23,41.7,4.38,74.1,0.62,0.0,0.0,estacionario,0.01,0.03,0.0,0.0
+vigia_6,botsort,53,43,1.98,9.4,138.2,1.43,39.5,4.56,77.0,0.65,0.0,0.0,estacionario,0.01,0.03,0.0,0.0
+vigia_8,propio_kf,93,80,0.81,19.3,306.7,0.52,73.8,4.14,41.0,0.4,0.0,0.2,movimiento suave,0.95,1.01,0.0,0.0
+vigia_8,bytetrack,75,43,0.58,27.0,164.9,0.38,88.4,1.59,22.0,0.23,0.0,0.0,movimiento suave,0.95,1.01,0.0,0.0
+vigia_8,botsort,66,47,0.57,27.3,180.2,0.33,85.1,1.72,23.7,0.21,0.0,0.0,movimiento suave,0.95,1.01,0.0,0.0

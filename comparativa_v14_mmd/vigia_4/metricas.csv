@@ -1,0 +1,4 @@
+video,detector,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_4,obb,propio_kf,34,11,1.24,11.3,47.0,0.33,63.6,0.97,55.0,1.09,0.0,1.6,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,obb,propio_kf_mmd,43,19,0.67,20.9,81.2,0.53,73.7,0.91,30.5,0.53,0.0,3.0,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,obb,propio_kf_mmd_iou,37,17,0.78,17.9,72.7,0.37,64.7,0.95,34.0,0.47,0.0,2.6,movimiento rapido,0.34,5.61,25.2,0.0

@@ -1,0 +1,4 @@
+video,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_4,propio_kf,34,11,1.24,11.3,47.0,0.33,63.6,0.97,55.0,1.09,0.0,1.6,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,bytetrack,34,21,0.39,35.8,89.8,0.27,95.2,0.59,24.8,0.05,0.0,5.2,movimiento rapido,0.34,5.61,25.2,0.0
+vigia_4,botsort,33,17,0.6,23.5,72.7,0.27,76.5,0.72,38.8,0.35,0.0,0.0,movimiento rapido,0.34,5.61,25.2,0.0

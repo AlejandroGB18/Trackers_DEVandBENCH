@@ -1,0 +1,4 @@
+video,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_6,propio_kf,67,55,1.86,10.1,176.8,1.5,40.0,5.47,75.7,0.69,0.0,0.1,estacionario,0.01,0.03,0.0,0.0
+vigia_6,bytetrack,71,48,1.7,11.0,154.3,1.23,41.7,4.38,74.1,0.62,0.0,0.0,estacionario,0.01,0.03,0.0,0.0
+vigia_6,botsort,53,43,1.98,9.4,138.2,1.43,39.5,4.56,77.0,0.65,0.0,0.0,estacionario,0.01,0.03,0.0,0.0

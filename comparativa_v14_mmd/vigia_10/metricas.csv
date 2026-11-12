@@ -1,0 +1,4 @@
+video,detector,variante,ids_emitidos,tracks,vida_media_s,tracks_por_objeto,ids_por_minuto,duracion_mediana_s,tracks_menores_1s_pct,objetos_simultaneos_prom,pct_frames_en_movimiento,cambios_estado_por_track,cajas_fusionadas_pct,cajas_grandes_sin_clase_pct,tipo_toma,mov_camara_px_mediana,mov_camara_px_p90,pct_frames_camara_rapida,pct_frames_H_no_fiable
+vigia_10,coco,propio_kf,402,349,1.01,27.7,750.2,0.4,73.1,12.61,37.0,0.32,0.3,2.0,movimiento suave,0.5,1.31,0.0,0.0
+vigia_10,coco,propio_kf_mmd,498,422,0.82,33.9,907.2,0.33,77.7,12.46,36.0,0.29,0.2,2.8,movimiento suave,0.5,1.31,0.0,0.0
+vigia_10,coco,propio_kf_mmd_iou,435,375,0.94,29.8,806.1,0.37,74.4,12.56,36.9,0.35,0.2,3.5,movimiento suave,0.5,1.31,0.0,0.0

@@ -1,0 +1,3 @@
+# Este notebook pesa 68 MB por sus salidas: al hacer commit se guardan SIN salidas (la copia local no cambia).
+# El filtro "sinsalidas" se configura en .git/config (ver README, sección "Notas del repo").
+YOLO_ByteTrack_Dron_Diagnostico.ipynb filter=sinsalidas

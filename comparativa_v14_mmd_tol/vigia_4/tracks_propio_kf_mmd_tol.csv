@@ -1,0 +1,18 @@
+id,clase,primer_frame,ultimo_frame,detecciones,frames_en_movimiento,frames_paralaje,cambios_de_estado,desplazamiento_max_px,estado_final
+19,desconocido,32,57,20,0,0,0,2.6,estatico
+20,desconocido,56,115,42,0,11,0,7.6,estatico
+23,desconocido,141,184,31,5,3,1,12.8,movimiento
+24,large vehicle,143,147,5,0,0,0,0.0,estatico
+25,desconocido,169,180,12,0,0,0,0.0,estatico
+26,desconocido,185,189,5,0,0,0,0.0,estatico
+27,desconocido,189,293,105,81,0,1,24.0,movimiento
+32,desconocido,252,352,50,34,0,1,10.9,movimiento
+33,desconocido,277,366,38,2,0,1,10.8,movimiento
+34,desconocido,293,299,7,0,0,0,0.0,estatico
+35,desconocido,314,317,4,0,0,0,0.0,estatico
+36,desconocido,352,416,35,7,0,1,11.0,movimiento
+37,desconocido,365,419,53,30,0,4,7.7,estatico
+38,desconocido,367,388,16,0,0,0,4.2,estatico
+40,desconocido,397,402,6,0,0,0,0.0,estatico
+41,desconocido,402,409,8,0,0,0,0.0,estatico
+42,desconocido,404,412,8,0,0,0,0.0,estatico
