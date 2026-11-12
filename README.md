@@ -1,4 +1,4 @@
-# Trackers DEV and BENCH — seguimiento de objetos en movimiento desde dron
+# Trackers DEV and BENCH — seguimiento de objetos en movimiento desde dron con fondos en Movimiento
 
 Seguimiento multi-objeto (MOT) sobre video de dron, con la cámara en movimiento: qué objetos hay, con un ID estable, y cuáles **se mueven de verdad** (no por el movimiento del dron).
 
