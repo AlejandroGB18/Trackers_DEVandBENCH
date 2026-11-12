@@ -28,8 +28,8 @@ Todo es **causal**: cada frame usa solo el actual y los anteriores. No hay pasad
 | `tracker_botsort.py` | BoT-SORT de Ultralytics con su GMC | Si se usa (+ `adaptador_ultralytics.py`) |
 | `adaptador_ultralytics.py` | Absorbe los cambios de API de Ultralytics entre versiones | Solo con ByteTrack / BoT-SORT |
 | `pruebas.py` | Self-tests de todo: `python pruebas.py` | Recomendado |
-| `../tiempo_real_propio.ipynb`, `../tiempo_real_ucmc.ipynb`, `../tiempo_real_bytetrack.ipynb`, `../tiempo_real_botsort.ipynb` | Un notebook **autocontenido** por tracker (no importa los `.py`: lleva el mismo código, celda por celda, con su explicación). Pruebas, video, tiempos y, en UCMC, la cámara estimada | No (es para estudiar / probar cada uno) |
-| `../demo_tiempo_real.ipynb` | Junto a las comparativas. Procesa un video frame a frame con YOLO como "detector externo", mide ms por etapa, guarda el video y los tracks en formato MOT | No (es la demo) |
+| `../Tracker Notebooks/tiempo_real_*.ipynb` (propio, ucmc, bytetrack, botsort) | Un notebook **autocontenido** por tracker (no importa los `.py`: lleva el mismo código, celda por celda, con su explicación). Pruebas, video, tiempos y, en UCMC, la cámara estimada | No (es para estudiar / probar cada uno) |
+| `../Tracker Notebooks/demo_tiempo_real.ipynb` | Usa estos `.py` (no los copia). Procesa un video frame a frame con YOLO como "detector externo", mide ms por etapa, guarda el video y los tracks en formato MOT | No (es la demo) |
 
 **Dependencias:**
 - `numpy`, `opencv-python` y `scipy` para el propio y UCMC.
