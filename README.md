@@ -18,7 +18,9 @@ Se comparan cuatro trackers alimentados con las **mismas detecciones** (YOLO):
 ```
 ├── VD - Trackers To Real Implementation/   código final (.py), un archivo por tracker, misma interfaz
 ├── Tracker Notebooks/                      un notebook por tracker + la demo
-└── Historial de desarrollo de trackers/    comparativas v5 → v14, cada una con sus resultados
+├── Historial de desarrollo de trackers/    comparativas v5 → v14, cada una con sus resultados
+├── benchmark/                              benchmark con GT: harness propio + TrackEval (ver su README)
+└── docs/                                   investigación (cómo evaluar, BoxMOT, métricas)
 ```
 
 | Carpeta | Qué contiene |

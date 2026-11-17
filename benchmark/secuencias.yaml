@@ -1,0 +1,80 @@
+# Manifiesto del benchmark. Rutas relativas a este archivo.
+# Las decisiones que fijan este archivo (umbrales, clases, splits) están razonadas en DECISIONS.md:
+# cambiarlas DESPUÉS de ver resultados invalida la comparación.
+
+detectores:
+  obb:                                   # tomas cenitales (DOTA-OBB; se usa la caja horizontal)
+    pesos: ../yolo11n-obb.pt
+    imgsz: 1280
+    clases: [small vehicle, large vehicle]
+    conf_cache: 0.05                     # umbral de la CACHÉ (bajo); el que entra al tracker es conf_entrada
+  coco:                                  # tomas oblicuas
+    pesos: ../yolo11n.pt
+    imgsz: 1280
+    clases: [car, truck, bus, motorcycle]
+    conf_cache: 0.05
+
+trackers:                                # mismo orden en todas las tablas
+  - propio_kf
+  - ucmc
+  - bytetrack
+  - botsort
+  # Ablaciones (otra etiqueta, otra config):
+  # - {nombre: ucmc, etiqueta: ucmc_manual, config: {ucmc_calibrar: false}}
+
+config_comun:                            # se aplica a los 4 (use_proposals=False se fuerza siempre)
+  conf_entrada: 0.10                     # detecciones que entran al tracker (= conf_low)
+  conf_high: 0.35
+  conf_low: 0.10
+  max_miss_sec: 1.0
+  min_hits: 4
+
+evaluacion:
+  clases_evaluadas: [1]                  # clase del GT VIGIA: 1 = vehicle (car/truck/bus/van fusionados)
+  clases_ignoradas: [0]                  # 0 = región ignorada (regla de área de VisDrone)
+  clases_distractoras: []                # p. ej. [2] si se anotan personas para no castigarlas
+  umbral_area_ignorada: 0.5
+  bins_ego_px: [0.5, 3.0]                # estacionario < 0.5 ≤ suave < 3.0 ≤ rápido (px/frame a 960 de ancho)
+  protocolos: [todos, moviles, estaticos, e2e_moviles]
+  bootstrap_n: 2000
+
+secuencias:
+  # gt: null hasta que exista la anotación; sin GT solo se calculan las métricas sin GT.
+  # gt_frames: frames ANOTADOS (base 1, del video completo). Con paso 3 a 30 fps ≈ 10 fps anotados.
+  - nombre: vigia_4
+    video: /Users/Alex/Documents/videos_VIGIA/vigia_4.mp4
+    detector: obb
+    toma: cenital
+    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    split: test
+    gt: null
+    # gt: ../anotaciones/vigia_4/gt.txt
+    # gt_frames: {inicio: 1, fin: 900, paso: 3}
+  - nombre: vigia_1
+    video: /Users/Alex/Documents/videos_VIGIA/vigia_1.mp4
+    detector: obb
+    toma: cenital
+    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    split: test
+    gt: null
+  - nombre: vigia_5
+    video: /Users/Alex/Documents/videos_VIGIA/vigia_5.mp4
+    detector: obb
+    toma: cenital
+    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    split: test
+    gt: null
+  - nombre: vigia_9
+    video: /Users/Alex/Documents/videos_VIGIA/vigia_9.mp4
+    detector: coco
+    toma: oblicua
+    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 50}
+    split: test
+    gt: null
+  - nombre: vigia_10
+    video: /Users/Alex/Documents/videos_VIGIA/vigia_10.mp4
+    detector: coco
+    toma: oblicua
+    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 40}
+    split: test
+    gt: null
