@@ -54,6 +54,41 @@ python bench.py evaluar --run v1               # métricas
 Cómo leerlo: **DetA** es sobre todo el detector (igual para los 4), **AssA / IDF1 / IDSW** son el tracker, y el salto de
 AssA entre `estacionario` y `rapido` es la robustez al movimiento del dron.
 
+## Cámara de UCMC sin telemetría: `bench.py barrer` (D17)
+
+Los datasets públicos no traen la cámara, así que se busca en una rejilla de **pitch × altura** (hfov fijo por
+dataset) definida por grupo de vuelo en `secuencias.yaml → barrido.grupos`. Cada secuencia lleva `split`
+(`ajuste` / `test`) y `grupo` (o su `toma`).
+
+```bash
+python bench.py barrer --run b1                     # rejilla en todas las secuencias → runs/b1/barrido/
+```
+
+| Archivo | Contenido |
+|---|---|
+| `resultados.csv` | Cada cámara de la rejilla × secuencia: HOTA, DetA, AssA, IDF1, IDSW, `n_fuera` y el criterio sin GT (pendiente de tamaño, escala, velocidades implausibles) — es la curva de sensibilidad |
+| `seleccion.csv` | La cámara elegida por secuencia en cada versión: `grupo_train`, `singt`, `oraculo_seq` |
+| `validacion_singt.csv` | Spearman entre el criterio sin GT y HOTA en las secuencias de ajuste |
+| `fraccion_rejilla_gana.csv` | Con `--contra RUN`: fracción de la rejilla en la que UCMC supera a cada rival |
+
+Después, se corren las versiones elegidas como trackers normales:
+
+```yaml
+trackers:
+  - propio_kf
+  - ucmc                                             # calibración automática en línea
+  - {nombre: ucmc, etiqueta: ucmc_grupo_train, seleccion: runs/b1/barrido/seleccion.csv, version: grupo_train}
+  - {nombre: ucmc, etiqueta: ucmc_oraculo_seq, seleccion: runs/b1/barrido/seleccion.csv, version: oraculo_seq}
+  - bytetrack
+  - botsort
+```
+
+`ucmc_oraculo_seq` sale en `metricas.csv` como `COMBINADO_COTA` (columna `uso_gt = test`) y no entra en
+`COMBINADO` ni en `comparaciones.csv`. Cada prueba de la rejilla corre solo el núcleo de UCMC sobre la H y las
+detecciones guardadas en `cache/entrada/` (sin decodificar el video); una prueba comprueba que da exactamente lo
+mismo que el tracker completo. Con telemetría real, la cámara se pasa directamente:
+`{nombre: ucmc, etiqueta: ucmc_telemetria, camara: {...}, config: {ucmc_calibrar_pitch: false, ucmc_calibrar_altura: false}}`.
+
 ## El GT (cómo anotar un clip VIGIA)
 
 1. **CVAT**, tarea con el clip; etiquetas `vehicle` e `ignored` (región). Atributos de `vehicle`: `visibility`.
@@ -77,6 +112,9 @@ AssA entre `estacionario` y `rapido` es la robustez al movimiento del dron.
 - `moving` derivado con paneo: un auto quieto sale 0 y uno que avanza sale 1.
 - Video sintético con paneo (3 px/frame): `ego_px` = 2.25 (el valor exacto), los 4 trackers corren, se evalúan y son
   deterministas (mismos bytes en dos corridas).
+- El núcleo de UCMC sobre la H cacheada da las mismas cajas que el tracker completo.
+- Integración con archivos reales (video, GT, ego, `moving`): barrido → selección D17 → correr → `evaluar_run`;
+  el oráculo queda solo en `COMBINADO_COTA` y fuera de las comparaciones.
 - Sobre 120 frames reales de vigia_1: el `ego_px` de referencia y el de la H de los trackers tienen mediana
   0.22 vs 0.235 px y correlación 0.96 (miden lo mismo con estimadores distintos).
 

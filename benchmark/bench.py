@@ -7,6 +7,7 @@ bench.py — Punto de entrada del benchmark
     python bench.py correr    --run NOMBRE [...]     # trackers sobre las detecciones cacheadas
     python bench.py moving    [...]                  # propuesta automática de la etiqueta moving + lista de revisión
     python bench.py evaluar   --run NOMBRE [...]     # TrackEval + análisis por ego-movimiento + decisor + sin GT
+    python bench.py barrer    --run NOMBRE [--contra RUN]   # rejilla de cámara de UCMC (D17) → barrido/seleccion.csv
     python bench.py todo      --run NOMBRE [...]     # detectar → ego → correr → evaluar
 
 Orden recomendado la primera vez: detectar → ego → moving (revisar a mano) → correr → evaluar.
@@ -70,21 +71,39 @@ def cmd_evaluar(man, a):
         print(s["sin_gt"].round(2).to_string(index=False))
 
 
+def cmd_barrer(man, a):
+    import pandas as pd
+    from barrido import barrer, fraccion_rejilla_gana
+    from comunes import DIR_RUNS
+    df, sel, val = barrer(man, a.run, a.seq or None)
+    if len(val):
+        print(f"[barrer] criterio sin GT: rho media con HOTA en ajuste = {val.rho_singt_hota.mean():.2f} "
+              f"(válido si ≤ -{man.barrido.get('singt_rho_min', 0.6)})")
+    print(sel.to_string(index=False))
+    if a.contra:
+        m = DIR_RUNS / a.contra / "eval" / "metricas.csv"
+        if m.exists():
+            f = fraccion_rejilla_gana(df, pd.read_csv(m))
+            f.to_csv(DIR_RUNS / a.run / "barrido" / "fraccion_rejilla_gana.csv", index=False)
+            print(f.round(3).to_string(index=False))
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("comando", choices=["detectar", "ego", "moving", "correr", "evaluar", "todo"])
+    p.add_argument("comando", choices=["detectar", "ego", "moving", "correr", "evaluar", "barrer", "todo"])
     p.add_argument("--manifiesto", default=str(RAIZ_BENCH / "secuencias.yaml"))
     p.add_argument("--seq", nargs="*", default=None, help="solo estas secuencias")
     p.add_argument("--run", default=None, help="nombre del run (carpeta en runs/)")
     p.add_argument("--rehacer", action="store_true")
     p.add_argument("--semilla", type=int, default=0)
     p.add_argument("--dispositivo", default=None, help="cpu, mps, 0 (cuda)…")
+    p.add_argument("--contra", default=None, help="barrer: run con los rivales evaluados (fracción de rejilla que gana)")
     a = p.parse_args()
     man = cargar_manifiesto(a.manifiesto)
-    if a.comando in ("correr", "evaluar", "todo") and not a.run:
-        p.error("--run es obligatorio para correr/evaluar")
+    if a.comando in ("correr", "evaluar", "barrer", "todo") and not a.run:
+        p.error("--run es obligatorio para correr/evaluar/barrer")
     pasos = {"detectar": [cmd_detectar], "ego": [cmd_ego], "moving": [cmd_moving], "correr": [cmd_correr],
-             "evaluar": [cmd_evaluar], "todo": [cmd_detectar, cmd_ego, cmd_correr, cmd_evaluar]}[a.comando]
+             "evaluar": [cmd_evaluar], "barrer": [cmd_barrer], "todo": [cmd_detectar, cmd_ego, cmd_correr, cmd_evaluar]}[a.comando]
     for f in pasos:
         f(man, a)
 

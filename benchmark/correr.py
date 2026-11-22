@@ -57,15 +57,38 @@ def crear_tracker(nombre, fps, nombres_clases, config_comun=None, config_propia=
     raise ValueError(f"Tracker desconocido: {nombre}. Disponibles: {TRACKERS_DISPONIBLES}")
 
 
+USO_GT_POR_VERSION = {"oraculo_seq": "test", "grupo_train": "train", "singt": "no"}
+
+
 def _normalizar_trackers(lista):
-    """Admite 'propio_kf' o {nombre: propio_kf, etiqueta: propio_kf_v2, config: {...}}."""
+    """Admite 'propio_kf' o un dict:
+        {nombre: propio_kf, etiqueta: propio_kf_v2, config: {...}}
+        {nombre: ucmc, etiqueta: ucmc_fija, camara: {pitch_respaldo_deg: 40, altura_m: 50}, config: {ucmc_calibrar: false}}
+        {nombre: ucmc, etiqueta: ucmc_grupo_train, seleccion: runs/x/barrido/seleccion.csv, version: grupo_train}
+    `camara` se combina sobre el `ucmc` de cada secuencia. `seleccion` + `version` toman la cámara elegida por
+    `bench.py barrer` para cada secuencia. `uso_gt` (no | train | test) dice si la configuración se eligió mirando GT;
+    las de `test` (oráculos) quedan fuera de COMBINADO y de las comparaciones."""
     out = []
     for t in lista:
         t = {"nombre": t} if isinstance(t, str) else dict(t)
         t.setdefault("etiqueta", t["nombre"])
         t.setdefault("config", {})
+        t.setdefault("camara", {})
+        t.setdefault("uso_gt", USO_GT_POR_VERSION.get(t.get("version"), "no"))
         out.append(t)
     return out
+
+
+def config_de_tracker(t, sec):
+    """(config_propia, camara_ucmc) de una entrada de `trackers` para una secuencia."""
+    config = dict(t["config"])
+    camara = {**(sec.ucmc or {}), **t["camara"]}
+    if t.get("seleccion"):
+        from barrido import camara_de_seleccion
+        cam, cfg = camara_de_seleccion(t["seleccion"], sec.nombre, t["version"])
+        camara.update(cam)
+        config.update(cfg)
+    return config, camara
 
 
 def correr_secuencia(sec, cache, trackers, config_comun, dir_run, frames=None, semilla=0):
@@ -74,8 +97,10 @@ def correr_secuencia(sec, cache, trackers, config_comun, dir_run, frames=None, s
     fps = fps_de(sec) if frames is None else float(sec.fps)
     conf_entrada = float(config_comun.get("conf_entrada", 0.10))
     trackers = _normalizar_trackers(trackers)
-    inst = {t["etiqueta"]: crear_tracker(t["nombre"], fps, cache.nombres_clases, config_comun, t["config"], sec.ucmc)
-            for t in trackers}
+    inst = {}
+    for t in trackers:
+        cfg_t, cam_t = config_de_tracker(t, sec)
+        inst[t["etiqueta"]] = crear_tracker(t["nombre"], fps, cache.nombres_clases, config_comun, cfg_t, cam_t)
     filas = {k: [] for k in inst}
     lat = {k: [] for k in inst}
     tiempos = {k: [] for k in inst}

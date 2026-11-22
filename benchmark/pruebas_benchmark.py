@@ -238,9 +238,102 @@ def prueba_punta_a_punta():
     print(f"  punta a punta (sintético, paneo 3 px/frame): ego_px {med:.2f} ≈ 2.25; {txt}; determinista")
 
 
+def _cache_de(gt, semilla=1):
+    from detecciones import CacheDetecciones
+    rng = np.random.default_rng(semilla)
+    d = gt[rng.random(len(gt)) > 0.05]
+    cajas = np.c_[d.x, d.y, d.x + d.w, d.y + d.h] + rng.normal(0, 1.0, (len(d), 4))
+    return CacheDetecciones.desde_arrays(d.frame, np.c_[cajas, np.full(len(d), 0.9), np.full(len(d), 2)], {2: "car"})
+
+
+def prueba_nucleo_equivale():
+    """El núcleo de UCMC sobre la H cacheada da EXACTAMENTE lo mismo que el tracker completo frame a frame."""
+    from barrido import calcular_entrada, config_manual, correr_nucleo
+    from comunes import leer_mot
+    from correr import correr_secuencia
+    frames, gt = _video_sintetico()
+    cache = _cache_de(gt)
+    comun = dict(conf_entrada=0.1, min_hits=3)
+    cam, cfg = config_manual(0.0, 80.0, 74.0, "centro")
+    with tempfile.TemporaryDirectory() as tmp:
+        t = {"nombre": "ucmc", "etiqueta": "ucmc_fija", "camara": cam, "config": cfg}
+        correr_secuencia(_Sec(ucmc={}), cache, [t], comun, tmp, frames=frames)
+        completo = leer_mot(Path(tmp) / "ucmc_fija" / "sintetico.txt")
+    nucleo, diag = correr_nucleo(calcular_entrada(frames, comun, cache), 30.0, cache.nombres_clases, comun, cfg, cam, "centro")
+    assert len(completo) == len(nucleo) > 0
+    a = completo[["frame", "id", "x", "y", "w", "h"]].to_numpy(float)
+    b = nucleo[["frame", "id", "x", "y", "w", "h"]].to_numpy(float)
+    assert np.allclose(a, b, atol=0.01), "el núcleo cacheado no reproduce al tracker completo"
+    assert diag["tamano_mediano_m"] > 0 and diag["singt_vel_implausible"] == 0.0, diag
+    print(f"  núcleo UCMC con H cacheada = tracker completo ({len(nucleo)} cajas); tamaño mediano en el suelo "
+          f"{diag['tamano_mediano_m']:.1f} m")
+
+
+def prueba_integracion_barrido_y_evaluacion():
+    """De punta a punta sobre archivos reales: video → ego → correr (con cámaras del barrido) → evaluar_run con GT.
+    Comprueba la selección D17 y que el oráculo quede fuera de COMBINADO y de las comparaciones."""
+    import shutil
+    import cv2
+    from barrido import barrer
+    from comunes import DIR_CACHE, DIR_RUNS, Manifiesto, Secuencia, escribir_mot
+    from correr import correr
+    from ego import calcular as calcular_ego
+    from evaluar import evaluar_run
+
+    run = "_prueba_integracion"
+    nombres = ["_prueba_aj", "_prueba_te1", "_prueba_te2"]
+    tmp = Path(tempfile.mkdtemp())
+    try:
+        secs, caches = [], {}
+        for k, nom in enumerate(nombres):
+            frames, gt = _video_sintetico(n=75, semilla=k)
+            vw = cv2.VideoWriter(str(tmp / f"{nom}.avi"), cv2.VideoWriter_fourcc(*"MJPG"), 30.0, (1280, 720))
+            for _, img in frames:
+                vw.write(img)
+            vw.release()
+            gt.to_csv(tmp / f"{nom}_gt.txt", header=False, index=False)
+            secs.append(Secuencia(nombre=nom, video=str(tmp / f"{nom}.avi"), detector="sint", fps=30.0, toma="cenital",
+                                  split="ajuste" if k == 0 else "test", gt=str(tmp / f"{nom}_gt.txt"),
+                                  ucmc=dict(hfov_deg=74, pitch_respaldo_deg=0)))
+            caches[nom] = _cache_de(gt, semilla=10 + k)
+        man = Manifiesto(detectores={}, secuencias=secs, trackers=[], config_comun=dict(conf_entrada=0.1, min_hits=3),
+                         evaluacion=dict(CFG, protocolos=["todos", "moviles"], bootstrap_n=200),
+                         barrido=dict(grupos=dict(cenital=dict(pitch=[0, 15], altura=[40, 120], hfov=74, punto="centro"))))
+        for s in secs:
+            calcular_ego(s, caches[s.nombre], rehacer=True, ancho_ref=1280)
+        df, sel, val = barrer(man, run, caches=caches)
+        assert len(df) == 4 * len(secs) and set(sel.version) == {"singt", "oraculo_seq", "grupo_train"}
+        o = sel[(sel.version == "oraculo_seq") & (sel.secuencia == "_prueba_te1")].HOTA_barrido.iloc[0]
+        assert o >= df[df.secuencia == "_prueba_te1"].HOTA.max() - 1e-9
+        sel_csv = DIR_RUNS / run / "barrido" / "seleccion.csv"
+        man.trackers = ["propio_kf", "ucmc",
+                        {"nombre": "ucmc", "etiqueta": "ucmc_grupo_train", "seleccion": str(sel_csv), "version": "grupo_train"},
+                        {"nombre": "ucmc", "etiqueta": "ucmc_oraculo_seq", "seleccion": str(sel_csv), "version": "oraculo_seq"}]
+        correr(man, run, caches=caches)
+        s = evaluar_run(man, DIR_RUNS / run)
+        m = s["metricas"]
+        comb = m[(m.secuencia == "COMBINADO") & (m.protocolo == "todos")]
+        assert set(comb.tracker) == {"propio_kf", "ucmc", "ucmc_grupo_train"}, comb.tracker.tolist()
+        cota = m[m.secuencia == "COMBINADO_COTA"]
+        assert set(cota.tracker) == {"ucmc_oraculo_seq"} and (cota.uso_gt == "test").all()
+        assert "ucmc_oraculo_seq" not in set(s["comparaciones"].A) | set(s["comparaciones"].B)
+        assert len(s["por_bin_ego"]) and len(s["decisor"]) and len(s["sin_gt"]) == 4 * len(secs)
+        assert (m[m.protocolo == "todos"].HOTA > 50).all(), m[["tracker", "secuencia", "HOTA"]]
+        hota = comb.set_index("tracker").HOTA.round(1).to_dict()
+        print(f"  integración: barrido {len(df)} pruebas, selección D17 ok; evaluar_run con GT → COMBINADO {hota}, "
+              f"oráculo solo en COMBINADO_COTA ({cota[cota.protocolo == 'todos'].HOTA.iloc[0]:.1f}) y fuera de comparaciones")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+        shutil.rmtree(DIR_RUNS / run, ignore_errors=True)
+        for nom in nombres:
+            for p in (DIR_CACHE / "ego" / f"{nom}.csv", DIR_CACHE / "entrada" / f"{nom}.npz", DIR_CACHE / "entrada" / f"{nom}.json"):
+                p.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     for p in (prueba_sanidad, prueba_cambio_id, prueba_replicas, prueba_motmetrics, prueba_ignoradas_y_protocolos,
-              prueba_moving_con_paneo, prueba_punta_a_punta):
+              prueba_moving_con_paneo, prueba_punta_a_punta, prueba_nucleo_equivale,
+              prueba_integracion_barrido_y_evaluacion):
         print(p.__name__)
         p()
     print("TODO OK")

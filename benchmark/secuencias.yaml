@@ -38,6 +38,22 @@ evaluacion:
   protocolos: [todos, moviles, estaticos, e2e_moviles]
   bootstrap_n: 2000
 
+barrido:                                 # "fuerza bruta" de la cámara de UCMC (D17; bench.py barrer)
+  singt_rho_min: 0.6                     # el criterio sin GT vale si su Spearman con HOTA en ajuste es ≤ -0.6
+  grupos:                                # clave = `grupo` de la secuencia (o su `toma` si no tiene grupo)
+    cenital:                             # pitch casi 0: solo importa altura/focal; punto de apoyo = centro
+      pitch: [0, 5, 10, 15, 20, 25]
+      altura: [30, 50, 80]               # dentro de la banda física del grupo (no es un hiperparámetro libre)
+      hfov: 74                           # ficha (FOV diagonal 84° de DJI 24 mm eq. → ~74° horizontal en 16:9)
+      punto: centro
+    oblicua:
+      pitch: [25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+      altura: [30, 50, 80]
+      hfov: 74
+      punto: base
+  # Por dataset, p. ej. UAVDT por atributos (altitud × vista):
+  # alta_oblicua: {pitch: [25, 30, ..., 70], altura: [70, 100, 130], hfov: 74, punto: base}
+
 secuencias:
   # gt: null hasta que exista la anotación; sin GT solo se calculan las métricas sin GT.
   # gt_frames: frames ANOTADOS (base 1, del video completo). Con paso 3 a 30 fps ≈ 10 fps anotados.

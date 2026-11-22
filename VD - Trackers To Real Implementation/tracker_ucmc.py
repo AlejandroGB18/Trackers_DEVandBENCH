@@ -89,6 +89,8 @@ class ConfigUCMC(Config):
     ucmc_altura_defecto_m: float = 100.0  # hasta que haya vehículos para estimarla
     # [CALIBRACION EN LINEA] (v13, hecha causal)
     ucmc_calibrar: bool = True            # False = modo MANUAL: pitch_respaldo_deg y altura fijos todo el tiempo
+    ucmc_calibrar_pitch: bool = True      # False = pitch fijo en pitch_respaldo_deg (telemetría o barrido), aunque se calibre la altura
+    ucmc_calibrar_altura: bool = True     # False = altura fija (altura_m, o ucmc_altura_defecto_m si es None), aunque se calibre el pitch
     ucmc_calib_ventana_s: float = 1.0     # separación de los dos frames cuya H se descompone
     ucmc_calib_min_t: float = 0.03        # desplazamiento mínimo del dron en la ventana (relativo a la distancia al suelo)
     ucmc_calib_max_roll: float = 25.0     # soluciones con más alabeo que esto se descartan (el gimbal mantiene el roll ~0)
@@ -107,6 +109,7 @@ class CamaraUCMC:
     hfov_deg: float = 82.0           # campo de visión horizontal: DATO de la cámara (DJI típicos: 73-84°). No se estima
     pitch_respaldo_deg: float = 0.0  # 0 = cenital, 90 = horizonte al centro. Se usa hasta la 1ª medida (o siempre, en manual)
     altura_m: float = None           # None = automática (vehículos + H); un número = altura fija sobre el suelo
+    aspecto_px: float = 1.0          # fy / fx: 1 = píxeles cuadrados; ≠ 1 si el video se reescaló de forma anamórfica
     nota: str = ""                   # de dónde salió (para no olvidar qué es estimado)
 
 
@@ -115,10 +118,11 @@ class CamaraUCMC:
 # Qué hace : Proyecta píxeles al plano del suelo (metros) y al revés, para una cámara (K, pitch, altura)
 # ¿Se toca? : No
 # ======================================================================
-def matriz_K(ww, wh, hfov_deg):
-    """Intrínsecos de una cámara ideal (centro óptico en el centro de la imagen) con ese hfov, en píxeles de trabajo."""
+def matriz_K(ww, wh, hfov_deg, aspecto_px=1.0):
+    """Intrínsecos de una cámara ideal (centro óptico en el centro de la imagen) con ese hfov, en píxeles de trabajo.
+    aspecto_px = fy/fx (1 = píxeles cuadrados). Devuelve (K, fx)."""
     f = (ww / 2.0) / np.tan(np.deg2rad(hfov_deg) / 2.0)
-    return np.array([[f, 0, ww / 2.0], [0, f, wh / 2.0], [0, 0, 1.0]]), f
+    return np.array([[f, 0, ww / 2.0], [0, f * aspecto_px, wh / 2.0], [0, 0, 1.0]]), f
 
 
 class Mapa:
@@ -184,7 +188,8 @@ class CalibradorCamara:
 
     def __init__(self, cfg, fps, cam, ww, wh):
         self.cfg, self.cam = cfg, cam
-        self.K, self.f = matriz_K(ww, wh, cam.hfov_deg)
+        self.K, self.f = matriz_K(ww, wh, cam.hfov_deg, getattr(cam, "aspecto_px", 1.0))
+        self.fy = float(self.K[1, 1])
         self.ww, self.wh = ww, wh
         self.gap = max(2, int(round(cfg.ucmc_calib_ventana_s * fps)))   # frames de la ventana
         self.paso = max(1, int(round(fps / 2)))                          # una ventana cada medio segundo
@@ -212,8 +217,8 @@ class CalibradorCamara:
         """Llamar UNA vez por frame. dets: detecciones de trabajo (Nx6). Devuelve (mapa de ahora, mapa del frame anterior)."""
         self.k += 1
         mapa_prev = self.mapa
-        if not self.cfg.ucmc_calibrar:                                   # modo MANUAL
-            return self.mapa, mapa_prev
+        if not self.cfg.ucmc_calibrar or not (self.cfg.ucmc_calibrar_pitch or self.cfg.ucmc_calibrar_altura):
+            return self.mapa, mapa_prev                                  # modo MANUAL (telemetría o barrido)
         c = self.cfg
         vehiculos = dets[(dets[:, 5] >= 0) & (dets[:, 4] >= c.conf_high)] if len(dets) else dets
         self._techo_de(vehiculos)                                        # c)
@@ -228,7 +233,7 @@ class CalibradorCamara:
         self.L[self.k] = L_nuevo
         for fr in [f for f in self.L if f < self.k - self.gap - 1]:
             del self.L[fr]
-        if self.cam.altura_m is None:
+        if self.cam.altura_m is None and self.cfg.ucmc_calibrar_altura:
             self._altura_con(vehiculos)                                  # h)
         if abs(self.pitch - self.mapa.pitch_deg) > 0.05 or abs(self.altura - self.mapa.altura_m) > 0.002 * self.mapa.altura_m:
             self.mapa = Mapa(self.K, self.pitch, self.altura)            # la cámara cambió: nuevo mapeo
@@ -237,7 +242,7 @@ class CalibradorCamara:
     # ---- c) techo de horizonte -------------------------------------------
     def _techo_de(self, vehiculos):
         if len(vehiculos) >= 3:
-            y = np.sort((vehiculos[:, 3] - self.wh / 2.0) / self.f)[2]  # base del 3er vehículo más alto
+            y = np.sort((vehiculos[:, 3] - self.wh / 2.0) / self.fy)[2]  # base del 3er vehículo más alto
             self.techo = 90.0 if y >= 0 else float(np.degrees(np.arctan(1.0 / -y)))
         self.techos[self.k] = self.techo
         for fr in [f for f in self.techos if f < self.k - self.gap - 1]:
@@ -285,11 +290,12 @@ class CalibradorCamara:
         sel = self._mas_continua(con)                                    # d)
         pitches = [m[1][s][0] for m, s in zip(con, sel)]
         nuevo = float(np.median(pitches[-self.cfg.ucmc_calib_suavizado:]))   # e)
-        if abs(nuevo - self.pitch) * self.fps / self.paso > self.cfg.ucmc_calib_max_salto and self.fuente_pitch == "H":
-            self.n_saltos += 1
-        if self.fuente_pitch == "respaldo":                              # 1ª medida: las alturas de los vehículos
-            self.vehiculos.clear()                                       # se calcularon con el pitch de respaldo
-        self.pitch, self.fuente_pitch = nuevo, "H"
+        if self.cfg.ucmc_calibrar_pitch:                                 # si no, el pitch queda fijo (telemetría/barrido)
+            if abs(nuevo - self.pitch) * self.fps / self.paso > self.cfg.ucmc_calib_max_salto and self.fuente_pitch == "H":
+                self.n_saltos += 1
+            if self.fuente_pitch == "respaldo":                          # 1ª medida: las alturas de los vehículos
+                self.vehiculos.clear()                                   # se calcularon con el pitch de respaldo
+            self.pitch, self.fuente_pitch = nuevo, "H"
         v = []                                                           # g) cambio de altura en esta ventana
         for m, s in zip(con, sel):
             if m[3] == (a, b):
@@ -438,6 +444,7 @@ class NucleoUCMC:
         self.max_age = max(2, int(round(cfg.max_miss_sec * fps)))     # frames costeando antes de borrar
         self.trackers, self.nid = [], 1
         self.n_fuera = 0                                               # detecciones por encima del horizonte (diagnóstico)
+        self.vel_suelo = np.zeros(0)                                   # |v| en m/s de los tracks emitidos en el último frame
         self.ids_2det = set()                                          # IDs con >= 2 detecciones, aunque sigan tentativos
         self.mapa = None
 
@@ -523,8 +530,9 @@ class NucleoUCMC:
                 continue
             vivos.append(t)
         self.trackers = vivos
-        out = [[*dets[t.detidx, :4], t.id, dets[t.detidx, 4], dets[t.detidx, 5]]
-               for t in self.trackers if t.status == CONFIRMADO and t.detidx >= 0]
+        emit = [t for t in self.trackers if t.status == CONFIRMADO and t.detidx >= 0]
+        self.vel_suelo = np.array([np.hypot(t.x[1], t.x[3]) for t in emit])   # m/s (diagnóstico / criterio sin GT)
+        out = [[*dets[t.detidx, :4], t.id, dets[t.detidx, 4], dets[t.detidx, 5]] for t in emit]
         return np.array(out, np.float32).reshape(-1, 7)
 
 
@@ -642,6 +650,22 @@ def selftest():
     # último valor. Aquí el gimbal gira 3°/s -> hasta ~4.5° de error mientras gira
     assert cal.fuente_pitch == "H" and max(err_p) < 5.0, f"pitch: error máx {max(err_p):.1f}°"
     assert max(err_a) < 0.08, f"altura: error máx {100 * max(err_a):.1f} %"
+    # pitch fijo (telemetría / barrido) con altura automática: el pitch no se mueve y la altura sí se estima
+    cal2 = CalibradorCamara(ConfigUCMC(ucmc_calibrar_pitch=False), fps, CamaraUCMC(pitch_respaldo_deg=35.0), ww, wh)
+    for k in range(N):
+        H = np.eye(3) if k == 0 else maps[k].A @ maps[k - 1].InvA
+        s = lado(k)
+        cal2.actualizar(H, True, np.array([[480 - s / 2, 270 - s / 4, 480 + s / 2, 270 + s / 4, 0.9, 2]] * 3, np.float32))
+    assert cal2.pitch == 35.0 and cal2.fuente_pitch == "respaldo" and cal2.fuente_altura == "vehiculos", "pitch fijo"
+    # altura fija con pitch automático
+    cal3 = CalibradorCamara(ConfigUCMC(ucmc_calibrar_altura=False), fps, CamaraUCMC(pitch_respaldo_deg=0.0), ww, wh)
+    for k in range(N):
+        H = np.eye(3) if k == 0 else maps[k].A @ maps[k - 1].InvA
+        cal3.actualizar(H, True, np.zeros((0, 6), np.float32))
+    assert cal3.altura == ConfigUCMC().ucmc_altura_defecto_m and cal3.fuente_pitch == "H", "altura fija"
+    # píxeles no cuadrados: fy = fx · aspecto
+    Ka, fa = matriz_K(960, 540, 82.0, 0.5)
+    assert np.isclose(Ka[1, 1], 0.5 * fa) and np.isclose(Ka[0, 0], fa), "aspecto de píxel"
     print(f"tracker_ucmc OK | mapeo, asignación, CMC (1 ID con paneo) | calibración en línea tras 2 s: "
           f"pitch error máx {max(err_p):.1f}°, altura error máx {100 * max(err_a):.1f} %")
 

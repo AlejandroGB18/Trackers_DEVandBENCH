@@ -191,10 +191,15 @@ TrackerUCMC(fps, CamaraUCMC(hfov_deg=82, pitch_respaldo_deg=0))     # cenital
 TrackerUCMC(fps, CamaraUCMC(hfov_deg=82, pitch_respaldo_deg=50))    # oblicua: estimación a ojo, solo hasta la 1ª medida
 TrackerUCMC(fps, CamaraUCMC(pitch_respaldo_deg=50, altura_m=80))    # altura conocida (telemetría): fija
 TrackerUCMC(fps, CamaraUCMC(pitch_respaldo_deg=50), ConfigUCMC(ucmc_calibrar=False))   # modo MANUAL
+TrackerUCMC(fps, CamaraUCMC(pitch_respaldo_deg=gimbal, altura_m=alt), ConfigUCMC(ucmc_calibrar_pitch=False, ucmc_calibrar_altura=False))  # telemetría
+TrackerUCMC(fps, CamaraUCMC(pitch_respaldo_deg=gimbal), ConfigUCMC(ucmc_calibrar_pitch=False))   # pitch de telemetría, altura automática
 ```
 
 - Si el dron da telemetría (altura, ángulo del gimbal), lo mejor es pasarla directamente en lugar de estimarla.
 - `pitch_respaldo_deg` también decide el **punto de apoyo**: centro de la caja si es menor de 30°, base si no.
+- `ucmc_calibrar_pitch` y `ucmc_calibrar_altura` apagan cada calibración por separado (telemetría parcial o el barrido del benchmark). `ucmc_punto="base"|"centro"` fija el punto de apoyo sin depender de `pitch_respaldo_deg`.
+- `CamaraUCMC.aspecto_px` (fy/fx) para videos reescalados de forma anamórfica (p. ej. UAVDT 1080×540, sin verificar).
+- **hfov:** las fichas de DJI suelen dar el FOV **diagonal** (84° en 24 mm eq.); el horizontal en 16:9 es ~70–74°. El 82° por defecto probablemente sobra (ver `docs/investigacion-ucmc-fuerza-bruta.md`).
 
 ---
 

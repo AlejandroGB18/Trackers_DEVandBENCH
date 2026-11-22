@@ -51,7 +51,13 @@ class Secuencia:
     gt: str = None                         # ruta a gt.txt (MOT, frames del video, base 1); None = sin GT
     gt_moving: str = None                  # ruta a moving.csv (frame,id,moving) revisado; None = derivarlo
     gt_frames: dict = None                 # {inicio, fin, paso}: frames ANOTADOS (los únicos que se evalúan)
-    toma: str = None                       # "cenital" | "oblicua" (punto de apoyo para `moving`)
+    toma: str = None                       # "cenital" | "oblicua" (punto de apoyo para `moving` y para UCMC)
+    grupo: str = None                      # grupo de vuelo para el barrido de UCMC (p. ej. "alta_oblicua"); None = toma
+    camara_fuente: str = None              # de dónde sale la cámara de `ucmc`: telemetria | ficha | banda | a_mano
+
+    @property
+    def grupo_barrido(self):
+        return self.grupo or self.toma or "sin_grupo"
 
 
 @dataclass
@@ -61,6 +67,7 @@ class Manifiesto:
     trackers: list
     config_comun: dict
     evaluacion: dict
+    barrido: dict = field(default_factory=dict)   # rejilla de cámara de UCMC por grupo (ver barrido.py)
     ruta: Path = None
 
     def secuencia(self, nombre):
@@ -95,7 +102,8 @@ def cargar_manifiesto(ruta):
         v["pesos"] = abs_(v["pesos"])
         dets[k] = v
     return Manifiesto(detectores=dets, secuencias=secs, trackers=list(d.get("trackers", [])),
-                      config_comun=dict(d.get("config_comun", {})), evaluacion=dict(d.get("evaluacion", {})), ruta=ruta)
+                      config_comun=dict(d.get("config_comun", {})), evaluacion=dict(d.get("evaluacion", {})),
+                      barrido=dict(d.get("barrido", {})), ruta=ruta)
 
 
 # ======================================================================

@@ -438,6 +438,7 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     dir_run = Path(dir_run)
     meta = json.load(open(dir_run / "run.json"))
     etiquetas = [t["etiqueta"] for t in meta["trackers"]]
+    uso_gt = {t["etiqueta"]: t.get("uso_gt", "no") for t in meta["trackers"]}   # no | train | test (oráculo)
     cfg = manifiesto.evaluacion
     umbr = tuple(cfg.get("bins_ego_px", (0.5, 3.0)))
     secs = [s for s in manifiesto.secuencias if s.nombre in meta["secuencias"] and (secuencias is None or s.nombre in secuencias)]
@@ -466,7 +467,8 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
                 data, extra = preparar(gt, pred, frames, cfg, p, moving, lat)
                 r = evaluar_datos(data)
                 res_comb[(p, e)][sec.nombre] = r
-                tablas.append(dict(protocolo=p, tracker=e, secuencia=sec.nombre, split=sec.split, **resumen(r),
+                tablas.append(dict(protocolo=p, tracker=e, secuencia=sec.nombre, split=sec.split, uso_gt=uso_gt[e],
+                                   **resumen(r),
                                    descartadas_ignoradas=extra["descartadas_ignoradas"],
                                    descartadas_distractor=extra["descartadas_distractor"]))
                 if p == "todos":
@@ -489,12 +491,15 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
                         for tipo, v in resumen_latencias(la).items():
                             lat_tab.append(dict(tracker=e, secuencia=sec.nombre, tipo=tipo, **v))
 
-    # combinados (solo split test; el de ajuste no se reporta)
+    # combinados (solo split test; el de ajuste no se reporta). Lo elegido mirando el GT de test (oráculos) no entra al
+    # COMBINADO del ranking: va en una fila aparte, COMBINADO_COTA.
     test = {s.nombre for s in secs if s.split != "ajuste"}
     for (p, e), d in res_comb.items():
         d = {k: v for k, v in d.items() if k in test}
         if d:
-            tablas.append(dict(protocolo=p, tracker=e, secuencia="COMBINADO", split="test", **resumen(combinar(d))))
+            nombre = "COMBINADO_COTA" if uso_gt[e] == "test" else "COMBINADO"
+            tablas.append(dict(protocolo=p, tracker=e, secuencia=nombre, split="test", uso_gt=uso_gt[e],
+                               **resumen(combinar(d))))
     for e, lista in bins_comb.items():
         if lista:
             comb = combinar_bins([x[0] for x in lista])
@@ -504,8 +509,9 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
                                      IDSW_por_1000=1000 * idsw / max(1, d["n_gt"])))
 
     comparaciones = pd.DataFrame()
-    por_tracker = {e: {k: v for k, v in res_comb.get(("todos", e), {}).items() if k in test} for e in etiquetas}
-    if len(etiquetas) > 1 and min(len(v) for v in por_tracker.values()) >= 2:
+    rankeables = [e for e in etiquetas if uso_gt[e] != "test"]
+    por_tracker = {e: {k: v for k, v in res_comb.get(("todos", e), {}).items() if k in test} for e in rankeables}
+    if len(rankeables) > 1 and min(len(v) for v in por_tracker.values()) >= 2:
         from estadistica import tabla_comparaciones
         comparaciones = tabla_comparaciones(por_tracker, n=int(cfg.get("bootstrap_n", 2000)))
 

@@ -24,6 +24,23 @@ motivo, y los resultados anteriores dejan de ser comparables con los nuevos.
 | D15 | Determinismo | `cv2.setRNGSeed(0)` antes de cada secuencia | El RANSAC del Estabilizador es aleatorio |
 | D16 | Ajuste de hiperparámetros | Ninguno por ahora: se reportan defaults. Los ruidos del Kalman no se ajustan nunca con datos de evaluación | Regla ya vigente en el proyecto |
 
+## D17 · Cámara de UCMC sin telemetría ("fuerza bruta") — fijada 2026-11-21
+
+Contexto: el caso real tiene telemetría completa, pero los datasets públicos no. Por ahora no se usa el sintético
+(SynDrone), así que la cámara de UCMC se busca en una rejilla (`bench.py barrer`). Detalle y fuentes en
+[`docs/investigacion-ucmc-fuerza-bruta.md`](../docs/investigacion-ucmc-fuerza-bruta.md).
+
+| # | Regla | Por qué |
+|---|---|---|
+| D17.1 | Se barren solo **pitch × altura**; el **hfov se fija por dataset** con la ficha (≈74° para DJI 24 mm eq. en 16:9) | En UCMC la altura es una escala global y hfov y pitch son casi colineales: 2 grados de libertad reales |
+| D17.2 | La altura solo se mueve **dentro de la banda física del grupo** (p. ej. atributos de altitud de UAVDT) | Barrer la altura libremente = ajustar wx, wy, vmax y `a` de UCMC (choca con D16) |
+| D17.3 | **Punto de apoyo fijado por grupo** (cenital = centro, oblicua = base), no por el pitch barrido | El modo "auto" cambia de punto a los 30°, en mitad de la rejilla |
+| D17.4 | Versiones reportadas: `ucmc` (auto, en línea), `ucmc_grupo_train` (mejor de la rejilla en las secuencias de **ajuste** del grupo, aplicada a test), `ucmc_singt` (criterio sin GT) y `ucmc_oraculo_seq` (mejor por secuencia de test) | Separar "conocer la clase de vuelo" de "conocer la cámara perfecta" |
+| D17.5 | `ucmc_oraculo_seq` (`uso_gt=test`) **no entra al ranking**: sale en `COMBINADO_COTA` y fuera de `comparaciones.csv` | Elegir con el GT de test es un oráculo (regla de MOTChallenge) |
+| D17.6 | `ucmc_singt` solo entra al ranking si su Spearman con HOTA en ajuste es ≤ −0.6 (`validacion_singt.csv`) | Un criterio sin GT no validado no debe decidir |
+| D17.7 | Objetivo de la selección: HOTA combinado (suma de conteos), AssA como desempate; se reporta DetA y `n_fuera` | La cámara cambia qué detecciones caen sobre el horizonte |
+| D17.8 | Los otros 3 trackers se quedan con defaults (D4/D16) | La búsqueda de UCMC es de **cámara** (lo que en producción da la telemetría), acotada por física y elegida en ajuste |
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |
@@ -34,5 +51,5 @@ motivo, y los resultados anteriores dejan de ser comparables con los nuevos.
 | A4 | Incertidumbre con pocos clips | Bootstrap por bloques temporales (5–10 s) dentro de cada clip (pendiente de implementar) |
 | A5 | Tamaño de objeto | Estratificar por área de caja (<16², 16–32², 32–64², >64² px) — pendiente |
 | A6 | Baselines extra | OC-SORT / BoostTrack de BoxMOT o Roboflow `trackers`, etiquetados como baselines y con la misma política de salida |
-| A7 | hfov por dron | Hoy 82° para todos; usar el dato de ficha técnica de cada dron si se conoce (el pitch estimado de UCMC depende de él) |
+| A7 | hfov por dron | Hoy 82° por defecto en `CamaraUCMC`, probablemente el FOV **diagonal** de la ficha DJI; el horizontal en 16:9 sería ~70–74°. El barrido usa 74° (D17.1); falta decidir si se corrige el default |
 | A8 | fps real de VIGIA | Se toma el del archivo; confirmar que no hay frames duplicados/variables |
