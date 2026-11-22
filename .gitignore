@@ -13,3 +13,7 @@ salidas/
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
+
+# Benchmark: cachés de detecciones/ego y salidas de corridas (se regeneran con bench.py)
+benchmark/cache/
+benchmark/runs/
