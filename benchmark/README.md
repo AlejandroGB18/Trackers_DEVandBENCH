@@ -35,9 +35,9 @@ python bench.py evaluar --run v1               # métricas
 
 | Archivo | Contenido |
 |---|---|
-| `metricas.csv` | Por protocolo × tracker × secuencia (y `COMBINADO`, solo split test): HOTA, DetA, AssA, LocA, DetRe/Pr, AssRe/Pr, HOTA(0.5), MOTA, MOTP, IDF1, IDP, IDR, IDSW, Frag, MT/PT/ML, FP, FN, IDs |
-| `por_bin_ego.csv` | HOTA/DetA/AssA/LocA e IDSW (y por 1000 GT-dets) por bin de ego-movimiento: `estacionario`, `suave`, `rapido`, `H_no_fiable` |
-| `decisor.csv` | `en_movimiento` vs GT `moving` sobre los TP (CLEAR α=0.5): TP/FP/FN/TN, precisión, recall, F1, especificidad, tasa de `paralaje` en quietos y móviles; global y por bin. Nivel track: falsa alarma y detección por track |
+| `metricas.csv` | Por protocolo × tracker × secuencia (y `COMBINADO`, solo split test; columnas `uso_gt` y `en_ranking`): HOTA, DetA, AssA, LocA, DetRe/Pr, AssRe/Pr, HOTA(0.5), MOTA, MOTP, IDF1, IDP, IDR, IDSW, Frag, MT/PT/ML, FP, FN, IDs |
+| `por_bin_ego.csv` | Solo split test. HOTA/DetA/AssA/LocA e IDSW (y por 1000 GT-dets) por bin de ego-movimiento: `estacionario`, `suave`, `rapido`, `H_no_fiable` |
+| `decisor.csv` | Solo split test. `en_movimiento` vs GT `moving` sobre los TP (CLEAR α=0.5): TP/FP/FN/TN, precisión, recall, F1, especificidad, tasa de `paralaje` en quietos y móviles; global y por bin. Nivel track: falsa alarma y detección por track |
 | `latencias.csv` | Encendido (GT empieza a moverse → decisor lo marca) y apagado: % detectado, mediana y p90 en s |
 | `sin_gt.csv` | Las métricas de la v13 (tracks, vida media, tracks por objeto, IDs/min…), para todas las secuencias |
 | `comparaciones.csv` | Δ pareado entre trackers (HOTA, AssA, IDF1) con IC 95 % por bootstrap de secuencias y "gana en k/n" |
@@ -84,7 +84,8 @@ trackers:
 ```
 
 `ucmc_oraculo_seq` sale en `metricas.csv` como `COMBINADO_COTA` (columna `uso_gt = test`) y no entra en
-`COMBINADO` ni en `comparaciones.csv`. Cada prueba de la rejilla corre solo el núcleo de UCMC sobre la H y las
+`COMBINADO` ni en `comparaciones.csv`. `ucmc_singt` solo entra si el criterio sin GT se validó en ajuste (D17.6,
+columna `valido` de `seleccion.csv`); si no, sale como `COMBINADO_NO_VALIDADO` (`en_ranking = false`). Cada prueba de la rejilla corre solo el núcleo de UCMC sobre la H y las
 detecciones guardadas en `cache/entrada/` (sin decodificar el video); una prueba comprueba que da exactamente lo
 mismo que el tracker completo. Con telemetría real, la cámara se pasa directamente:
 `{nombre: ucmc, etiqueta: ucmc_telemetria, camara: {...}, config: {ucmc_calibrar_pitch: false, ucmc_calibrar_altura: false}}`.
@@ -114,7 +115,8 @@ mismo que el tracker completo. Con telemetría real, la cámara se pasa directam
   deterministas (mismos bytes en dos corridas).
 - El núcleo de UCMC sobre la H cacheada da las mismas cajas que el tracker completo.
 - Integración con archivos reales (video, GT, ego, `moving`): barrido → selección D17 → correr → `evaluar_run`;
-  el oráculo queda solo en `COMBINADO_COTA` y fuera de las comparaciones.
+  el oráculo queda solo en `COMBINADO_COTA`, el `singt` no validado en `COMBINADO_NO_VALIDADO`, ambos fuera de las
+  comparaciones, y los bins y el decisor no incluyen las secuencias de ajuste.
 - Sobre 120 frames reales de vigia_1: el `ego_px` de referencia y el de la H de los trackers tienen mediana
   0.22 vs 0.235 px y correlación 0.96 (miden lo mismo con estimadores distintos).
 

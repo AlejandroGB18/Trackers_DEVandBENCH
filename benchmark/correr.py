@@ -67,7 +67,8 @@ def _normalizar_trackers(lista):
         {nombre: ucmc, etiqueta: ucmc_grupo_train, seleccion: runs/x/barrido/seleccion.csv, version: grupo_train}
     `camara` se combina sobre el `ucmc` de cada secuencia. `seleccion` + `version` toman la cámara elegida por
     `bench.py barrer` para cada secuencia. `uso_gt` (no | train | test) dice si la configuración se eligió mirando GT;
-    las de `test` (oráculos) quedan fuera de COMBINADO y de las comparaciones."""
+    las de `test` (oráculos) quedan fuera de COMBINADO y de las comparaciones. `en_ranking` es False para los oráculos
+    y para una selección no validada en ajuste (`valido` de seleccion.csv, p. ej. `singt` que no pasa D17.6)."""
     out = []
     for t in lista:
         t = {"nombre": t} if isinstance(t, str) else dict(t)
@@ -75,6 +76,14 @@ def _normalizar_trackers(lista):
         t.setdefault("config", {})
         t.setdefault("camara", {})
         t.setdefault("uso_gt", USO_GT_POR_VERSION.get(t.get("version"), "no"))
+        if "en_ranking" not in t:
+            t["en_ranking"] = t["uso_gt"] != "test"
+            if t["en_ranking"] and t.get("seleccion") and Path(t["seleccion"]).exists():
+                from barrido import seleccion_valida
+                t["en_ranking"] = seleccion_valida(t["seleccion"], t["version"])
+                if not t["en_ranking"]:
+                    print(f"[correr] {t['etiqueta']}: la selección '{t['version']}' no está validada en ajuste "
+                          "→ fuera del ranking (D17.6)")
         out.append(t)
     return out
 
@@ -140,7 +149,7 @@ def correr(manifiesto, nombre_run, secuencias=None, semilla=0, caches=None):
     for sec in secs:
         cache = (caches or {}).get(sec.nombre) or CacheDetecciones(ruta_cache(sec, sec.detector))
         print(f"[correr] {sec.nombre} ({sec.detector}) → {[t['etiqueta'] for t in meta['trackers']]}")
-        ms = correr_secuencia(sec, cache, manifiesto.trackers, manifiesto.config_comun, dir_run, semilla=semilla)
+        ms = correr_secuencia(sec, cache, meta["trackers"], manifiesto.config_comun, dir_run, semilla=semilla)
         meta["secuencias"][sec.nombre] = dict(detector=sec.detector, firma_detecciones=cache.meta.get("firma"),
                                               rango=list(rango_frames(sec)), fps=fps_de(sec), ucmc=sec.ucmc,
                                               ms_mediana=ms, split=sec.split)
