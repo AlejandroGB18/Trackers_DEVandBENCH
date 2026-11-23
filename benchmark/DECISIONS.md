@@ -9,15 +9,15 @@ motivo, y los resultados anteriores dejan de ser comparables con los nuevos.
 |---|---|---|---|
 | D1 | Juez | Métricas de `trackeval==1.3.0` (HOTA, CLEAR, Identity, Count) con preprocesado propio | Implementación de referencia de HOTA; el fork de PyPI corrige `np.float`. BoxMOT ya no usa TrackEval y trata distinto las regiones ignoradas |
 | D2 | Detecciones | Una caché por secuencia, umbral 0.05; entra al tracker lo ≥ `conf_entrada` = 0.10 | Mismas cajas para los 4; los trackers hacen una 2.ª ronda con débiles (`conf_low` 0.10) |
-| D3 | Detectores | `yolo11n-obb` (cenitales, small/large vehicle), `yolo11n` (oblicuas, car/truck/bus/motorcycle), imgsz 1280 | Los de la v13. Preentrenados en DOTA/COCO, sin VIGIA → sin leakage en VIGIA |
+| D3 | ~~Detectores~~ | ~~`yolo11n-obb` / `yolo11n`, imgsz 1280~~ — **reemplazada por D20 (2026-11-23)** | Eran para VIGIA |
 | D4 | Config de trackers | Los defaults de los `.py`, `use_proposals=False`, `min_hits=4`, `max_miss_sec=1.0` | Las propuestas sin clase serían FP en un benchmark de clases conocidas |
 | D5 | Implementación de ByteTrack / BoT-SORT | Las de Ultralytics 8.4.x (vía `adaptador_ultralytics.py`) | Continuidad con v9–v14; las de BoxMOT tienen otros defaults y no son intercambiables |
 | D6 | Política de salida | Solo tracks confirmados con detección en el frame (igual en los 4) | Emitir predicciones sin detección cambia DetA |
 | D7 | Clase evaluada | `vehicle` (todas las de vehículo fusionadas); evaluación agnóstica de clase en las predicciones | Evita IDSW falsos por oscilación car↔truck |
 | D8 | Regiones ignoradas | Se descarta la predicción con ≥ 50 % de su área dentro | Regla del toolkit oficial de VisDrone |
-| D9 | Frames evaluados | Solo los anotados (`gt_frames`, paso 3 ≈ 10 fps); los trackers corren a fps completo | Costo de anotación; CLEAR/Identity/HOTA emparejan por frame |
+| D9 | Frames evaluados | Solo los anotados (`gt_frames`); en UAVDT son **todos** (D19) | CLEAR/Identity/HOTA emparejan por frame |
 | D10 | H de referencia | SIFT a 1920 px, cajas enmascaradas, USAC_MAGSAC 1 px, ida-vuelta ≤ 1 px, ≥ 40 inliers | Independiente de `comun.Estabilizador` (LK+RANSAC a 960), para no heredar sus errores |
-| D11 | Bins de ego-movimiento | `ego_px` (rejilla 3×3, px a 960) con mediana centrada de 0.5 s: < 0.5 estacionario, < 3 suave, ≥ 3 rápido | Mismos umbrales que `tipo_toma` de la v13, pero por frame |
+| D11 | Bins de ego-movimiento | `ego_px` (rejilla 3×3, px a 960) con mediana centrada de 0.5 s. ~~Umbrales fijos 0.5 / 3~~: **los cortes los fija D26** | La medida se mantiene; los umbrales de VIGIA no aplican a UAVDT |
 | D12 | `moving` del GT | Ventana centrada 1 s, punto de apoyo (base en oblicuas, centro en cenitales); móvil si d ≥ 0.30·L y ≥ 3 px@960; quieto si d ≤ 0.10·L; resto dudoso; **revisión humana** de dudosos y cambios | Criterio semántico (≈1.35 m/s para 4.5 m), distinto del decisor para no premiar su configuración |
 | D13 | Dudosos | Distractores en `moviles`/`estaticos`/`e2e_moviles`; fuera de la confusión del decisor | No castigar ni premiar lo ambiguo |
 | D14 | Combinado | Suma de conteos (como TrackEval), solo split `test` | Promediar HOTA por secuencia pesa igual clips de 5 y de 80 objetos |
@@ -41,15 +41,37 @@ Contexto: el caso real tiene telemetría completa, pero los datasets públicos n
 | D17.7 | Objetivo de la selección: HOTA combinado (suma de conteos), AssA como desempate; se reporta DetA y `n_fuera` | La cámara cambia qué detecciones caen sobre el horizonte |
 | D17.8 | Los otros 3 trackers se quedan con defaults (D4/D16) | La búsqueda de UCMC es de **cámara** (lo que en producción da la telemetría), acotada por física y elegida en ajuste |
 
+## v1 con UAVDT — fijadas 2026-11-23
+
+Acordadas en el *grilling* del 2026-11-23. Plan de ejecución: [`docs/plan-benchmark-v1.md`](../docs/plan-benchmark-v1.md).
+Vocabulario: [`GLOSSARY.md`](../GLOSSARY.md).
+
+| # | Decisión | Valor | Por qué |
+|---|---|---|---|
+| D18 | Fuente de GT | Solo **UAVDT-MOT**: train oficial (30) = ajuste, test oficial (20) = test | Única fuente con vehículos, entorno urbano, DJI y atributos de altitud y vista ([ADR 0001](../docs/adr/0001-uavdt-unica-fuente-de-gt.md)) |
+| D19 | Frames y cajas | Todos los frames; todas las cajas de vehículo (car, truck y bus → `vehicle`); solo se aplican las regiones ignoradas de UAVDT (D8), sin filtrar por oclusión ni por fuera de vista | UAVDT anota cada frame; filtrar por oclusión sería una elección más que justificar |
+| D20 | Detector | Un solo **YOLOv8 entrenado en VisDrone** (el del laboratorio), sin reentrenar; detecciones generadas una vez con umbral 0.05 y leídas desde archivo | Sin fuga de datos, sin partir el train, ahorra ~medio día ([ADR 0002](../docs/adr/0002-detector-visdrone-sin-reentrenar.md)) |
+| D21 | Umbrales del detector | `conf_high` en el punto de mejor F1 del detector y `conf_low` donde su precisión cae al ~50 %, medidos en ajuste; iguales para los 4 trackers | Los defaults venían de otra escala de confianza; se calibra el detector, no los trackers |
+| D22 | Hiperparámetros | Defaults en los 4 trackers (D4, D16); solo la cámara de UCMC se elige en ajuste (D17) | La cámara es una entrada física (telemetría en producción), no un hiperparámetro de asociación |
+| D23 | Ranking | Una entrada por tracker: propio_kf, ByteTrack, BoT-SORT y `ucmc_grupo_train`. `ucmc` automático = referencia (`en_ranking: false`); `ucmc_oraculo_seq` = cota. `ucmc_singt` fuera de la v1 | Dos versiones de UCMC en el ranking serían dos oportunidades de ganar |
+| D24 | Grupos de vuelo | cenital (vista cenital), oblicua_baja (frontal o lateral con altitud de 10–30 m) y oblicua_alta (frontal o lateral, > 30 m), con la rejilla de cámara de UCMC dentro de esas bandas de altura | Cruzar altitud × vista deja celdas con 0–1 secuencias de ajuste |
+| D25 | Exclusión | Un estrato (grupo de vuelo o iluminación) con DetA < 20 en ajuste sale completo del ranking, para los 4 trackers; se decide y se escribe antes de test | Si el detector falla, la asociación no es evaluable; decidir después sesgaría |
+| D26 | Tramos de ego | Cortes en los percentiles 33 y 67 de `ego_px` en ajuste → bajo, medio y alto. Si el alto no cumple D28, quedan solo bajo (< P33) contra alto (≥ P67). Se reportan los px por frame de cada corte | UAVDT no trae movimiento de cámara; P1 se mide sobre el ego que existe, sin sintético |
+| D27 | Movimiento real | Etiqueta automática (D12), más revisión humana por track en test: dudosos, cambios de estado y el 10 % de los seguros. Los umbrales de D12 se pueden recalibrar con la revisión, antes de ver los trackers. Se reporta el acuerdo entre la etiqueta automática y la humana | Revisar frame por frame no cabe; se calibra la etiqueta, no el resultado |
+| D28 | Estadística | Unidad = secuencia; bootstrap pareado con IC 95 %; "gana" solo si el IC excluye 0, si no es empate técnico; P1 = ΔAssA entre tramos, P2 = F1 del decisor; un tramo con < 2000 detecciones del GT o < 5 secuencias es solo indicativo | 20 secuencias de test; frames de un mismo video no son independientes |
+| D29 | Ejecución | Desarrollo y prueba con una muestra aquí; ejecución completa en el laboratorio (Linux, conda), por etapas, congelando entre ajuste y test; test se corre una vez | Los modelos y datos viven en el laboratorio |
+| D30 | Arquitectura | v1 enfocada: adaptador de UAVDT y lectura de detecciones externas como módulos separados; el núcleo no se toca para crecer | Horizonte de una semana; sin cerrar la puerta a VisDrone o a la v2 |
+| D31 | Entregable | `docs/resultados-v1.md` con figuras PNG reproducibles desde `eval/` | Pasa casi directo a la tesis |
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |
 |---|---|---|
-| A1 | ¿Qué clips/tramos anotar? | Propuesta del informe: vigia_4 (rápido), tramo de vigia_1 (suave), tramo de vigia_9 o 10 (oblicuo), vigia_5 (estacionario) |
-| A2 | ¿Ajustar hiperparámetros? | (a) solo defaults; (b) mismo presupuesto (p. ej. 100 pruebas Optuna) para los 4 en VisDrone/UAVDT `val` o en clips VIGIA reservados que no se reportan |
-| A3 | ¿Agregar VisDrone-MOT / UAVDT? | Necesitan un conversor a este formato de GT (clases 0/11 → ignoradas) y un detector entrenado en VisDrone |
+| A1 | ~~¿Qué clips/tramos anotar?~~ **Obsoleta (D18): no se anota, se usa UAVDT** | Propuesta del informe: vigia_4 (rápido), tramo de vigia_1 (suave), tramo de vigia_9 o 10 (oblicuo), vigia_5 (estacionario) |
+| A2 | ¿Ajustar hiperparámetros? **v1: no (D22)**; abierta para después | (a) solo defaults; (b) mismo presupuesto (p. ej. 100 pruebas Optuna) para los 4 en VisDrone/UAVDT `val` o en clips VIGIA reservados que no se reportan |
+| A3 | ~~¿Agregar VisDrone-MOT / UAVDT?~~ **Resuelta: UAVDT (D18); VisDrone después de la v1** | Necesitan un conversor a este formato de GT (clases 0/11 → ignoradas) y un detector entrenado en VisDrone |
 | A4 | Incertidumbre con pocos clips | Bootstrap por bloques temporales (5–10 s) dentro de cada clip (pendiente de implementar) |
 | A5 | Tamaño de objeto | Estratificar por área de caja (<16², 16–32², 32–64², >64² px) — pendiente |
 | A6 | Baselines extra | OC-SORT / BoostTrack de BoxMOT o Roboflow `trackers`, etiquetados como baselines y con la misma política de salida |
 | A7 | hfov por dron | Hoy 82° por defecto en `CamaraUCMC`, probablemente el FOV **diagonal** de la ficha DJI; el horizontal en 16:9 sería ~70–74°. El barrido usa 74° (D17.1) y desde 2026-11-23 `secuencias.yaml` también (`ucmc.hfov_deg: 74`), para que `ucmc` y `ucmc_grupo_train` solo difieran en la cámara elegida; falta decidir si se corrige el default del `.py` |
-| A8 | fps real de VIGIA | Se toma el del archivo; confirmar que no hay frames duplicados/variables |
+| A8 | ~~fps real de VIGIA~~ **Obsoleta: UAVDT es 30 fps** | Se toma el del archivo; confirmar que no hay frames duplicados/variables |
