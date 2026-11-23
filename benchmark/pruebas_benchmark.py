@@ -271,7 +271,8 @@ def prueba_nucleo_equivale():
 
 def prueba_integracion_barrido_y_evaluacion():
     """De punta a punta sobre archivos reales: video → ego → correr (con cámaras del barrido) → evaluar_run con GT.
-    Comprueba la selección D17 y que el oráculo quede fuera de COMBINADO y de las comparaciones."""
+    Comprueba la selección D17, que el oráculo y el singt no validado queden fuera de COMBINADO y de las
+    comparaciones, y que los bins y el decisor no incluyan las secuencias de ajuste."""
     import shutil
     import cv2
     from barrido import barrer
@@ -308,7 +309,10 @@ def prueba_integracion_barrido_y_evaluacion():
         sel_csv = DIR_RUNS / run / "barrido" / "seleccion.csv"
         man.trackers = ["propio_kf", "ucmc",
                         {"nombre": "ucmc", "etiqueta": "ucmc_grupo_train", "seleccion": str(sel_csv), "version": "grupo_train"},
-                        {"nombre": "ucmc", "etiqueta": "ucmc_oraculo_seq", "seleccion": str(sel_csv), "version": "oraculo_seq"}]
+                        {"nombre": "ucmc", "etiqueta": "ucmc_oraculo_seq", "seleccion": str(sel_csv), "version": "oraculo_seq"},
+                        {"nombre": "ucmc", "etiqueta": "ucmc_singt", "seleccion": str(sel_csv), "version": "singt"}]
+        # en el sintético toda la rejilla da el mismo HOTA → ρ indefinida → singt no validado (D17.6)
+        assert not sel[sel.version == "singt"].valido.any()
         correr(man, run, caches=caches)
         s = evaluar_run(man, DIR_RUNS / run)
         m = s["metricas"]
@@ -316,12 +320,20 @@ def prueba_integracion_barrido_y_evaluacion():
         assert set(comb.tracker) == {"propio_kf", "ucmc", "ucmc_grupo_train"}, comb.tracker.tolist()
         cota = m[m.secuencia == "COMBINADO_COTA"]
         assert set(cota.tracker) == {"ucmc_oraculo_seq"} and (cota.uso_gt == "test").all()
-        assert "ucmc_oraculo_seq" not in set(s["comparaciones"].A) | set(s["comparaciones"].B)
-        assert len(s["por_bin_ego"]) and len(s["decisor"]) and len(s["sin_gt"]) == 4 * len(secs)
+        fuera = set(s["comparaciones"].A) | set(s["comparaciones"].B)
+        assert "ucmc_oraculo_seq" not in fuera and "ucmc_singt" not in fuera
+        novalid = m[m.secuencia == "COMBINADO_NO_VALIDADO"]
+        assert set(novalid.tracker) == {"ucmc_singt"} and not novalid.en_ranking.any()
+        # D14: bins de ego y decisor sin las secuencias de ajuste
+        for k in ("por_bin_ego", "decisor", "latencias"):
+            if len(s[k]):
+                assert "_prueba_aj" not in set(s[k].secuencia), k
+        assert len(s["por_bin_ego"]) and len(s["decisor"]) and len(s["sin_gt"]) == 5 * len(secs)
         assert (m[m.protocolo == "todos"].HOTA > 50).all(), m[["tracker", "secuencia", "HOTA"]]
         hota = comb.set_index("tracker").HOTA.round(1).to_dict()
         print(f"  integración: barrido {len(df)} pruebas, selección D17 ok; evaluar_run con GT → COMBINADO {hota}, "
-              f"oráculo solo en COMBINADO_COTA ({cota[cota.protocolo == 'todos'].HOTA.iloc[0]:.1f}) y fuera de comparaciones")
+              f"oráculo solo en COMBINADO_COTA ({cota[cota.protocolo == 'todos'].HOTA.iloc[0]:.1f}), singt no validado "
+              "en COMBINADO_NO_VALIDADO, ambos fuera de comparaciones; bins/decisor sin ajuste")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
         shutil.rmtree(DIR_RUNS / run, ignore_errors=True)

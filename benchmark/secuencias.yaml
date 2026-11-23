@@ -61,7 +61,7 @@ secuencias:
     video: /Users/Alex/Documents/videos_VIGIA/vigia_4.mp4
     detector: obb
     toma: cenital
-    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
     split: test
     gt: null
     # gt: ../anotaciones/vigia_4/gt.txt
@@ -70,27 +70,27 @@ secuencias:
     video: /Users/Alex/Documents/videos_VIGIA/vigia_1.mp4
     detector: obb
     toma: cenital
-    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
     split: test
     gt: null
   - nombre: vigia_5
     video: /Users/Alex/Documents/videos_VIGIA/vigia_5.mp4
     detector: obb
     toma: cenital
-    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 0}
+    ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
     split: test
     gt: null
   - nombre: vigia_9
     video: /Users/Alex/Documents/videos_VIGIA/vigia_9.mp4
     detector: coco
     toma: oblicua
-    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 50}
+    ucmc: {hfov_deg: 74, pitch_respaldo_deg: 50}
     split: test
     gt: null
   - nombre: vigia_10
     video: /Users/Alex/Documents/videos_VIGIA/vigia_10.mp4
     detector: coco
     toma: oblicua
-    ucmc: {hfov_deg: 82, pitch_respaldo_deg: 40}
+    ucmc: {hfov_deg: 74, pitch_respaldo_deg: 40}
     split: test
     gt: null

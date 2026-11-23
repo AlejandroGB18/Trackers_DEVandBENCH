@@ -276,9 +276,16 @@ def camara_de_seleccion(ruta, secuencia, version):
     return config_manual(r.pitch, r.altura, r.hfov, r.punto, r.get("aspecto", 1.0))
 
 
+def seleccion_valida(ruta, version):
+    """False si la versión no pasó su validación en ajuste (p. ej. `singt` con Spearman > −ρ_min, D17.6)."""
+    s = pd.read_csv(ruta)
+    s = s[s.version == version]
+    return bool(len(s)) and bool(s["valido"].astype(bool).all()) if "valido" in s.columns else bool(len(s))
+
+
 def fraccion_rejilla_gana(df, metricas_run, metrica="HOTA"):
     """Por secuencia y rival: fracción de la rejilla de UCMC que supera al rival (metricas.csv de un run normal)."""
-    m = metricas_run[(metricas_run.protocolo == "todos") & (metricas_run.secuencia != "COMBINADO")]
+    m = metricas_run[(metricas_run.protocolo == "todos") & (~metricas_run.secuencia.str.startswith("COMBINADO"))]
     out = []
     for (s, t), x in m.groupby(["secuencia", "tracker"]):
         g = df[df.secuencia == s][metrica].dropna()

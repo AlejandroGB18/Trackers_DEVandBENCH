@@ -439,6 +439,8 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     meta = json.load(open(dir_run / "run.json"))
     etiquetas = [t["etiqueta"] for t in meta["trackers"]]
     uso_gt = {t["etiqueta"]: t.get("uso_gt", "no") for t in meta["trackers"]}   # no | train | test (oráculo)
+    # fuera del ranking: oráculos (uso_gt=test) y selecciones no validadas en ajuste (singt sin D17.6)
+    en_ranking = {t["etiqueta"]: t.get("en_ranking", t.get("uso_gt", "no") != "test") for t in meta["trackers"]}
     cfg = manifiesto.evaluacion
     umbr = tuple(cfg.get("bins_ego_px", (0.5, 3.0)))
     secs = [s for s in manifiesto.secuencias if s.nombre in meta["secuencias"] and (secuencias is None or s.nombre in secuencias)]
@@ -468,10 +470,10 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
                 r = evaluar_datos(data)
                 res_comb[(p, e)][sec.nombre] = r
                 tablas.append(dict(protocolo=p, tracker=e, secuencia=sec.nombre, split=sec.split, uso_gt=uso_gt[e],
-                                   **resumen(r),
+                                   en_ranking=en_ranking[e], **resumen(r),
                                    descartadas_ignoradas=extra["descartadas_ignoradas"],
                                    descartadas_distractor=extra["descartadas_distractor"]))
-                if p == "todos":
+                if p == "todos" and sec.split != "ajuste":   # D14: bins y decisor solo en test
                     if bins is not None:
                         et = [bins.get(int(f), "H_no_fiable") for f in frames]
                         acc = hota_por_bins(data, et)
@@ -497,9 +499,10 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     for (p, e), d in res_comb.items():
         d = {k: v for k, v in d.items() if k in test}
         if d:
-            nombre = "COMBINADO_COTA" if uso_gt[e] == "test" else "COMBINADO"
+            nombre = ("COMBINADO_COTA" if uso_gt[e] == "test" else
+                      "COMBINADO" if en_ranking[e] else "COMBINADO_NO_VALIDADO")
             tablas.append(dict(protocolo=p, tracker=e, secuencia=nombre, split="test", uso_gt=uso_gt[e],
-                               **resumen(combinar(d))))
+                               en_ranking=en_ranking[e], **resumen(combinar(d))))
     for e, lista in bins_comb.items():
         if lista:
             comb = combinar_bins([x[0] for x in lista])
@@ -509,7 +512,7 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
                                      IDSW_por_1000=1000 * idsw / max(1, d["n_gt"])))
 
     comparaciones = pd.DataFrame()
-    rankeables = [e for e in etiquetas if uso_gt[e] != "test"]
+    rankeables = [e for e in etiquetas if en_ranking[e]]
     por_tracker = {e: {k: v for k, v in res_comb.get(("todos", e), {}).items() if k in test} for e in rankeables}
     if len(rankeables) > 1 and min(len(v) for v in por_tracker.values()) >= 2:
         from estadistica import tabla_comparaciones
