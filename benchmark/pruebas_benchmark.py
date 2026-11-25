@@ -449,16 +449,16 @@ def prueba_detecciones_y_rutas():
         y.parent.mkdir()
         y.write_text("datos_raiz: ../datosA\ndetectores: {d: {tipo: archivo, carpeta: detecciones/d}}\n"
                      "secuencias: [{nombre: s, video: UAVDT/x, detector: d, gt: UAVDT/g.txt}]\n")
-        m = cargar_manifiesto(y)
-        assert m.secuencias[0].video == str((tmp / "datosA" / "UAVDT" / "x").resolve())
-        assert m.detectores["d"]["carpeta"] == str((tmp / "datosA" / "detecciones" / "d").resolve())
-        previo = os.environ.get("BENCH_DATOS")
-        os.environ["BENCH_DATOS"] = str(tmp / "lab")
+        previo = os.environ.pop("BENCH_DATOS", None)     # la prueba no debe depender del BENCH_DATOS de quien la corre
         try:
+            m = cargar_manifiesto(y)
+            assert m.secuencias[0].video == str((tmp / "datosA" / "UAVDT" / "x").resolve())
+            assert m.detectores["d"]["carpeta"] == str((tmp / "datosA" / "detecciones" / "d").resolve())
+            os.environ["BENCH_DATOS"] = str(tmp / "lab")
             assert cargar_manifiesto(y).secuencias[0].gt == str((tmp / "lab" / "UAVDT" / "g.txt").resolve())
         finally:
             if previo is None:
-                os.environ.pop("BENCH_DATOS")
+                os.environ.pop("BENCH_DATOS", None)
             else:
                 os.environ["BENCH_DATOS"] = previo
     print("  detecciones externas: .txt ida y vuelta, rango y filtro de clase en la caché; "
