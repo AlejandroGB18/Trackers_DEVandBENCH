@@ -19,3 +19,5 @@ benchmark/cache/
 benchmark/runs/
 datos/
 .claude/launch.json
+benchmark/logs/
+prueba_lab.log
