@@ -16,20 +16,44 @@ secuencias.yaml ─┬─ detectar ──► cache/detecciones/<det>/<seq>.npz  
                  └─ evaluar ───► runs/<run>/eval/*.csv
 ```
 
-## Uso
+## Uso (v1: UAVDT, ver [`docs/plan-benchmark-v1.md`](../docs/plan-benchmark-v1.md))
 
-```bash
-pip install "trackeval==1.3.0" pyyaml          # + lo de los trackers (numpy, opencv, scipy, ultralytics)
-cd benchmark
-python pruebas_benchmark.py                    # debe terminar en "TODO OK"
-python bench.py detectar                       # detecciones cacheadas de todas las secuencias
-python bench.py ego                            # ego-movimiento de referencia
-python bench.py moving                         # solo secuencias con GT: propone moving y lista qué revisar
-python bench.py correr  --run v1               # los 4 trackers
-python bench.py evaluar --run v1               # métricas
+Los datos viven fuera del repo, bajo una raíz (`datos_raiz: ../datos` en `secuencias.yaml`, o la variable de entorno
+`BENCH_DATOS` en el laboratorio):
+
+```
+<raíz>/UAVDT/UAV-benchmark-M/Mxxxx/img000001.jpg …     (zip oficial, 6.3 GB)
+<raíz>/UAVDT/UAV-benchmark-MOTD_v1.0/GT/…             (zip oficial, GT y toolkit)
+<raíz>/UAVDT/M_attr/{train,test}/Mxxxx_attr.txt        (zip oficial)
+<raíz>/UAVDT/gt_benchmark/Mxxxx/gt.txt                 (lo genera adaptadores/uavdt.py)
+<raíz>/detecciones/<detector>/{Mxxxx.txt, firma.json}  (lo genera detectar_lab.py)
 ```
 
-`--seq vigia_9 vigia_10` limita a algunas secuencias; `--rehacer` ignora las cachés.
+En el laboratorio (Linux, conda, GPU):
+
+```bash
+conda env create -f benchmark/environment.yml && conda activate bench-trackers
+export BENCH_DATOS=/ruta/a/datos
+cd benchmark
+python pruebas_benchmark.py                                   # debe terminar en "TODO OK"
+python -m adaptadores.uavdt                                   # GT de UAVDT → gt_benchmark/ (secuencias.yaml ya viene generado)
+python detectar_lab.py --frames $BENCH_DATOS/UAVDT/UAV-benchmark-M --pesos /ruta/yolo8x_best.pt \
+                       --salida $BENCH_DATOS/detecciones/yolo8x --dispositivo 0
+# AJUSTE (30 secuencias) → luego CONGELADO 1 en DECISIONS.md
+python bench.py detectar --split ajuste
+python bench.py ego      --split ajuste
+python bench.py barrer   --split ajuste --run v1_ajuste
+# TEST (20 secuencias), una sola vez y con todo congelado
+python bench.py detectar --split test
+python bench.py ego      --split test
+python bench.py moving   --split test                         # propuesta → revisión humana → CONGELADO 2
+python bench.py barrer   --run v1_ajuste                      # todas: lleva la cámara de ajuste a test (+ cota)
+python bench.py correr   --split test --run v1
+python bench.py evaluar  --split test --run v1
+```
+
+`--seq M0101 M0202` limita a algunas secuencias; `--detector yolo8n` usa otro detector del manifiesto (la prueba en la
+Mac); `--rehacer` ignora las cachés.
 
 ## Qué sale en `runs/<run>/eval/`
 
@@ -85,24 +109,11 @@ trackers:
 
 `ucmc_oraculo_seq` sale en `metricas.csv` como `COMBINADO_COTA` (columna `uso_gt = test`) y no entra en
 `COMBINADO` ni en `comparaciones.csv`. `ucmc_singt` solo entra si el criterio sin GT se validó en ajuste (D17.6,
-columna `valido` de `seleccion.csv`); si no, sale como `COMBINADO_NO_VALIDADO` (`en_ranking = false`). Cada prueba de la rejilla corre solo el núcleo de UCMC sobre la H y las
+columna `valido` de `seleccion.csv`); si no, sale como `COMBINADO_NO_VALIDADO` (`en_ranking = false`). Un tracker
+marcado `en_ranking: false` a mano (la referencia `ucmc`, D23) sale como `COMBINADO_REFERENCIA`. Cada prueba de la rejilla corre solo el núcleo de UCMC sobre la H y las
 detecciones guardadas en `cache/entrada/` (sin decodificar el video); una prueba comprueba que da exactamente lo
 mismo que el tracker completo. Con telemetría real, la cámara se pasa directamente:
 `{nombre: ucmc, etiqueta: ucmc_telemetria, camara: {...}, config: {ucmc_calibrar_pitch: false, ucmc_calibrar_altura: false}}`.
-
-## El GT (cómo anotar un clip VIGIA)
-
-1. **CVAT**, tarea con el clip; etiquetas `vehicle` e `ignored` (región). Atributos de `vehicle`: `visibility`.
-2. Anotar cada 3 frames (≈10 fps a 30 fps) con interpolación entre keyframes, **sin** pre-anotar con ninguno de los 4
-   trackers. Lo que no se pueda separar (estacionamientos densos, vehículos de pocos px) se cubre con `ignored`.
-3. Exportar en **MOT 1.1** → `gt/gt.txt` (`frame,id,x,y,w,h,considerar,clase,visibilidad`). Asegurar que las clases
-   queden como en `secuencias.yaml` (`1` = vehicle, `0` = región ignorada) y que **los frames sean los del video
-   completo, base 1** (si la tarea de CVAT empieza en otro frame, sumar el desfase).
-4. En `secuencias.yaml`: `gt:` con la ruta y `gt_frames: {inicio, fin, paso: 3}`.
-5. `python bench.py ego` y `python bench.py moving` → revisar en CVAT los casos de `moving_revisar.csv`, corregir
-   `moving_auto.csv` y guardarlo como `moving.csv`; ponerlo en `gt_moving:`. Sin `gt_moving` la evaluación usa la
-   propuesta automática y lo avisa.
-6. QA: otra persona revisa ~20 % de los frames.
 
 ## Cómo está validado (`pruebas_benchmark.py`)
 
@@ -117,12 +128,13 @@ mismo que el tracker completo. Con telemetría real, la cámara se pasa directam
 - Integración con archivos reales (video, GT, ego, `moving`): barrido → selección D17 → correr → `evaluar_run`;
   el oráculo queda solo en `COMBINADO_COTA`, el `singt` no validado en `COMBINADO_NO_VALIDADO`, ambos fuera de las
   comparaciones, y los bins y el decisor no incluyen las secuencias de ajuste.
+- Adaptador de UAVDT sobre un árbol mínimo con el formato real; carpetas de frames; detecciones externas (`.txt` →
+  caché, rango y clases) y rutas portables (`datos_raiz`, `BENCH_DATOS`).
 - Sobre 120 frames reales de vigia_1: el `ego_px` de referencia y el de la H de los trackers tienen mediana
   0.22 vs 0.235 px y correlación 0.96 (miden lo mismo con estimadores distintos).
 
 ## Límites conocidos
 
-- Sin GT anotado todavía: hoy solo salen `sin_gt.csv` y los tiempos. Todo lo demás se activa al poner `gt:`.
 - `py-motmetrics 1.4.0` usa `np.asfarray` (NumPy < 2) en `iou_matrix`; las pruebas calculan la matriz de distancias
   por su cuenta.
 - La latencia del decisor tiene la resolución de la anotación (con paso 3, 0.1 s).

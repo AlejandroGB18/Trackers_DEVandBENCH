@@ -4,7 +4,9 @@ comunes.py — Lo que comparten todas las etapas del benchmark
 
 - Rutas (dónde viven las cachés y las corridas).
 - Lectura del manifiesto (secuencias.yaml).
-- Lectura de video por rango de frames.
+- Lectura de frames por rango, desde un video o desde una carpeta de imágenes (UAVDT: img000001.jpg …).
+- Rutas portables: lo relativo se resuelve contra `datos_raiz` (variable de entorno BENCH_DATOS > `datos_raiz` del
+  manifiesto > carpeta del manifiesto), así el mismo manifiesto sirve en la Mac y en el laboratorio.
 - Lectura y escritura de archivos MOT.
 - Huellas (hash) y versiones, para que cada resultado diga con qué se hizo.
 
@@ -12,8 +14,10 @@ Convención de frames en TODO el benchmark: **número de frame del video, base 1
 archivo), igual que MOTChallenge. Si una secuencia es un tramo del video (`rango`), los frames siguen siendo los del
 video completo: así el GT, las detecciones y las salidas de los trackers se cruzan sin desfases.
 """
+import functools
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -42,7 +46,7 @@ MOT_COLS = ["frame", "id", "x", "y", "w", "h", "conf", "clase", "c9", "c10"]
 @dataclass
 class Secuencia:
     nombre: str
-    video: str
+    video: str                             # archivo de video o carpeta de frames (orden alfabético = orden temporal)
     detector: str                          # clave en `detectores`
     rango: tuple = (1, None)               # [primer, último] frame del video (base 1, inclusivo); None = hasta el final
     fps: float = None                      # None = el del archivo de video
@@ -54,6 +58,7 @@ class Secuencia:
     toma: str = None                       # "cenital" | "oblicua" (punto de apoyo para `moving` y para UCMC)
     grupo: str = None                      # grupo de vuelo para el barrido de UCMC (p. ej. "alta_oblicua"); None = toma
     camara_fuente: str = None              # de dónde sale la cámara de `ucmc`: telemetria | ficha | banda | a_mano
+    atributos: dict = field(default_factory=dict)   # metadatos del dataset (altitud, vista, iluminación…), para estratos
 
     @property
     def grupo_barrido(self):
@@ -69,6 +74,7 @@ class Manifiesto:
     evaluacion: dict
     barrido: dict = field(default_factory=dict)   # rejilla de cámara de UCMC por grupo (ver barrido.py)
     ruta: Path = None
+    datos_raiz: Path = None
 
     def secuencia(self, nombre):
         for s in self.secuencias:
@@ -77,11 +83,21 @@ class Manifiesto:
         raise KeyError(f"No hay secuencia '{nombre}' en {self.ruta}")
 
 
+def raiz_datos(d, ruta_manifiesto):
+    """BENCH_DATOS > `datos_raiz` del manifiesto (relativo al manifiesto) > carpeta del manifiesto."""
+    if os.environ.get("BENCH_DATOS"):
+        return Path(os.environ["BENCH_DATOS"]).expanduser().resolve()
+    if d.get("datos_raiz"):
+        p = Path(d["datos_raiz"]).expanduser()
+        return (p if p.is_absolute() else ruta_manifiesto.parent / p).resolve()
+    return ruta_manifiesto.parent
+
+
 def cargar_manifiesto(ruta):
     import yaml
     ruta = Path(ruta).resolve()
     d = yaml.safe_load(open(ruta, encoding="utf-8"))
-    base = ruta.parent
+    base = raiz_datos(d, ruta)
 
     def abs_(p):
         if p is None:
@@ -99,17 +115,35 @@ def cargar_manifiesto(ruta):
     dets = {}
     for k, v in d["detectores"].items():
         v = dict(v)
-        v["pesos"] = abs_(v["pesos"])
+        for c in ("pesos", "carpeta"):
+            if v.get(c):
+                v[c] = abs_(v[c])
         dets[k] = v
     return Manifiesto(detectores=dets, secuencias=secs, trackers=list(d.get("trackers", [])),
                       config_comun=dict(d.get("config_comun", {})), evaluacion=dict(d.get("evaluacion", {})),
-                      barrido=dict(d.get("barrido", {})), ruta=ruta)
+                      barrido=dict(d.get("barrido", {})), ruta=ruta, datos_raiz=base)
 
 
 # ======================================================================
-# Video
+# Frames: video o carpeta de imágenes
 # ======================================================================
+EXT_IMAGEN = (".jpg", ".jpeg", ".png", ".bmp")
+FPS_CARPETA = 30.0          # una carpeta de frames no trae fps: se usa `fps` de la secuencia o este valor (UAVDT)
+
+
+@functools.lru_cache(maxsize=64)
+def _imagenes(ruta):
+    p = Path(ruta)
+    return tuple(sorted(str(f) for f in p.iterdir() if f.suffix.lower() in EXT_IMAGEN))
+
+
 def info_video(ruta):
+    if Path(ruta).is_dir():
+        imgs = _imagenes(str(ruta))
+        if not imgs:
+            raise FileNotFoundError(f"La carpeta {ruta} no tiene imágenes {EXT_IMAGEN}")
+        h, w = cv2.imread(imgs[0]).shape[:2]
+        return dict(n_frames=len(imgs), fps=FPS_CARPETA, ancho=w, alto=h)
     cap = cv2.VideoCapture(str(ruta))
     if not cap.isOpened():
         raise FileNotFoundError(f"No se puede abrir el video {ruta}")
@@ -134,7 +168,16 @@ def fps_de(sec):
 
 
 def leer_frames(ruta, primero, ultimo):
-    """Genera (frame base 1, imagen BGR) de `primero` a `ultimo` inclusive."""
+    """Genera (frame base 1, imagen BGR) de `primero` a `ultimo` inclusive. En una carpeta, el frame k es la k-ésima
+    imagen en orden alfabético (img000001.jpg = frame 1)."""
+    if Path(ruta).is_dir():
+        imgs = _imagenes(str(ruta))
+        for f in range(primero, min(ultimo, len(imgs)) + 1):
+            img = cv2.imread(imgs[f - 1])
+            if img is None:
+                raise IOError(f"No se pudo leer {imgs[f - 1]}")
+            yield f, img
+        return
     cap = cv2.VideoCapture(str(ruta))
     if primero > 1:
         cap.set(cv2.CAP_PROP_POS_FRAMES, primero - 1)

@@ -10,6 +10,10 @@ bench.py — Punto de entrada del benchmark
     python bench.py barrer    --run NOMBRE [--contra RUN]   # rejilla de cámara de UCMC (D17) → barrido/seleccion.csv
     python bench.py todo      --run NOMBRE [...]     # detectar → ego → correr → evaluar
 
+    --split ajuste|test   solo las secuencias de ese split (el flujo congela entre ajuste y test, D29)
+    --detector NOMBRE     usa ese detector del manifiesto en todas las secuencias (p. ej. yolo8n en la Mac)
+    Rutas de datos: variable de entorno BENCH_DATOS (si no, `datos_raiz` del manifiesto).
+
 Orden recomendado la primera vez: detectar → ego → moving (revisar a mano) → correr → evaluar.
 """
 import argparse
@@ -20,6 +24,18 @@ from comunes import RAIZ_BENCH, cargar_manifiesto, fps_de, info_video
 
 def _secs(man, nombres):
     return [s for s in man.secuencias if not nombres or s.nombre in nombres]
+
+
+def _filtrar(man, a):
+    """--split y --detector se aplican al manifiesto antes de cualquier etapa."""
+    if a.split:
+        man.secuencias = [s for s in man.secuencias if s.split == a.split]
+    if a.detector:
+        if a.detector not in man.detectores:
+            raise SystemExit(f"Detector '{a.detector}' no está en el manifiesto: {sorted(man.detectores)}")
+        for s in man.secuencias:
+            s.detector = a.detector
+    return man
 
 
 def cmd_detectar(man, a):
@@ -98,8 +114,10 @@ def main():
     p.add_argument("--semilla", type=int, default=0)
     p.add_argument("--dispositivo", default=None, help="cpu, mps, 0 (cuda)…")
     p.add_argument("--contra", default=None, help="barrer: run con los rivales evaluados (fracción de rejilla que gana)")
+    p.add_argument("--split", choices=["ajuste", "test"], default=None)
+    p.add_argument("--detector", default=None, help="detector del manifiesto para todas las secuencias")
     a = p.parse_args()
-    man = cargar_manifiesto(a.manifiesto)
+    man = _filtrar(cargar_manifiesto(a.manifiesto), a)
     if a.comando in ("correr", "evaluar", "barrer", "todo") and not a.run:
         p.error("--run es obligatorio para correr/evaluar/barrer")
     pasos = {"detectar": [cmd_detectar], "ego": [cmd_ego], "moving": [cmd_moving], "correr": [cmd_correr],
