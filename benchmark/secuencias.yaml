@@ -24,10 +24,10 @@ trackers:                                # ranking = una entrada por tracker (D2
   - {nombre: ucmc, etiqueta: ucmc, en_ranking: false}                       # referencia: calibración automática
   - {nombre: ucmc, etiqueta: ucmc_oraculo_seq, seleccion: runs/v1_ajuste/barrido/seleccion.csv, version: oraculo_seq}
 
-config_comun:                            # los 4 con defaults (D22); conf_high/conf_low se recalibran en ajuste (D21)
-  conf_entrada: 0.10
-  conf_high: 0.35
-  conf_low: 0.10
+config_comun:                            # los 4 con defaults (D22); umbrales del detector: CONGELADO 1 (D21, D32)
+  conf_entrada: 0.05                     # = conf_low (D21)
+  conf_high: 0.20                        # mejor F1 de yolo8x en ajuste (0.808)
+  conf_low: 0.05                         # precisión 0.78 en 0.05 ≥ 0.5 → piso de la caché
   max_miss_sec: 1.0
   min_hits: 4
 
@@ -37,8 +37,7 @@ evaluacion:
   clases_distractoras: []
   umbral_area_ignorada: 0.5
   bins_ego_px: [0.5, 3.0]                # solo si no hay tramos_ego (legado VIGIA)
-  # CONGELADO 1 (D26): copiar de runs/v1_ajuste/ajuste/propuesta.json → tramos
-  # tramos_ego: {cortes_px: [x, y], etiquetas: [bajo, medio, alto]}
+  tramos_ego: {cortes_px: [0.328, 1.241], etiquetas: [bajo, medio, alto]}   # CONGELADO 1 (D26, D32): P33/P67 en ajuste, px/frame a 960
   # CONGELADO 2 (D27): umbrales de moving calibrados con la revisión (calibracion.csv); por defecto los de D12
   # moving: {rel_mov: 0.30, rel_est: 0.10}
   protocolos: [todos, moviles, estaticos, e2e_moviles]
