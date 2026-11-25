@@ -9,3 +9,4 @@ pyyaml>=6.0
 lap>=0.5.12
 torch>=2.3
 motmetrics==1.4.0           # solo para pruebas_benchmark.py (paridad de métricas)
+matplotlib>=3.8            # figuras de bench.py reporte

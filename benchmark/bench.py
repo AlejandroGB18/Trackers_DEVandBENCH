@@ -8,6 +8,10 @@ bench.py — Punto de entrada del benchmark
     python bench.py moving    [...]                  # propuesta automática de la etiqueta moving + lista de revisión
     python bench.py evaluar   --run NOMBRE [...]     # TrackEval + análisis por ego-movimiento + decisor + sin GT
     python bench.py barrer    --run NOMBRE [--contra RUN]   # rejilla de cámara de UCMC (D17) → barrido/seleccion.csv
+    python bench.py ajuste    --run NOMBRE            # solo AJUSTE: detector por estrato + tramos de ego → propuesta.json
+    python bench.py reporte   --run NOMBRE            # tablas y figuras desde eval/ → runs/<run>/reporte/
+    python bench.py revisar   --split test            # páginas de revisión de moving (después de `moving`)
+    python bench.py aplicar-revision --split test --decisiones CARPETA   # decisiones → moving.csv + calibración
     python bench.py todo      --run NOMBRE [...]     # detectar → ego → correr → evaluar
 
     --split ajuste|test   solo las secuencias de ese split (el flujo congela entre ajuste y test, D29)
@@ -27,7 +31,9 @@ def _secs(man, nombres):
 
 
 def _filtrar(man, a):
-    """--split y --detector se aplican al manifiesto antes de cualquier etapa."""
+    """--seq, --split y --detector se aplican al manifiesto antes de cualquier etapa."""
+    if a.seq:
+        man.secuencias = [s for s in man.secuencias if s.nombre in a.seq]
     if a.split:
         man.secuencias = [s for s in man.secuencias if s.split == a.split]
     if a.detector:
@@ -61,13 +67,69 @@ def cmd_moving(man, a):
             print(f"[moving] {s.nombre}: sin GT, se omite")
             continue
         m = derivar_moving(leer_gt(s.gt), leer(ruta_cache(s)), fps_de(s), info_video(s.video)["ancho"],
-                           toma=s.toma or "cenital", clases=man.evaluacion.get("clases_evaluadas"))
+                           toma=s.toma or "cenital", clases=man.evaluacion.get("clases_evaluadas"),
+                           **(man.evaluacion.get("moving") or {}))
         dest = Path(s.gt).with_name("moving_auto.csv")
         m.to_csv(dest, index=False)
         rev = lista_revision(m)
         rev.to_csv(dest.with_name("moving_revisar.csv"), index=False)
         n = m.moving.value_counts().to_dict()
         print(f"[moving] {s.nombre}: {n} (1 móvil, 0 quieto, -1 dudoso); {len(rev)} casos a revisar → {dest.parent}")
+
+
+def cmd_revisar(man, a):
+    from comunes import leer_gt
+    import pandas as pd
+    from ego import leer, ruta_cache
+    from revision import generar
+    for s in _secs(man, a.seq):
+        auto = Path(s.gt).with_name("moving_auto.csv") if s.gt else None
+        if not auto or not auto.exists():
+            print(f"[revisar] {s.nombre}: falta moving_auto.csv (corre `bench.py moving`), se omite")
+            continue
+        generar(s, leer_gt(s.gt), pd.read_csv(auto), leer(ruta_cache(s)), fps_de(s))
+
+
+def cmd_aplicar_revision(man, a):
+    import pandas as pd
+    from revision import acuerdo, aplicar, calibracion, dir_revision, leer_decisiones
+    if not a.decisiones:
+        raise SystemExit("aplicar-revision necesita --decisiones CARPETA (donde quedaron los decisiones_<seq>.csv)")
+    min_px_960 = float((man.evaluacion.get("moving") or {}).get("min_px_960", 3.0))
+    acuerdos, calib = [], []
+    for s in _secs(man, a.seq):
+        d = dir_revision(s)
+        auto, tr = Path(s.gt).with_name("moving_auto.csv"), d / f"tracks_{s.nombre}.csv"
+        if not tr.exists():
+            print(f"[aplicar-revision] {s.nombre}: sin página de revisión, se omite")
+            continue
+        mov_auto, tracks = pd.read_csv(auto), pd.read_csv(tr)
+        dec = leer_decisiones(a.decisiones, s.nombre)
+        m, t, faltan = aplicar(mov_auto, tracks, dec)
+        if len(faltan):
+            print(f"[aplicar-revision] {s.nombre}: AVISO, faltan {len(faltan)} tracks por decidir: "
+                  f"{faltan.id.tolist()[:15]}{'…' if len(faltan) > 15 else ''}")
+        m[["frame", "id", "moving"]].assign(fuente="revisado").to_csv(Path(s.gt).with_name("moving.csv"), index=False)
+        t.to_csv(d / f"decisiones_aplicadas_{s.nombre}.csv", index=False)
+        acuerdos.append(dict(secuencia=s.nombre, **acuerdo(t), revisados=int(t.decision.notna().sum()),
+                             faltan=len(faltan)))
+        c = calibracion(mov_auto, t, min_px_960 * info_video(s.video)["ancho"] / 960.0)
+        if len(c):
+            calib.append(c.assign(secuencia=s.nombre))
+    ac = pd.DataFrame(acuerdos)
+    print(ac.to_string(index=False))
+    dest = Path(a.decisiones)
+    ac.to_csv(dest / "acuerdo.csv", index=False)
+    if calib:
+        c = pd.concat(calib)
+        c["aciertos"] = c.acuerdo * c.tracks
+        g = c.groupby(["rel_mov", "rel_est"], as_index=False).agg(tracks=("tracks", "sum"), aciertos=("aciertos", "sum"),
+                                                                 frac_frames_dudosos=("frac_frames_dudosos", "mean"))
+        g["acuerdo"] = g.aciertos / g.tracks
+        g = g.drop(columns="aciertos")
+        g.round(3).to_csv(dest / "calibracion.csv", index=False)
+        print(g.sort_values("acuerdo", ascending=False).head(5).round(3).to_string(index=False))
+    print(f"[aplicar-revision] moving.csv escrito junto a cada gt.txt; resumen en {dest}")
 
 
 def cmd_correr(man, a):
@@ -85,6 +147,17 @@ def cmd_evaluar(man, a):
         print(m[m.secuencia == "COMBINADO"][cols].round(2).to_string(index=False))
     else:
         print(s["sin_gt"].round(2).to_string(index=False))
+
+
+def cmd_ajuste(man, a):
+    from ajuste import correr_ajuste
+    correr_ajuste(man, a.run, que=tuple(a.que))
+
+
+def cmd_reporte(man, a):
+    from comunes import DIR_RUNS
+    from reporte import generar_reporte
+    generar_reporte(DIR_RUNS / a.run, man)
 
 
 def cmd_barrer(man, a):
@@ -106,7 +179,8 @@ def cmd_barrer(man, a):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("comando", choices=["detectar", "ego", "moving", "correr", "evaluar", "barrer", "todo"])
+    p.add_argument("comando", choices=["detectar", "ego", "moving", "revisar", "aplicar-revision", "correr", "evaluar",
+                                        "barrer", "ajuste", "reporte", "todo"])
     p.add_argument("--manifiesto", default=str(RAIZ_BENCH / "secuencias.yaml"))
     p.add_argument("--seq", nargs="*", default=None, help="solo estas secuencias")
     p.add_argument("--run", default=None, help="nombre del run (carpeta en runs/)")
@@ -115,13 +189,16 @@ def main():
     p.add_argument("--dispositivo", default=None, help="cpu, mps, 0 (cuda)…")
     p.add_argument("--contra", default=None, help="barrer: run con los rivales evaluados (fracción de rejilla que gana)")
     p.add_argument("--split", choices=["ajuste", "test"], default=None)
+    p.add_argument("--decisiones", default=None, help="aplicar-revision: carpeta con decisiones_<seq>.csv")
+    p.add_argument("--que", nargs="*", default=["det", "tramos"], help="ajuste: det y/o tramos")
     p.add_argument("--detector", default=None, help="detector del manifiesto para todas las secuencias")
     a = p.parse_args()
     man = _filtrar(cargar_manifiesto(a.manifiesto), a)
-    if a.comando in ("correr", "evaluar", "barrer", "todo") and not a.run:
+    if a.comando in ("correr", "evaluar", "barrer", "ajuste", "reporte", "todo") and not a.run:
         p.error("--run es obligatorio para correr/evaluar/barrer")
     pasos = {"detectar": [cmd_detectar], "ego": [cmd_ego], "moving": [cmd_moving], "correr": [cmd_correr],
-             "evaluar": [cmd_evaluar], "barrer": [cmd_barrer], "todo": [cmd_detectar, cmd_ego, cmd_correr, cmd_evaluar]}[a.comando]
+             "evaluar": [cmd_evaluar], "barrer": [cmd_barrer], "ajuste": [cmd_ajuste], "revisar": [cmd_revisar], "reporte": [cmd_reporte],
+             "aplicar-revision": [cmd_aplicar_revision], "todo": [cmd_detectar, cmd_ego, cmd_correr, cmd_evaluar]}[a.comando]
     for f in pasos:
         f(man, a)
 

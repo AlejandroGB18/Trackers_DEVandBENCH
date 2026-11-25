@@ -39,17 +39,24 @@ python pruebas_benchmark.py                                   # debe terminar en
 python -m adaptadores.uavdt                                   # GT de UAVDT → gt_benchmark/ (secuencias.yaml ya viene generado)
 python detectar_lab.py --frames $BENCH_DATOS/UAVDT/UAV-benchmark-M --pesos /ruta/yolo8x_best.pt \
                        --salida $BENCH_DATOS/detecciones/yolo8x --dispositivo 0
-# AJUSTE (30 secuencias) → luego CONGELADO 1 en DECISIONS.md
+# AJUSTE (30 secuencias)
 python bench.py detectar --split ajuste
 python bench.py ego      --split ajuste
-python bench.py barrer   --split ajuste --run v1_ajuste
-# TEST (20 secuencias), una sola vez y con todo congelado
+python bench.py ajuste   --split ajuste --run v1_ajuste        # detector por estrato + tramos → ajuste/propuesta.json
+python bench.py barrer   --split ajuste --run v1_ajuste        # cámara de UCMC por grupo
+# → CONGELADO 1: conf_high/conf_low, exclusiones, tramos_ego y cámaras en secuencias.yaml + DECISIONS.md
+# TEST (20 secuencias), con todo congelado
 python bench.py detectar --split test
 python bench.py ego      --split test
-python bench.py moving   --split test                         # propuesta → revisión humana → CONGELADO 2
-python bench.py barrer   --run v1_ajuste                      # todas: lleva la cámara de ajuste a test (+ cota)
-python bench.py correr   --split test --run v1
+python bench.py moving   --split test                          # propuesta automática por frame
+python bench.py revisar  --split test                          # gt_benchmark/<seq>/revision/<seq>.html
+#   (abrir cada .html, decidir con M/Q/A/D, exportar decisiones_<seq>.csv a una carpeta)
+python bench.py aplicar-revision --split test --decisiones CARPETA   # moving.csv + acuerdo.csv + calibracion.csv
+# → CONGELADO 2: umbrales de moving (evaluacion.moving); si cambian, repetir `moving` y `aplicar-revision`
+python bench.py barrer   --run v1_ajuste                       # todas: lleva la cámara de ajuste a test (+ cota)
+python bench.py correr   --split test --run v1                 # una sola vez
 python bench.py evaluar  --split test --run v1
+python bench.py reporte  --run v1                              # runs/v1/reporte/resultados.md + figuras
 ```
 
 `--seq M0101 M0202` limita a algunas secuencias; `--detector yolo8n` usa otro detector del manifiesto (la prueba en la
@@ -64,6 +71,7 @@ Mac); `--rehacer` ignora las cachés.
 | `decisor.csv` | Solo split test. `en_movimiento` vs GT `moving` sobre los TP (CLEAR α=0.5): TP/FP/FN/TN, precisión, recall, F1, especificidad, tasa de `paralaje` en quietos y móviles; global y por bin. Nivel track: falsa alarma y detección por track |
 | `latencias.csv` | Encendido (GT empieza a moverse → decisor lo marca) y apagado: % detectado, mediana y p90 en s |
 | `sin_gt.csv` | Las métricas de la v13 (tracks, vida media, tracks por objeto, IDs/min…), para todas las secuencias |
+| `../reporte/` | `bench.py reporte`: `resultados.md` (ranking, comparaciones con veredicto, P1 con ΔAssA e IC, P2 con IC, cámara de UCMC, costo) y figuras PNG |
 | `comparaciones.csv` | Δ pareado entre trackers (HOTA, AssA, IDF1) con IC 95 % por bootstrap de secuencias y "gana en k/n" |
 
 **Protocolos** (columna `protocolo`):

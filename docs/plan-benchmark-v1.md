@@ -41,7 +41,7 @@ Comparar 4 trackers de vehículos para dron en una base pública común y reprod
 | Referencia y cota | `ucmc` automático (referencia) y `ucmc_oraculo_seq` (cota), fuera del ranking | D23 |
 | Grupos de vuelo | cenital, oblicua_baja y oblicua_alta (§3) | D24 |
 | Exclusión | Estrato (grupo de vuelo o iluminación) con DetA < 20 en ajuste: sale del ranking completo, decidido antes de test | D25 |
-| Tramos de ego | Percentiles 33 y 67 de `ego_px` en ajuste dan bajo, medio y alto. Si el alto no cumple el mínimo de datos, quedan bajo (< P33) contra alto (≥ P67) | D26 |
+| Tramos de ego | Percentiles 33 y 67 de `ego_px` en ajuste dan bajo, medio y alto. Si el alto no cumple el mínimo de datos, dos tramos cortando en la mediana | D26 |
 | Movimiento real | Etiqueta automática (D12), más revisión humana por track en test: dudosos, cambios de estado y una muestra del 10 % de los seguros. Umbrales ajustables solo con la revisión y antes de ver los trackers | D27 |
 | Estadística | Unidad = secuencia; bootstrap pareado con IC 95 %; "gana" solo si el IC excluye 0; mínimo de datos por tramo: ≥ 2000 detecciones del GT y ≥ 5 secuencias | D28 |
 | Ejecución | Desarrollo y prueba con una muestra aquí; ejecución completa en el laboratorio (Linux, conda), por etapas, congelando entre ajuste y test | D29 |

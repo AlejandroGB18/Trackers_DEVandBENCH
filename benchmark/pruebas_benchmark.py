@@ -13,6 +13,8 @@ pruebas_benchmark.py — Comprobaciones del harness (python pruebas_benchmark.py
 8. Núcleo de UCMC = tracker completo; integración barrido → selección D17 → correr → evaluar.
 9. Adaptador de UAVDT (formato real de GT, regiones ignoradas, atributos → grupos y split) y frames desde carpeta.
 10. Detecciones externas (`tipo: archivo`): ida y vuelta del .txt, filtro de rango y caché; rutas portables.
+11. Ajuste (detector por umbral con regiones ignoradas, tramos de ego por percentiles) y revisión de `moving`
+    (clasificación de tracks, muestra, decisiones M/Q/A/D, acuerdo y calibración); reporte en la integración.
 """
 import sys
 import tempfile
@@ -318,6 +320,12 @@ def prueba_integracion_barrido_y_evaluacion():
         assert not sel[sel.version == "singt"].valido.any()
         correr(man, run, caches=caches)
         s = evaluar_run(man, DIR_RUNS / run)
+        from reporte import generar_reporte
+        rep = generar_reporte(DIR_RUNS / run, man)
+        for f in ("resultados.md", "ranking.png", "p1.png", "p2.png"):
+            assert (rep / f).exists(), f
+        texto = (rep / "resultados.md").read_text()
+        assert "ucmc_oraculo_seq | cota" in texto and "## P1" in texto and "## P2" in texto
         m = s["metricas"]
         comb = m[(m.secuencia == "COMBINADO") & (m.protocolo == "todos")]
         assert set(comb.tracker) == {"propio_kf", "ucmc", "ucmc_grupo_train"}, comb.tracker.tolist()
@@ -457,10 +465,61 @@ def prueba_detecciones_y_rutas():
           "rutas relativas a datos_raiz y BENCH_DATOS")
 
 
+def prueba_ajuste_y_revision():
+    from ajuste import _conteos_por_umbral, UMBRALES, cargar_tramos, etiquetar, tramos
+    from detecciones import CacheDetecciones
+    from comunes import Secuencia
+    from revision import acuerdo, aplicar, calibracion, clasificar_tracks, elegir
+    # --- detector: 2 autos; 1 detección buena (0.9), 1 FP débil (0.2), 1 FP dentro de región ignorada (0.8)
+    gt = pd.DataFrame([(1, 1, 10, 10, 20, 20, 1, 1, 1), (1, 2, 100, 100, 20, 20, 1, 1, 1),
+                       (1, -1, 300, 300, 50, 50, 1, 0, -1)],
+                      columns=["frame", "id", "x", "y", "w", "h", "considerar", "clase", "visibilidad"])
+    cache = CacheDetecciones.desde_arrays([1, 1, 1], [[10, 10, 30, 30, .9, 0], [200, 200, 220, 220, .2, 0],
+                                                      [310, 310, 330, 330, .8, 0]], {0: "car"})
+    tp, fp, fn = _conteos_por_umbral(gt, cache, [1], CFG)
+    k05, k50 = list(UMBRALES).index(0.05), list(UMBRALES).index(0.5)
+    assert (tp[k05], fp[k05], fn[k05]) == (1, 1, 1), (tp[k05], fp[k05], fn[k05])   # la de la región no cuenta
+    assert (tp[k50], fp[k50], fn[k50]) == (1, 0, 1)
+    # --- tramos: 6 secuencias, ego creciente; con mucho GT en "alto" quedan 3 tramos
+    secs, egos, gts = [], {}, {}
+    for i in range(6):
+        nom = f"s{i}"
+        secs.append(Secuencia(nombre=nom, video="x", detector="d", fps=30.0, gt_frames=dict(inicio=1, fin=300)))
+        egos[nom] = pd.DataFrame(dict(frame=np.arange(1, 301), ego_px=np.linspace(0, 6, 300) + i * 0.1, H_ok=True))
+        gts[nom] = pd.DataFrame(dict(frame=np.repeat(np.arange(1, 301), 5), id=1, x=0, y=0, w=1, h=1, considerar=1,
+                                     clase=1))
+    frames_de = lambda sec, gt: np.arange(1, 301)
+    tabla, prop = tramos(secs, egos, gts, frames_de)
+    assert prop["modo"] == "tres" and len(prop["cortes_px"]) == 2 and set(tabla.tramo) == {"bajo", "medio", "alto"}
+    _, prop2 = tramos(secs[:2], {k: egos[k] for k in ("s0", "s1")}, gts, frames_de)   # 2 secuencias: no alcanza
+    assert prop2["modo"] == "dos" and prop2["etiquetas"] == ["bajo", "alto"]
+    c, e = cargar_tramos(dict(cortes_px=[1.0, 2.0], etiquetas=["bajo", "medio", "alto"]))
+    lab = etiquetar(pd.Series([0.5, 1.5, 2.5, np.nan]), c, e)
+    assert lab.tolist() == ["bajo", "medio", "alto", "H_no_fiable"]
+    # --- revisión: 4 tracks (seguro móvil, seguro quieto, cambio, dudoso)
+    filas = []
+    for tid, patron in ((1, [1] * 30), (2, [0] * 30), (3, [0] * 15 + [1] * 15), (4, [-1] * 20 + [1] * 10)):
+        for f, m in enumerate(patron, 1):
+            filas.append((f, tid, m, 10.0 if m == 1 else 0.5 if m == 0 else np.nan, 20.0))
+    mov = pd.DataFrame(filas, columns=["frame", "id", "moving", "d_px", "L_px"])
+    t = elegir(clasificar_tracks(mov))
+    cat = dict(zip(t.id, t.categoria))
+    assert cat == {1: "seguro", 2: "seguro", 3: "cambio", 4: "dudoso"}
+    assert t.revisar.sum() == 3 and t.muestra_seguros.sum() == 1          # cambio + dudoso + 10 % de 2 seguros
+    dec = pd.DataFrame(dict(id=[3, 4] + t[t.muestra_seguros].id.tolist(), decision=["M", "D", "A"]))
+    m2, t2, faltan = aplicar(mov, t, dec)
+    assert (m2[m2.id == 3].moving == 1).all() and (m2[m2.id == 4].moving == -1).all() and len(faltan) == 0
+    assert acuerdo(t2)["acuerdo"] == 1.0
+    cal = calibracion(mov, t2, min_px=3.0)
+    assert len(cal) == 15 and cal.acuerdo.between(0, 1).all()
+    print("  ajuste: curva del detector respeta regiones ignoradas; tramos por percentiles (3 o 2 según datos); "
+          "revisión: categorías, muestra 10 %, M/Q/A/D, acuerdo y calibración")
+
+
 if __name__ == "__main__":
     for p in (prueba_sanidad, prueba_cambio_id, prueba_replicas, prueba_motmetrics, prueba_ignoradas_y_protocolos,
               prueba_moving_con_paneo, prueba_punta_a_punta, prueba_nucleo_equivale,
-              prueba_integracion_barrido_y_evaluacion, prueba_adaptador_uavdt, prueba_detecciones_y_rutas):
+              prueba_integracion_barrido_y_evaluacion, prueba_adaptador_uavdt, prueba_detecciones_y_rutas, prueba_ajuste_y_revision):
         print(p.__name__)
         p()
     print("TODO OK")
