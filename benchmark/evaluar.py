@@ -451,6 +451,8 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     version = {t["etiqueta"]: t.get("version") for t in meta["trackers"]}
     cfg = manifiesto.evaluacion
     umbr = tuple(cfg.get("bins_ego_px", (0.5, 3.0)))
+    from ajuste import cargar_tramos, ego_suavizado, etiquetar
+    tramos_cfg = cargar_tramos(cfg.get("tramos_ego"))
     secs = [s for s in manifiesto.secuencias if s.nombre in meta["secuencias"] and (secuencias is None or s.nombre in secuencias)]
     protocolos = protocolos or cfg.get("protocolos", ["todos", "moviles", "estaticos", "e2e_moviles"])
 
@@ -463,9 +465,15 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
         df_ego = leer_ego(ruta_ego(sec)) if ruta_ego(sec).exists() else None
         gt = leer_gt(sec.gt) if sec.gt else None
         frames = frames_anotados(sec, gt) if gt is not None else None
-        moving = (cargar_moving(sec, gt, df_ego, info_video(sec.video)["ancho"], fps, cfg.get("clases_evaluadas"))
+        moving = (cargar_moving(sec, gt, df_ego, info_video(sec.video)["ancho"], fps, cfg.get("clases_evaluadas"),
+                                cfg.get("moving"))
                   if gt is not None else None)
-        bins = bins_ego(df_ego, fps, umbr) if df_ego is not None else None
+        if df_ego is None:
+            bins = None
+        elif tramos_cfg:                                    # D26: cortes congelados en ajuste (bajo/medio/alto)
+            bins = etiquetar(ego_suavizado(df_ego, fps), *tramos_cfg)
+        else:
+            bins = bins_ego(df_ego, fps, umbr)
         for e in etiquetas:
             pred = leer_mot(dir_run / e / f"{sec.nombre}.txt")
             lat = pd.read_csv(dir_run / e / f"{sec.nombre}_lateral.csv")

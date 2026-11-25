@@ -112,13 +112,16 @@ def lista_revision(moving):
     return pd.DataFrame(out, columns=["id", "frame", "motivo"])
 
 
-def cargar_moving(sec, gt=None, df_ego=None, ancho_video=None, fps=None, clases=None):
-    """El moving revisado si existe (`gt_moving`); si no, la derivación automática (avisando)."""
-    if sec.gt_moving:
-        m = pd.read_csv(sec.gt_moving)
+def cargar_moving(sec, gt=None, df_ego=None, ancho_video=None, fps=None, clases=None, umbrales=None):
+    """El moving revisado si existe (`gt_moving`, o `moving.csv` junto al gt.txt, que escribe
+    `bench.py aplicar-revision`); si no, la derivación automática (avisando)."""
+    from pathlib import Path
+    ruta = sec.gt_moving or (Path(sec.gt).with_name("moving.csv") if sec.gt else None)
+    if ruta and Path(ruta).exists():
+        m = pd.read_csv(ruta)
         return m[["frame", "id", "moving"]]
     if df_ego is None:
         return None
     print(f"[gt] {sec.nombre}: sin moving revisado; se usa la derivación AUTOMÁTICA (revisar antes de reportar)")
-    return derivar_moving(gt, df_ego, fps, ancho_video, toma=sec.toma or "cenital",
-                          clases=clases)[["frame", "id", "moving"]]
+    return derivar_moving(gt, df_ego, fps, ancho_video, toma=sec.toma or "cenital", clases=clases,
+                          **(umbrales or {}))[["frame", "id", "moving"]]

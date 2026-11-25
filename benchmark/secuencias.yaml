@@ -36,7 +36,11 @@ evaluacion:
   clases_ignoradas: [0]                  # 0 = región ignorada de UAVDT (regla de área, D8)
   clases_distractoras: []
   umbral_area_ignorada: 0.5
-  bins_ego_px: [0.5, 3.0]                # PROVISIONAL: D26 los reemplaza por los percentiles 33/67 de ajuste
+  bins_ego_px: [0.5, 3.0]                # solo si no hay tramos_ego (legado VIGIA)
+  # CONGELADO 1 (D26): copiar de runs/v1_ajuste/ajuste/propuesta.json → tramos
+  # tramos_ego: {cortes_px: [x, y], etiquetas: [bajo, medio, alto]}
+  # CONGELADO 2 (D27): umbrales de moving calibrados con la revisión (calibracion.csv); por defecto los de D12
+  # moving: {rel_mov: 0.30, rel_est: 0.10}
   protocolos: [todos, moviles, estaticos, e2e_moviles]
   bootstrap_n: 2000
 

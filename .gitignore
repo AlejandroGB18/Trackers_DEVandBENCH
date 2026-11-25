@@ -18,3 +18,4 @@ __pycache__/
 benchmark/cache/
 benchmark/runs/
 datos/
+.claude/launch.json
