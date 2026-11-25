@@ -53,7 +53,7 @@ python bench.py revisar  --split test                          # gt_benchmark/<s
 #   (abrir cada .html, decidir con M/Q/A/D, exportar decisiones_<seq>.csv a una carpeta)
 python bench.py aplicar-revision --split test --decisiones CARPETA   # moving.csv + acuerdo.csv + calibracion.csv
 # → CONGELADO 2: umbrales de moving (evaluacion.moving); si cambian, repetir `moving` y `aplicar-revision`
-python bench.py barrer   --run v1_ajuste                       # todas: lleva la cámara de ajuste a test (+ cota)
+python bench.py barrer   --run v1_ajuste                       # todas, con los umbrales congelados: cámara definitiva (D32.4) + cota
 python bench.py correr   --split test --run v1                 # una sola vez
 python bench.py evaluar  --split test --run v1
 python bench.py reporte  --run v1                              # runs/v1/reporte/resultados.md + figuras
