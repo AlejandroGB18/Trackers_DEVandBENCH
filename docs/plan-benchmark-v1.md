@@ -34,7 +34,7 @@ Comparar 4 trackers de vehículos para dron en una base pública común y reprod
 | GT | Solo **UAVDT-MOT**: 30 secuencias de ajuste (train oficial) y 20 de test | D18, [ADR 0001](adr/0001-uavdt-unica-fuente-de-gt.md) |
 | Frames | Todos (UAVDT anota cada frame, 30 fps) | D19 |
 | Cajas del GT | Todas las de vehículo (car, truck y bus fusionadas). Solo se descartan predicciones dentro de las regiones ignoradas (≥ 50 % del área); sin filtrar por oclusión ni por fuera de vista | D7, D8, D19 |
-| Detector | **Un solo YOLOv8 entrenado en VisDrone**, sin reentrenar. Detecciones generadas una vez, en el laboratorio, con umbral 0.05 | D20, [ADR 0002](adr/0002-detector-visdrone-sin-reentrenar.md) |
+| Detector | **Un solo YOLOv8x (`yolo8x_best.pt`)**, entrenado en un subconjunto curado de VisDrone (~1700 imágenes, solo vehículos), sin reentrenar. Detecciones generadas una vez, en el laboratorio, con umbral 0.05 | D20, [ADR 0002](adr/0002-detector-visdrone-sin-reentrenar.md) |
 | Umbrales del detector | `conf_high` en el punto de mejor F1 del detector y `conf_low` donde su precisión cae al ~50 %, medidos en ajuste; iguales para los 4 trackers | D21 |
 | Trackers | Defaults (D4, D16); solo la cámara de UCMC se elige, en ajuste (D17) | D22 |
 | Ranking | Una entrada por tracker: **propio_kf, ByteTrack, BoT-SORT y `ucmc_grupo_train`** | D23 |
@@ -114,7 +114,7 @@ Prueba de punta a punta aquí con el GT y 3 secuencias (2 de ajuste y 1 de test)
 
 | Día | Aquí (Claude) | Laboratorio (tú) | Sale |
 |---|---|---|---|
-| 1 | C1–C5, C9 y C11; prueba de punta a punta con la muestra | Descargar UAVDT al laboratorio; crear el entorno conda; elegir el tamaño de YOLOv8 | PR del código |
+| 1 | C1–C5, C9 y C11; prueba de punta a punta con la muestra | Descargar UAVDT al laboratorio; crear el entorno conda | PR del código |
 | 2 | C6–C8 y C10 | `git clone`, `pruebas_benchmark.py` → `TODO OK`; `detectar` (50 secuencias), `ego`, `det-eval` y `barrer` sobre ajuste | CSV de ajuste |
 | 3 | Análisis de ajuste → **congelado 1** en `DECISIONS.md` | `moving` sobre test; empezar la revisión (~6–8 h, días 3–4) | `DECISIONS.md` congelado |
 | 4 | Calibrar los umbrales de `moving` con tu revisión → **congelado 2** | Terminar la revisión; correr `correr` y `evaluar` sobre test **una vez** | `eval/` de test |
@@ -140,12 +140,12 @@ Prueba de punta a punta aquí con el GT y 3 secuencias (2 de ajuste y 1 de test)
 
 ## 9. Después de la v1
 
-- **v2, detector × tracker:** YOLO11 y RT-DETR del laboratorio, con las mismas piezas (D20).
+- **v2, detector × tracker:** `yolo11x_best.pt` y RT-DETR del laboratorio, con las mismas piezas (D20).
 - **Segunda fuente de GT:** VisDrone-MOT, y DynUAV si llega el acceso.
 - **Más trackers:** OC-SORT o BoostTrack como baselines extra (A6).
 - **Más análisis:** ajuste con el mismo presupuesto para todos (A2) y bootstrap por bloques temporales (A4).
 
 ## 10. Pendiente de ti antes del día 2
 
-- El **tamaño del YOLOv8** de VisDrone (n, s, m, l o x) y su ruta en el laboratorio.
+- La ruta de `yolo8x_best.pt` en el laboratorio (decidido: YOLOv8x; en la Mac, `yolo8n_best.pt` para la prueba).
 - La **descarga de UAVDT** al laboratorio. Aquí descargo el GT y 3 secuencias para la prueba.
