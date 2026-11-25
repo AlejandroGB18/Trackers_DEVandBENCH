@@ -112,7 +112,7 @@ def lista_revision(moving):
     return pd.DataFrame(out, columns=["id", "frame", "motivo"])
 
 
-def cargar_moving(sec, gt=None, df_ego=None, ancho_video=None, fps=None):
+def cargar_moving(sec, gt=None, df_ego=None, ancho_video=None, fps=None, clases=None):
     """El moving revisado si existe (`gt_moving`); si no, la derivación automática (avisando)."""
     if sec.gt_moving:
         m = pd.read_csv(sec.gt_moving)
@@ -120,4 +120,5 @@ def cargar_moving(sec, gt=None, df_ego=None, ancho_video=None, fps=None):
     if df_ego is None:
         return None
     print(f"[gt] {sec.nombre}: sin moving revisado; se usa la derivación AUTOMÁTICA (revisar antes de reportar)")
-    return derivar_moving(gt, df_ego, fps, ancho_video, toma=sec.toma or "cenital")[["frame", "id", "moving"]]
+    return derivar_moving(gt, df_ego, fps, ancho_video, toma=sec.toma or "cenital",
+                          clases=clases)[["frame", "id", "moving"]]

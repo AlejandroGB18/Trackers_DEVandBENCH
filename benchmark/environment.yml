@@ -1,0 +1,13 @@
+# Entorno del benchmark (laboratorio, Linux + GPU). Versiones con las que pasan las pruebas en la Mac de desarrollo.
+#   conda env create -f benchmark/environment.yml
+#   conda activate bench-trackers
+#   (GPU) instalar torch con CUDA según https://pytorch.org antes de `pip install`, si el de pip no la detecta
+#   cd benchmark && python pruebas_benchmark.py      # debe terminar en "TODO OK"
+name: bench-trackers
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - -r requirements.txt

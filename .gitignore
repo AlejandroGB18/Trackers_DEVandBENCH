@@ -17,3 +17,4 @@ __pycache__/
 # Benchmark: cachés de detecciones/ego y salidas de corridas (se regeneran con bench.py)
 benchmark/cache/
 benchmark/runs/
+datos/

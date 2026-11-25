@@ -10,6 +10,9 @@ pruebas_benchmark.py — Comprobaciones del harness (python pruebas_benchmark.py
 6. Derivación de `moving` con una cámara que se desplaza.
 7. De punta a punta con un video sintético (cámara en paneo, autos quietos y en movimiento):
    ego-movimiento, los 4 trackers, evaluación y determinismo.
+8. Núcleo de UCMC = tracker completo; integración barrido → selección D17 → correr → evaluar.
+9. Adaptador de UAVDT (formato real de GT, regiones ignoradas, atributos → grupos y split) y frames desde carpeta.
+10. Detecciones externas (`tipo: archivo`): ida y vuelta del .txt, filtro de rango y caché; rutas portables.
 """
 import sys
 import tempfile
@@ -342,10 +345,122 @@ def prueba_integracion_barrido_y_evaluacion():
                 p.unlink(missing_ok=True)
 
 
+def _uavdt_mini(raiz):
+    """Árbol UAVDT mínimo con el formato real: 2 secuencias, GT de MOT, regiones ignoradas, atributos y frames."""
+    import cv2
+    raiz = Path(raiz)
+    gtd = raiz / "UAV-benchmark-MOTD_v1.0" / "GT"
+    gtd.mkdir(parents=True)
+    # M0001 (ajuste, frontal, altitud baja): 2 autos en 5 frames, 1 región ignorada en el frame 2
+    (gtd / "M0001_gt.txt").write_text("".join(f"{f},{i},{10 * i + f},20,30,15,1,-1,-1\n" for f in range(1, 6) for i in (1, 2)))
+    (gtd / "M0001_gt_ignore.txt").write_text("2,7,500,300,80,40,1,-1,-1\n")
+    # M0002 (test, cenital, altitud media): 1 auto hasta el frame 3 aunque haya 5 imágenes; sin regiones
+    (gtd / "M0002_gt.txt").write_text("".join(f"{f},5,100,100,20,20,1,-1,-1\n" for f in range(1, 4)))
+    (gtd / "M0002_gt_ignore.txt").write_text("")
+    for split, seq, v in (("train", "M0001", "1,0,0,1,0,0,1,0,0,0"), ("test", "M0002", "0,1,0,0,1,0,0,0,1,0")):
+        d = raiz / "M_attr" / split
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f"{seq}_attr.txt").write_text(v + "\n")
+    for seq in ("M0001", "M0002"):
+        d = raiz / "UAV-benchmark-M" / seq
+        d.mkdir(parents=True)
+        for f in range(1, 6):
+            img = np.full((54, 102, 3), f * 40, np.uint8)
+            cv2.imwrite(str(d / f"img{f:06d}.jpg"), img)
+    return raiz
+
+
+def prueba_adaptador_uavdt():
+    """Conversión del GT, grupos de vuelo y split; frames de carpeta = frame k ↔ img00000k.jpg."""
+    from adaptadores.uavdt import MARCA, entradas_manifiesto, escribir_secuencias, preparar
+    from comunes import info_video, leer_frames, leer_gt
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz = _uavdt_mini(Path(tmp) / "UAVDT")
+        attr, resumen = preparar(raiz, verbose=False)
+        a = attr.set_index("secuencia")
+        assert a.loc["M0001", "split"] == "ajuste" and a.loc["M0001", "grupo"] == "oblicua_baja"
+        assert a.loc["M0002", "split"] == "test" and a.loc["M0002", "grupo"] == "cenital"
+        assert a.loc["M0002", "luz"] == "noche" and a.loc["M0001", "vista"] == "frontal"
+        g = leer_gt(raiz / "gt_benchmark" / "M0001" / "gt.txt")
+        assert (g.clase == 1).sum() == 10 and set(g[g.clase == 1].id) == {1, 2}
+        reg = g[g.clase == 0]
+        assert len(reg) == 1 and reg.frame.iloc[0] == 2 and reg.id.iloc[0] < 0   # id negativo: no choca con autos
+        r = {x["secuencia"]: x for x in resumen}
+        assert r["M0002"]["ultimo_frame_gt"] == 3 and r["M0002"]["imagenes"] == 5
+        ent = {e["nombre"]: e for e in entradas_manifiesto(attr, resumen, "det")}
+        assert ent["M0002"]["rango"] == [1, 3] and ent["M0002"]["toma"] == "cenital"
+        assert ent["M0001"]["ucmc"]["hfov_deg"] == 74 and ent["M0001"]["gt_frames"]["fin"] == 5
+        y = Path(tmp) / "m.yaml"
+        y.write_text("# cabecera que se conserva\nx: 1\n" + MARCA + "\nsecuencias: []\n")
+        escribir_secuencias(y, list(ent.values()))
+        import yaml
+        d = yaml.safe_load(y.read_text())
+        assert y.read_text().startswith("# cabecera") and d["x"] == 1 and len(d["secuencias"]) == 2
+        carpeta = raiz / "UAV-benchmark-M" / "M0001"
+        inf = info_video(carpeta)
+        assert inf["n_frames"] == 5 and (inf["ancho"], inf["alto"]) == (102, 54) and inf["fps"] == 30.0
+        fr = list(leer_frames(carpeta, 2, 4))
+        assert [f for f, _ in fr] == [2, 3, 4] and abs(int(fr[0][1].mean()) - 80) <= 2   # frame 2 = img000002
+    print("  adaptador UAVDT: GT oficial → clase 1, regiones → clase 0 con id < 0, grupos/split/luz desde M_attr, "
+          "rango hasta el último frame con GT; carpeta de frames base 1")
+
+
+def prueba_detecciones_y_rutas():
+    """`tipo: archivo`: el .txt de detectar_lab.py entra a la caché igual que una detección propia; rutas portables."""
+    import json
+    import os
+    from comunes import Secuencia, cargar_manifiesto
+    from detecciones import (CacheDetecciones, cachear, escribir_detecciones_txt, leer_detecciones_txt,
+                             ruta_cache)
+    frame = np.array([1, 1, 2, 4], np.int32)
+    dets = np.array([[10, 20, 50, 40, .9, 0], [60, 60, 80, 90, .3, 3], [11, 21, 51, 41, .8, 0],
+                     [0, 0, 5, 5, .06, 4]], np.float32)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        escribir_detecciones_txt(tmp / "det" / "_prueba_det.txt", frame, dets)
+        f2, d2 = leer_detecciones_txt(tmp / "det" / "_prueba_det.txt")
+        assert (f2 == frame).all() and np.allclose(d2, dets, atol=0.01)
+        (tmp / "det" / "firma.json").write_text(json.dumps(dict(
+            pesos_sha256="x", imgsz=640, conf=0.05, nombres_clases={"0": "car", "3": "bus", "4": "freight car"})))
+        _uavdt_mini(tmp / "UAVDT")
+        sec = Secuencia(nombre="_prueba_det", video=str(tmp / "UAVDT" / "UAV-benchmark-M" / "M0001"),
+                        detector="ext", rango=(1, 3))
+        perfil = dict(tipo="archivo", carpeta=str(tmp / "det"))
+        try:
+            c = CacheDetecciones(cachear(sec, "ext", perfil))
+            assert len(c.por_frame(1)) == 2 and len(c.por_frame(1, conf_min=0.5)) == 1
+            assert len(c.por_frame(4)) == 0                      # fuera de rango (1–3): no entra
+            assert c.nombres_clases[4] == "freight car"
+            c2 = CacheDetecciones(cachear(sec, "ext", dict(perfil, clases=["car"])))
+            assert len(c2.por_frame(1)) == 1                     # filtro por nombre de clase
+        finally:
+            for p in (ruta_cache(sec, "ext"), ruta_cache(sec, "ext").with_suffix(".json")):
+                p.unlink(missing_ok=True)
+        # rutas: relativas a datos_raiz; BENCH_DATOS la sobrescribe
+        y = tmp / "conf" / "m.yaml"
+        y.parent.mkdir()
+        y.write_text("datos_raiz: ../datosA\ndetectores: {d: {tipo: archivo, carpeta: detecciones/d}}\n"
+                     "secuencias: [{nombre: s, video: UAVDT/x, detector: d, gt: UAVDT/g.txt}]\n")
+        m = cargar_manifiesto(y)
+        assert m.secuencias[0].video == str((tmp / "datosA" / "UAVDT" / "x").resolve())
+        assert m.detectores["d"]["carpeta"] == str((tmp / "datosA" / "detecciones" / "d").resolve())
+        previo = os.environ.get("BENCH_DATOS")
+        os.environ["BENCH_DATOS"] = str(tmp / "lab")
+        try:
+            assert cargar_manifiesto(y).secuencias[0].gt == str((tmp / "lab" / "UAVDT" / "g.txt").resolve())
+        finally:
+            if previo is None:
+                os.environ.pop("BENCH_DATOS")
+            else:
+                os.environ["BENCH_DATOS"] = previo
+    print("  detecciones externas: .txt ida y vuelta, rango y filtro de clase en la caché; "
+          "rutas relativas a datos_raiz y BENCH_DATOS")
+
+
 if __name__ == "__main__":
     for p in (prueba_sanidad, prueba_cambio_id, prueba_replicas, prueba_motmetrics, prueba_ignoradas_y_protocolos,
               prueba_moving_con_paneo, prueba_punta_a_punta, prueba_nucleo_equivale,
-              prueba_integracion_barrido_y_evaluacion):
+              prueba_integracion_barrido_y_evaluacion, prueba_adaptador_uavdt, prueba_detecciones_y_rutas):
         print(p.__name__)
         p()
     print("TODO OK")

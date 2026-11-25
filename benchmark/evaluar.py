@@ -189,7 +189,14 @@ def combinar(res_por_seq):
 
 
 def resumen(res):
+    """Métricas principales en %. Sin vehículos del GT en el protocolo (p. ej. `estaticos` en una secuencia sin autos
+    quietos) las métricas relativas no están definidas: se devuelven NaN, no −∞ ni 0."""
     h, c, i, n = res["HOTA"], res["CLEAR"], res["Identity"], res["Count"]
+    if int(n["GT_Dets"]) == 0:
+        nan = {k: np.nan for k in ("HOTA", "DetA", "AssA", "LocA", "DetRe", "DetPr", "AssRe", "AssPr", "HOTA(0.5)",
+                                   "MOTA", "MOTP", "IDF1", "IDP", "IDR")}
+        return {**nan, "IDSW": int(c["IDSW"]), "Frag": int(c["Frag"]), "MT": 0, "PT": 0, "ML": 0,
+                "FP": int(c["CLR_FP"]), "FN": 0, "IDs": int(n["IDs"]), "GT_IDs": 0, "GT_Dets": 0}
     return {"HOTA": 100 * h["HOTA"].mean(), "DetA": 100 * h["DetA"].mean(), "AssA": 100 * h["AssA"].mean(),
             "LocA": 100 * h["LocA"].mean(), "DetRe": 100 * h["DetRe"].mean(), "DetPr": 100 * h["DetPr"].mean(),
             "AssRe": 100 * h["AssRe"].mean(), "AssPr": 100 * h["AssPr"].mean(),
@@ -441,6 +448,7 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     uso_gt = {t["etiqueta"]: t.get("uso_gt", "no") for t in meta["trackers"]}   # no | train | test (oráculo)
     # fuera del ranking: oráculos (uso_gt=test) y selecciones no validadas en ajuste (singt sin D17.6)
     en_ranking = {t["etiqueta"]: t.get("en_ranking", t.get("uso_gt", "no") != "test") for t in meta["trackers"]}
+    version = {t["etiqueta"]: t.get("version") for t in meta["trackers"]}
     cfg = manifiesto.evaluacion
     umbr = tuple(cfg.get("bins_ego_px", (0.5, 3.0)))
     secs = [s for s in manifiesto.secuencias if s.nombre in meta["secuencias"] and (secuencias is None or s.nombre in secuencias)]
@@ -455,7 +463,8 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
         df_ego = leer_ego(ruta_ego(sec)) if ruta_ego(sec).exists() else None
         gt = leer_gt(sec.gt) if sec.gt else None
         frames = frames_anotados(sec, gt) if gt is not None else None
-        moving = cargar_moving(sec, gt, df_ego, info_video(sec.video)["ancho"], fps) if gt is not None else None
+        moving = (cargar_moving(sec, gt, df_ego, info_video(sec.video)["ancho"], fps, cfg.get("clases_evaluadas"))
+                  if gt is not None else None)
         bins = bins_ego(df_ego, fps, umbr) if df_ego is not None else None
         for e in etiquetas:
             pred = leer_mot(dir_run / e / f"{sec.nombre}.txt")
@@ -499,8 +508,10 @@ def evaluar_run(manifiesto, dir_run, secuencias=None, protocolos=None):
     for (p, e), d in res_comb.items():
         d = {k: v for k, v in d.items() if k in test}
         if d:
-            nombre = ("COMBINADO_COTA" if uso_gt[e] == "test" else
-                      "COMBINADO" if en_ranking[e] else "COMBINADO_NO_VALIDADO")
+            nombre = ("COMBINADO_COTA" if uso_gt[e] == "test" else           # oráculo: usa el GT de test
+                      "COMBINADO" if en_ranking[e] else
+                      "COMBINADO_NO_VALIDADO" if version[e] == "singt" else   # D17.6 no se cumplió
+                      "COMBINADO_REFERENCIA")                                 # fuera del ranking a propósito (D23)
             tablas.append(dict(protocolo=p, tracker=e, secuencia=nombre, split="test", uso_gt=uso_gt[e],
                                en_ranking=en_ranking[e], **resumen(combinar(d))))
     for e, lista in bins_comb.items():
