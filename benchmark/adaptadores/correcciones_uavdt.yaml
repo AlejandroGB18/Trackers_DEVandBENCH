@@ -24,6 +24,9 @@ M1101:
 M0606:
   tracks_a_ignorada: [68, 69, 71, 112]
   motivo: Cajas de vehículo sobre fondo (estacionamiento, árboles, edificios); revisión humana = D.
+M0802:
+  tracks_a_ignorada: [23]
+  motivo: Caja de ~5.7× la mediana de la secuencia, 1101 frames; revisión humana = D, se decide ignorar (2026-11-26).
 M1007:
   tracks_a_ignorada: [36]
   motivo: Caja de ~200×280 px sobre fondo; revisión humana = D.
