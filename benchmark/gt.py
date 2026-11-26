@@ -30,7 +30,8 @@ def frames_anotados(sec, gt=None):
     y el último del GT (paso 1). Ojo: los frames anotados SIN objetos solo existen si se declaran aquí."""
     if sec.gt_frames:
         g = sec.gt_frames
-        return np.arange(int(g["inicio"]), int(g["fin"]) + 1, int(g.get("paso", 1)))
+        f = np.arange(int(g["inicio"]), int(g["fin"]) + 1, int(g.get("paso", 1)))
+        return f[~np.isin(f, g.get("excluir", []))]           # D33: frames con GT roto, fuera de la evaluación
     gt = gt if gt is not None else leer_gt(sec.gt)
     if len(gt) == 0:
         return np.zeros(0, int)

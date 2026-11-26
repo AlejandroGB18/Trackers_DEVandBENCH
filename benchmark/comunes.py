@@ -54,7 +54,7 @@ class Secuencia:
     ucmc: dict = field(default_factory=dict)   # kwargs de CamaraUCMC (hfov_deg, pitch_respaldo_deg, altura_m)
     gt: str = None                         # ruta a gt.txt (MOT, frames del video, base 1); None = sin GT
     gt_moving: str = None                  # ruta a moving.csv (frame,id,moving) revisado; None = derivarlo
-    gt_frames: dict = None                 # {inicio, fin, paso}: frames ANOTADOS (los únicos que se evalúan)
+    gt_frames: dict = None                 # {inicio, fin, paso, excluir}: frames ANOTADOS (los únicos que se evalúan)
     toma: str = None                       # "cenital" | "oblicua" (punto de apoyo para `moving` y para UCMC)
     grupo: str = None                      # grupo de vuelo para el barrido de UCMC (p. ej. "alta_oblicua"); None = toma
     camara_fuente: str = None              # de dónde sale la cámara de `ucmc`: telemetria | ficha | banda | a_mano

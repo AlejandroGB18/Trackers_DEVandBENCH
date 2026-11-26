@@ -21,6 +21,7 @@ Decisiones:
   secuencias. El toolkit oficial solo quita predicciones contenidas por completo y solo en 18 secuencias de test;
   es una diferencia de protocolo documentada, no un error.
 - Frames evaluados: 1 … último frame con GT (M0207 tiene 885 imágenes pero GT hasta el 571, como recorta el toolkit).
+- Correcciones al GT oficial (D33): `correcciones_uavdt.yaml` (fin, frames excluidos, tracks → región ignorada).
 
 Uso:
     python -m adaptadores.uavdt                       # usa BENCH_DATOS o ../datos
@@ -47,6 +48,22 @@ GRUPOS = {
     "oblicua_alta": dict(pitch=list(range(25, 71, 5)), altura=[30, 45, 60, 80, 100], punto="base"),
 }
 HFOV = 74            # D17.1 / A7: ficha aproximada; UAVDT no publica la cámara exacta
+CORRECCIONES = Path(__file__).with_name("correcciones_uavdt.yaml")
+OFFSET_IGNORADA = 100000      # tracks pasados a región ignorada: id = -(OFFSET + id), sin chocar con las regiones
+
+
+def cargar_correcciones(ruta=CORRECCIONES):
+    """{secuencia: {fin, excluir_frames, tracks_a_ignorada, motivo}} (D33). {} si no hay archivo."""
+    import yaml
+    ruta = Path(ruta) if ruta else None
+    if not ruta or not ruta.exists():
+        return {}
+    d = yaml.safe_load(ruta.read_text(encoding="utf-8")) or {}
+    validas = {"fin", "excluir_frames", "tracks_a_ignorada", "motivo"}
+    for s, c in d.items():
+        if set(c) - validas:
+            raise ValueError(f"{ruta}: {s} tiene claves desconocidas {set(c) - validas}")
+    return d
 
 
 def leer_atributos(raiz):
@@ -87,8 +104,8 @@ def _leer(ruta, ncol=9):
     return pd.read_csv(ruta, header=None).iloc[:, :ncol]
 
 
-def convertir_gt(raiz, secuencia, destino=None):
-    """Escribe gt_benchmark/<seq>/gt.txt. Devuelve (ruta, resumen)."""
+def convertir_gt(raiz, secuencia, destino=None, correccion=None):
+    """Escribe gt_benchmark/<seq>/gt.txt. Devuelve (ruta, resumen). `correccion`: entrada de D33 o None."""
     raiz = Path(raiz)
     g = _leer(raiz / DIR_GT / f"{secuencia}_gt.txt")
     ig = _leer(raiz / DIR_GT / f"{secuencia}_gt_ignore.txt")
@@ -98,6 +115,17 @@ def convertir_gt(raiz, secuencia, destino=None):
                             considerar=g[6].astype(int), clase=1, visibilidad=-1))
     reg = pd.DataFrame(dict(frame=ig[0].astype(int), id=-(ig[1].astype(int) + 1), x=ig[2], y=ig[3], w=ig[4], h=ig[5],
                             considerar=1, clase=0, visibilidad=-1)) if len(ig) else veh.iloc[:0]
+    c = correccion or {}
+    excluir = sorted(int(f) for f in c.get("excluir_frames", []))
+    a_ign = set(int(i) for i in c.get("tracks_a_ignorada", []))
+    if a_ign - set(veh.id):
+        raise ValueError(f"{secuencia}: tracks_a_ignorada inexistentes {sorted(a_ign - set(veh.id))}")
+    if a_ign:                                          # D33: caja de vehículo sobre fondo → región ignorada
+        sel = veh.id.isin(a_ign)
+        nuevas = veh[sel].assign(id=-(OFFSET_IGNORADA + veh.id[sel]), considerar=1, clase=0)
+        veh, reg = veh[~sel], pd.concat([reg, nuevas])
+    fin = int(c["fin"]) if "fin" in c else int(veh.frame.max())
+    veh, reg = veh[(veh.frame <= fin) & ~veh.frame.isin(excluir)], reg[(reg.frame <= fin) & ~reg.frame.isin(excluir)]
     out = pd.concat([veh, reg]).sort_values(["frame", "clase", "id"], ascending=[True, False, True])
     destino = Path(destino) if destino else raiz / DIR_SALIDA / secuencia / "gt.txt"
     destino.parent.mkdir(parents=True, exist_ok=True)
@@ -105,7 +133,7 @@ def convertir_gt(raiz, secuencia, destino=None):
     n_img = len([f for f in (raiz / DIR_FRAMES / secuencia).iterdir() if f.suffix == ".jpg"]) \
         if (raiz / DIR_FRAMES / secuencia).exists() else None
     return destino, dict(secuencia=secuencia, cajas=len(veh), tracks=veh.id.nunique(), regiones=len(reg),
-                         ultimo_frame_gt=int(veh.frame.max()), imagenes=n_img)
+                         ultimo_frame_gt=fin, imagenes=n_img, excluir_frames=excluir)
 
 
 def entradas_manifiesto(attr, resumen, detector, prefijo="UAVDT"):
@@ -120,7 +148,8 @@ def entradas_manifiesto(attr, resumen, detector, prefijo="UAVDT"):
             toma="cenital" if a.grupo == "cenital" else "oblicua", grupo=a.grupo,
             ucmc=dict(hfov_deg=HFOV, pitch_respaldo_deg=0 if a.grupo == "cenital" else 45),
             camara_fuente="ficha", gt=f"{prefijo}/{DIR_SALIDA}/{a.secuencia}/gt.txt",
-            gt_frames=dict(inicio=1, fin=s["ultimo_frame_gt"], paso=1),
+            gt_frames=dict(inicio=1, fin=s["ultimo_frame_gt"], paso=1,
+                           **({"excluir": s["excluir_frames"]} if s.get("excluir_frames") else {})),
             atributos=dict(luz=a.luz, altitud=a.altitud, vista=a.vista, largo=int(a.largo))))
     return out
 
@@ -129,14 +158,19 @@ def barrido_grupos():
     return {g: dict(v, hfov=HFOV) for g, v in GRUPOS.items()}
 
 
-def preparar(raiz, verbose=True):
-    """Convierte el GT de las 50 secuencias. Devuelve (atributos, resumen)."""
+def preparar(raiz, verbose=True, correcciones=CORRECCIONES):
+    """Convierte el GT de las 50 secuencias. Devuelve (atributos, resumen). `correcciones`: ruta, dict o None (D33)."""
     attr = leer_atributos(raiz)
-    resumen = [convertir_gt(raiz, s)[1] for s in attr.secuencia]
+    corr = correcciones if isinstance(correcciones, dict) else cargar_correcciones(correcciones)
+    if set(corr) - set(attr.secuencia):
+        raise ValueError(f"correcciones para secuencias que no existen: {sorted(set(corr) - set(attr.secuencia))}")
+    resumen = [convertir_gt(raiz, s, correccion=corr.get(s))[1] for s in attr.secuencia]
     if verbose:
         r = pd.DataFrame(resumen).merge(attr[["secuencia", "split", "grupo", "luz"]], on="secuencia")
         print(r.groupby(["split", "grupo"]).agg(secuencias=("secuencia", "size"), cajas=("cajas", "sum"),
                                                  tracks=("tracks", "sum")).to_string())
+        for s, c in corr.items():
+            print(f"[uavdt] corrección D33 {s}: " + ", ".join(f"{k}={v}" for k, v in c.items() if k != "motivo"))
         print(f"[uavdt] GT convertido → {Path(raiz) / DIR_SALIDA}")
     return attr, resumen
 
