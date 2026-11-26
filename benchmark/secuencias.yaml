@@ -38,8 +38,7 @@ evaluacion:
   umbral_area_ignorada: 0.5
   bins_ego_px: [0.5, 3.0]                # solo si no hay tramos_ego (legado VIGIA)
   tramos_ego: {cortes_px: [0.328, 1.241], etiquetas: [bajo, medio, alto]}   # CONGELADO 1 (D26, D32): P33/P67 en ajuste, px/frame a 960
-  # CONGELADO 2 (D27): umbrales de moving calibrados con la revisión (calibracion.csv); por defecto los de D12
-  # moving: {rel_mov: 0.30, rel_est: 0.10}
+  moving: {rel_mov: 0.30, rel_est: 0.10}  # CONGELADO 2 (D34): se quedan los de D12; revision/decisiones/calibracion.csv
   protocolos: [todos, moviles, estaticos, e2e_moviles]
   bootstrap_n: 2000
 
@@ -510,7 +509,7 @@ secuencias:
 - nombre: M0601
   video: UAVDT/UAV-benchmark-M/M0601
   detector: yolo8x
-  rango: [1, 372]
+  rango: [1, 319]
   fps: 30.0
   split: test
   toma: oblicua
@@ -518,7 +517,7 @@ secuencias:
   ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
   camara_fuente: ficha
   gt: UAVDT/gt_benchmark/M0601/gt.txt
-  gt_frames: {inicio: 1, fin: 372, paso: 1}
+  gt_frames: {inicio: 1, fin: 319, paso: 1}
   atributos: {luz: dia, altitud: alta, vista: frontal+lateral, largo: 0}
 - nombre: M0602
   video: UAVDT/UAV-benchmark-M/M0602
@@ -648,7 +647,11 @@ secuencias:
   ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
   camara_fuente: ficha
   gt: UAVDT/gt_benchmark/M1101/gt.txt
-  gt_frames: {inicio: 1, fin: 864, paso: 1}
+  gt_frames:
+    inicio: 1
+    fin: 864
+    paso: 1
+    excluir: [322]
   atributos: {luz: noche, altitud: baja, vista: frontal+lateral, largo: 0}
 - nombre: M1301
   video: UAVDT/UAV-benchmark-M/M1301

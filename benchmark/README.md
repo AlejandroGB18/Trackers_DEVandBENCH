@@ -51,8 +51,9 @@ python bench.py ego      --split test
 python bench.py moving   --split test                          # propuesta automática por frame
 python bench.py revisar  --split test                          # gt_benchmark/<seq>/revision/<seq>.html
 #   (abrir cada .html, decidir con M/Q/A/D, exportar decisiones_<seq>.csv a una carpeta)
-python bench.py aplicar-revision --split test --decisiones CARPETA   # moving.csv + acuerdo.csv + calibracion.csv
+python bench.py aplicar-revision --split test --decisiones revision/decisiones   # moving.csv + acuerdo + calibración (las decisiones v1 están versionadas)
 # → CONGELADO 2: umbrales de moving (evaluacion.moving); si cambian, repetir `moving` y `aplicar-revision`
+#   Si cambia adaptadores/correcciones_uavdt.yaml (D33): repetir `python -m adaptadores.uavdt`, `moving` y `aplicar-revision`
 python bench.py barrer   --run v1_ajuste                       # todas, con los umbrales congelados: cámara definitiva (D32.4) + cota
 python bench.py correr   --split test --run v1                 # una sola vez
 python bench.py evaluar  --split test --run v1

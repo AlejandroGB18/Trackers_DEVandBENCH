@@ -384,7 +384,7 @@ def prueba_adaptador_uavdt():
     from comunes import info_video, leer_frames, leer_gt
     with tempfile.TemporaryDirectory() as tmp:
         raiz = _uavdt_mini(Path(tmp) / "UAVDT")
-        attr, resumen = preparar(raiz, verbose=False)
+        attr, resumen = preparar(raiz, verbose=False, correcciones=None)
         a = attr.set_index("secuencia")
         assert a.loc["M0001", "split"] == "ajuste" and a.loc["M0001", "grupo"] == "oblicua_baja"
         assert a.loc["M0002", "split"] == "test" and a.loc["M0002", "grupo"] == "cenital"
@@ -409,8 +409,30 @@ def prueba_adaptador_uavdt():
         assert inf["n_frames"] == 5 and (inf["ancho"], inf["alto"]) == (102, 54) and inf["fps"] == 30.0
         fr = list(leer_frames(carpeta, 2, 4))
         assert [f for f, _ in fr] == [2, 3, 4] and abs(int(fr[0][1].mean()) - 80) <= 2   # frame 2 = img000002
+        # D33: correcciones al GT oficial (fin, frames excluidos, tracks → región ignorada)
+        from adaptadores.uavdt import OFFSET_IGNORADA, cargar_correcciones
+        from comunes import Secuencia
+        from gt import frames_anotados
+        corr = {"M0001": {"excluir_frames": [3], "tracks_a_ignorada": [2]}, "M0002": {"fin": 2}}
+        attr, resumen = preparar(raiz, verbose=False, correcciones=corr)
+        g = leer_gt(raiz / "gt_benchmark" / "M0001" / "gt.txt")
+        assert set(g[g.clase == 1].id) == {1} and set(g[g.clase == 1].frame) == {1, 2, 4, 5}
+        ign = g[g.id == -(OFFSET_IGNORADA + 2)]
+        assert len(ign) == 4 and (ign.clase == 0).all() and 3 not in set(g.frame)
+        ent = {e["nombre"]: e for e in entradas_manifiesto(attr, resumen, "det")}
+        assert ent["M0001"]["gt_frames"]["excluir"] == [3] and "excluir" not in ent["M0002"]["gt_frames"]
+        assert ent["M0002"]["rango"] == [1, 2] and leer_gt(raiz / "gt_benchmark" / "M0002" / "gt.txt").frame.max() == 2
+        s = Secuencia(nombre="M0001", video="x", detector="d", gt_frames=ent["M0001"]["gt_frames"])
+        assert list(frames_anotados(s)) == [1, 2, 4, 5]
+        try:
+            preparar(raiz, verbose=False, correcciones={"M0001": {"tracks_a_ignorada": [99]}})
+            raise AssertionError("un track inexistente debía fallar")
+        except ValueError:
+            pass
+        real = cargar_correcciones()                    # el archivo versionado se lee y solo usa claves válidas
+        assert real["M0601"]["fin"] == 319 and real["M1101"]["excluir_frames"] == [322]
     print("  adaptador UAVDT: GT oficial → clase 1, regiones → clase 0 con id < 0, grupos/split/luz desde M_attr, "
-          "rango hasta el último frame con GT; carpeta de frames base 1")
+          "rango hasta el último frame con GT; carpeta de frames base 1; correcciones D33")
 
 
 def prueba_detecciones_y_rutas():
@@ -449,16 +471,16 @@ def prueba_detecciones_y_rutas():
         y.parent.mkdir()
         y.write_text("datos_raiz: ../datosA\ndetectores: {d: {tipo: archivo, carpeta: detecciones/d}}\n"
                      "secuencias: [{nombre: s, video: UAVDT/x, detector: d, gt: UAVDT/g.txt}]\n")
-        m = cargar_manifiesto(y)
-        assert m.secuencias[0].video == str((tmp / "datosA" / "UAVDT" / "x").resolve())
-        assert m.detectores["d"]["carpeta"] == str((tmp / "datosA" / "detecciones" / "d").resolve())
-        previo = os.environ.get("BENCH_DATOS")
-        os.environ["BENCH_DATOS"] = str(tmp / "lab")
+        previo = os.environ.pop("BENCH_DATOS", None)     # la prueba no debe depender del BENCH_DATOS de quien la corre
         try:
+            m = cargar_manifiesto(y)
+            assert m.secuencias[0].video == str((tmp / "datosA" / "UAVDT" / "x").resolve())
+            assert m.detectores["d"]["carpeta"] == str((tmp / "datosA" / "detecciones" / "d").resolve())
+            os.environ["BENCH_DATOS"] = str(tmp / "lab")
             assert cargar_manifiesto(y).secuencias[0].gt == str((tmp / "lab" / "UAVDT" / "g.txt").resolve())
         finally:
             if previo is None:
-                os.environ.pop("BENCH_DATOS")
+                os.environ.pop("BENCH_DATOS", None)
             else:
                 os.environ["BENCH_DATOS"] = previo
     print("  detecciones externas: .txt ida y vuelta, rango y filtro de clase en la caché; "

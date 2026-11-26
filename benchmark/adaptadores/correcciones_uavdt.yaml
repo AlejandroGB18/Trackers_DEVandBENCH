@@ -1,0 +1,35 @@
+# Correcciones al GT oficial de UAVDT-MOT (D33). Las aplica adaptadores/uavdt.py al convertir el GT.
+# Se encontraron en la revisión humana de `moving` (2026-11-26) y se confirmaron contra los archivos oficiales
+# (Mxxxx_gt.txt) y las imágenes. Se decidieron mirando solo GT e imágenes, ANTES de correr cualquier tracker en test.
+#
+#   fin: N                 se evalúa (y se corre) solo hasta el frame N
+#   excluir_frames: [..]   esos frames no se evalúan (los trackers sí los recorren)
+#   tracks_a_ignorada: [..] esos tracks pasan a región ignorada (clase 0): no cuentan como faltantes ni castigan
+#                          predicciones encima (regla D8)
+#
+# Solo test. En ajuste hay ~8 tracks sospechosos por tamaño que no se tocaron (ver D33 en DECISIONS.md).
+
+M0601:
+  fin: 319
+  motivo: >-
+    Frame 322 con 42 cajas (≈30 en los vecinos), casi todas desplazadas sobre bodegas y vías (copiadas de otro
+    frame; el track 15 salta de (851,515) a (629,348)). Del 323 al 372 solo quedan 9 cajas por frame con muchos
+    autos visibles sin anotar. Saltos masivos desde el 320.
+M1101:
+  excluir_frames: [322]
+  tracks_a_ignorada: [7]
+  motivo: >-
+    Frame 322 con 22 cajas (16–18 en los vecinos), varias sobre zonas vacías; tracks 37 y 38 saltan en ese frame.
+    Track 7: caja fija de ~128×112 px sobre fondo; revisión humana = D.
+M0606:
+  tracks_a_ignorada: [68, 69, 71, 112]
+  motivo: Cajas de vehículo sobre fondo (estacionamiento, árboles, edificios); revisión humana = D.
+M0802:
+  tracks_a_ignorada: [23]
+  motivo: Caja de ~5.7× la mediana de la secuencia, 1101 frames; revisión humana = D, se decide ignorar (2026-11-26).
+M1007:
+  tracks_a_ignorada: [36]
+  motivo: Caja de ~200×280 px sobre fondo; revisión humana = D.
+M1401:
+  tracks_a_ignorada: [42, 66]
+  motivo: Cajas sobre fondo (franja lejana de la vía y bloque fijo); revisión humana = D.
