@@ -94,9 +94,9 @@ que aplica `python -m adaptadores.uavdt`.
 |---|---|---|
 | Frame con cajas desplazadas (copiadas de otro frame) | M0601 (320–322), M1101 (322) | M0601: se evalúa y se corre solo 1–319. M1101: el frame 322 sale de la evaluación (`gt_frames.excluir`) |
 | Anotación incompleta al final | M0601 (323–372: 9 cajas por frame con muchos autos visibles) | Cubierto por el fin en 319 |
-| Caja de vehículo sobre fondo | M0606 (68, 69, 71, 112), M1007 (36), M1101 (7), M1401 (42, 66) | Pasan a región ignorada (clase 0, regla D8) |
+| Caja de vehículo sobre fondo | M0606 (68, 69, 71, 112), M0802 (23), M1007 (36), M1101 (7), M1401 (42, 66) | Pasan a región ignorada (clase 0, regla D8) |
 
-Efecto: test pasa de 1227 a 1218 tracks evaluables. Ajuste no se tocó: el patrón de frames rotos no aparece ahí
+Efecto: test pasa de 1227 a 1217 tracks evaluables. Ajuste no se tocó: el patrón de frames rotos no aparece ahí
 (búsqueda en las 50 secuencias), y ~8 tracks de ajuste con caja > 4× la mediana quedan sin revisar; solo sirvieron
 para umbrales (D32.1) y cámara (D32.4), donde su efecto es despreciable. Va a limitaciones, junto con autos
 estacionados sin anotar.
@@ -109,9 +109,9 @@ automática + decisión humana por track (`bench.py aplicar-revision`), con el G
 
 | # | Qué | Valor congelado | Evidencia |
 |---|---|---|---|
-| D34.1 | Umbrales de `moving` (D12, D27) | **Se quedan** `rel_mov` 0.30 y `rel_est` 0.10 | Acuerdo automático-humano en los seguros de muestra: **76/76 (100 %)**. En la rejilla (`calibracion.csv`, 613 tracks casi todos dudosos) el mejor par es 0.25/0.05 con 0.798 contra 0.742 de los actuales, pero esos tracks ya llevan la etiqueta humana, así que cambiar los umbrales solo movería los seguros no revisados (donde el acuerdo es 100 %) y subiría los frames sin decidir de 36 % a 41 % |
-| D34.2 | Decisión D ("No se puede") | El track queda en −1 (fuera de móviles y quietos). Los 8 de fondo además van a región ignorada (D33); M0203 23 y M0802 23 solo quedan en −1 | Semántica de la página de revisión |
-| D34.3 | Resultado | 1218 tracks: 1030 móviles, 186 quietos, 2 sin decidir (mayoría por frames); frames: 82.1 % móvil, 16.2 % quieto, 1.8 % −1 | `moving.csv` de test |
+| D34.1 | Umbrales de `moving` (D12, D27) | **Se quedan** `rel_mov` 0.30 y `rel_est` 0.10 | Acuerdo automático-humano en los seguros de muestra: **76/76 (100 %)**. En la rejilla (`calibracion.csv`, 614 tracks casi todos dudosos) el mejor par es 0.25/0.05 con 0.796 contra 0.741 de los actuales, pero esos tracks ya llevan la etiqueta humana, así que cambiar los umbrales solo movería los seguros no revisados (donde el acuerdo es 100 %) y subiría los frames sin decidir de 36 % a 41 % |
+| D34.2 | Decisión D ("No se puede") | El track queda en −1 (fuera de móviles y quietos). Los 9 de fondo además van a región ignorada (D33). Releídos por la persona: M0203 23 pasa a Q y M0802 23 a región ignorada, así que no queda ningún D sin resolver | Semántica de la página de revisión |
+| D34.3 | Resultado | 1217 tracks: 1030 móviles y 187 quietos (mayoría por frames); frames: 82.3 % móvil, 16.2 % quieto, 1.4 % −1 | `moving.csv` de test |
 
 Nota de proceso: la guía oral describió mal las teclas (A = "Propuesta OK", D = "No se puede"); la página mostraba los
 nombres correctos y las decisiones se tomaron con ellos.
