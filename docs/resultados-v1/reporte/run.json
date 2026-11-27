@@ -1,0 +1,1319 @@
+{
+  "run": "v1",
+  "semilla": 0,
+  "trackers": [
+    {
+      "nombre": "propio_kf",
+      "etiqueta": "propio_kf",
+      "config": {},
+      "camara": {},
+      "uso_gt": "no",
+      "en_ranking": true
+    },
+    {
+      "nombre": "bytetrack",
+      "etiqueta": "bytetrack",
+      "config": {},
+      "camara": {},
+      "uso_gt": "no",
+      "en_ranking": true
+    },
+    {
+      "nombre": "botsort",
+      "etiqueta": "botsort",
+      "config": {},
+      "camara": {},
+      "uso_gt": "no",
+      "en_ranking": true
+    },
+    {
+      "nombre": "ucmc",
+      "etiqueta": "ucmc_grupo_train",
+      "seleccion": "runs/v1_ajuste/barrido/seleccion.csv",
+      "version": "grupo_train",
+      "config": {},
+      "camara": {},
+      "uso_gt": "train",
+      "en_ranking": true
+    },
+    {
+      "nombre": "ucmc",
+      "etiqueta": "ucmc",
+      "en_ranking": false,
+      "config": {},
+      "camara": {},
+      "uso_gt": "no"
+    },
+    {
+      "nombre": "ucmc",
+      "etiqueta": "ucmc_oraculo_seq",
+      "seleccion": "runs/v1_ajuste/barrido/seleccion.csv",
+      "version": "oraculo_seq",
+      "config": {},
+      "camara": {},
+      "uso_gt": "test",
+      "en_ranking": false
+    }
+  ],
+  "config_comun": {
+    "conf_entrada": 0.05,
+    "conf_high": 0.2,
+    "conf_low": 0.05,
+    "max_miss_sec": 1.0,
+    "min_hits": 4
+  },
+  "versiones": {
+    "python": "3.12.16",
+    "numpy": "2.3.5",
+    "opencv": "5.1.0",
+    "pandas": "3.1.1",
+    "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "git": "37d1bcfadbadf370fe120f11b3d68b24bb60488a",
+    "ultralytics": "8.4.192",
+    "trackeval": "1.3.0",
+    "scipy": "1.18.1"
+  },
+  "secuencias": {
+    "M0203": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "5636bf9facf2b61d330fc49b6d64432c4f7b8ea43e19da389a190b6768ace8f4",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1007
+        ]
+      },
+      "rango": [
+        1,
+        1007
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 0
+      },
+      "ms_mediana": {
+        "propio_kf": 15.487442025914788,
+        "bytetrack": 15.282276086509228,
+        "botsort": 18.867715960368514,
+        "ucmc_grupo_train": 15.183368930593133,
+        "ucmc": 15.374690992757678,
+        "ucmc_oraculo_seq": 15.28026582673192
+      },
+      "split": "test"
+    },
+    "M0205": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "0ada3ebd5fa443a9f2b0b878f99c00c406ddbc567c8d15266a9d16cbfe50f76f",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          646
+        ]
+      },
+      "rango": [
+        1,
+        646
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 18.190574017353356,
+        "bytetrack": 17.818814958445728,
+        "botsort": 21.451040403917432,
+        "ucmc_grupo_train": 17.734638531692326,
+        "ucmc": 17.967864987440407,
+        "ucmc_oraculo_seq": 17.76331407018006
+      },
+      "split": "test"
+    },
+    "M0208": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "45ba78f3924f5ca989a6b0c3f0a80aa401f1a19edec8598e94c98cf37fe55376",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          265
+        ]
+      },
+      "rango": [
+        1,
+        265
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 15.645117033272982,
+        "bytetrack": 15.5576360411942,
+        "botsort": 19.08666710369289,
+        "ucmc_grupo_train": 15.59442700818181,
+        "ucmc": 15.642334008589387,
+        "ucmc_oraculo_seq": 15.546212904155254
+      },
+      "split": "test"
+    },
+    "M0209": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "9e9609afbd513f7fd9e895f1557cd5f0803e7dde9e9fe28a022e2d8948cec7ef",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1576
+        ]
+      },
+      "rango": [
+        1,
+        1576
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 19.43262352142483,
+        "bytetrack": 19.138711038976908,
+        "botsort": 22.386600030586123,
+        "ucmc_grupo_train": 19.18608893174678,
+        "ucmc": 19.333127071149647,
+        "ucmc_oraculo_seq": 19.156184047460556
+      },
+      "split": "test"
+    },
+    "M0403": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "3fada612caee388fe75e43a4c10cd26aa21513d0391611d403a65d3f9e14a448",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          514
+        ]
+      },
+      "rango": [
+        1,
+        514
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 30.050067929551005,
+        "bytetrack": 26.203443529084325,
+        "botsort": 29.568050056695938,
+        "ucmc_grupo_train": 26.276331511326134,
+        "ucmc": 27.037030435167253,
+        "ucmc_oraculo_seq": 26.23441757168621
+      },
+      "split": "test"
+    },
+    "M0601": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "9bf93290d3ffdcdade06f089b07d19e562e4220497db0be2cc82f0e944b700c8",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          319
+        ]
+      },
+      "rango": [
+        1,
+        319
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 18.277776893228292,
+        "bytetrack": 18.120351945981383,
+        "botsort": 21.328103030100465,
+        "ucmc_grupo_train": 18.169724149629474,
+        "ucmc": 18.266018945723772,
+        "ucmc_oraculo_seq": 18.17433093674481
+      },
+      "split": "test"
+    },
+    "M0602": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "66171c2a7fc17b1d7e809dbe11ceda561841c3a25fbde3ec6d30ad2a0aa27f14",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          480
+        ]
+      },
+      "rango": [
+        1,
+        480
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 17.915959004312754,
+        "bytetrack": 17.911365488544106,
+        "botsort": 21.109603927470744,
+        "ucmc_grupo_train": 17.851975047960877,
+        "ucmc": 17.88585796020925,
+        "ucmc_oraculo_seq": 17.86485407501459
+      },
+      "split": "test"
+    },
+    "M0606": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "bcd7b7c095c3d7168e851398be07e83fe5ce6171260360ff5bdde509b473b896",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1374
+        ]
+      },
+      "rango": [
+        1,
+        1374
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 26.097694993950427,
+        "bytetrack": 23.67633394896984,
+        "botsort": 27.47622353490442,
+        "ucmc_grupo_train": 23.92334258183837,
+        "ucmc": 24.320955388247967,
+        "ucmc_oraculo_seq": 23.87056511361152
+      },
+      "split": "test"
+    },
+    "M0701": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "45f6f28f6ea7645a6d0710630867f123bd4116a8c797119a662c9b75d2022fef",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1308
+        ]
+      },
+      "rango": [
+        1,
+        1308
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 0
+      },
+      "ms_mediana": {
+        "propio_kf": 21.749823936261237,
+        "bytetrack": 19.639674457721412,
+        "botsort": 23.074842523783445,
+        "ucmc_grupo_train": 20.330310566350818,
+        "ucmc": 20.464019034989178,
+        "ucmc_oraculo_seq": 20.078128902241588
+      },
+      "split": "test"
+    },
+    "M0801": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "56acffa666e1d9a1dfc912d0315f771a750d35342455d63911f31158b707e65c",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          298
+        ]
+      },
+      "rango": [
+        1,
+        298
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 0
+      },
+      "ms_mediana": {
+        "propio_kf": 16.727658454328775,
+        "bytetrack": 16.483742045238614,
+        "botsort": 20.02738951705396,
+        "ucmc_grupo_train": 16.38945611193776,
+        "ucmc": 16.51763403788209,
+        "ucmc_oraculo_seq": 16.373916994780302
+      },
+      "split": "test"
+    },
+    "M0802": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "011bc8b82746eb69b1eed8b318f0b8b27e94a0b34ef151a19907a65eaf6d44c8",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1101
+        ]
+      },
+      "rango": [
+        1,
+        1101
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 22.965169046074152,
+        "bytetrack": 20.866537932306528,
+        "botsort": 24.232781026512384,
+        "ucmc_grupo_train": 21.51195891201496,
+        "ucmc": 22.0161359757185,
+        "ucmc_oraculo_seq": 21.533349063247442
+      },
+      "split": "test"
+    },
+    "M1001": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "9b15329f5efaaf84ca96519a15ce1fc2d745d1d1b867faa9c3366f119eef77a4",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1859
+        ]
+      },
+      "rango": [
+        1,
+        1859
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 17.450795974582434,
+        "bytetrack": 16.566389938816428,
+        "botsort": 20.036387955769897,
+        "ucmc_grupo_train": 16.674601938575506,
+        "ucmc": 16.981838969513774,
+        "ucmc_oraculo_seq": 16.690926859155297
+      },
+      "split": "test"
+    },
+    "M1004": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "5b38c41a1bb748787d2be86098d51243c55e0b814e06bc630d1f35ba2d488680",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          269
+        ]
+      },
+      "rango": [
+        1,
+        269
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 10.739712975919247,
+        "bytetrack": 10.591391008347273,
+        "botsort": 14.248969033360481,
+        "ucmc_grupo_train": 10.61756000854075,
+        "ucmc": 10.66712406463921,
+        "ucmc_oraculo_seq": 10.569027159363031
+      },
+      "split": "test"
+    },
+    "M1007": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "dbbbcb48f1a8b869f8ce0ec874cd71840c5d8c38dcde38a96051f2809ea07cc4",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          659
+        ]
+      },
+      "rango": [
+        1,
+        659
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 17.478211084380746,
+        "bytetrack": 15.916560078039765,
+        "botsort": 19.411662127822638,
+        "ucmc_grupo_train": 16.309337923303246,
+        "ucmc": 16.759793972596526,
+        "ucmc_oraculo_seq": 16.29314385354519
+      },
+      "split": "test"
+    },
+    "M1009": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "201ac21526ec8c03c43d70fb71b707d20de802a848f50a98941ab04f3f80fc52",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          604
+        ]
+      },
+      "rango": [
+        1,
+        604
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 0
+      },
+      "ms_mediana": {
+        "propio_kf": 15.764128067530692,
+        "bytetrack": 15.190693433396518,
+        "botsort": 18.59544648323208,
+        "ucmc_grupo_train": 15.255144913680851,
+        "ucmc": 15.558680053800344,
+        "ucmc_oraculo_seq": 15.207623480819166
+      },
+      "split": "test"
+    },
+    "M1101": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "e5267573c456cb0503bc71f0e9cc0bce74c0593c6092d458fd93ec686cbde160",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          864
+        ]
+      },
+      "rango": [
+        1,
+        864
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 19.228307530283928,
+        "bytetrack": 17.877707490697503,
+        "botsort": 21.41456352546811,
+        "ucmc_grupo_train": 18.237291486002505,
+        "ucmc": 18.49658996798098,
+        "ucmc_oraculo_seq": 18.243766971863806
+      },
+      "split": "test"
+    },
+    "M1301": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "84eff9acef13e29d61ecfc758a0129fb202e6b713ecf66a690526af7a35e6bb0",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1182
+        ]
+      },
+      "rango": [
+        1,
+        1182
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 22.28054660372436,
+        "bytetrack": 21.114457049407065,
+        "botsort": 24.687595898285508,
+        "ucmc_grupo_train": 21.285073016770184,
+        "ucmc": 21.818804554641247,
+        "ucmc_oraculo_seq": 21.319408901035786
+      },
+      "split": "test"
+    },
+    "M1302": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "cac3fb69bb64c9145c57ad4da2f2b81363934f28a0f689c529d43a0324474c12",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          719
+        ]
+      },
+      "rango": [
+        1,
+        719
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 20.16278705559671,
+        "bytetrack": 19.636347889900208,
+        "botsort": 23.0985211674124,
+        "ucmc_grupo_train": 19.750409061089158,
+        "ucmc": 20.071220118552446,
+        "ucmc_oraculo_seq": 19.75800096988678
+      },
+      "split": "test"
+    },
+    "M1303": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "0ddfcafbcf7e0c84a5e8161f875cd317f1eadf1a366db41e354642b8ec2f4d21",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          445
+        ]
+      },
+      "rango": [
+        1,
+        445
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 23.505951976403594,
+        "bytetrack": 22.15182688087225,
+        "botsort": 25.724208913743496,
+        "ucmc_grupo_train": 22.40598015487194,
+        "ucmc": 22.644863929599524,
+        "ucmc_oraculo_seq": 22.389642195776105
+      },
+      "split": "test"
+    },
+    "M1401": {
+      "detector": "yolo8x",
+      "firma_detecciones": {
+        "origen": "archivo",
+        "txt_sha256": "1b10dc885b93180750bc80768794cca1f92576bf9ffd7d8b8b83ea242a78ab59",
+        "firma_externa": {
+          "pesos": "yolo8x_best.pt",
+          "pesos_sha256": "bb32e761d0e57c6fff1dded779b00eb1d45cd24eb09c90d685fe088c081778d9",
+          "imgsz": 640,
+          "conf": 0.05,
+          "iou": 0.7,
+          "nombres_clases": {
+            "0": "car",
+            "1": "truck",
+            "2": "van",
+            "3": "bus",
+            "4": "freight car"
+          },
+          "train_args": {
+            "model": "yolov8x.pt",
+            "data": "/home/udlap/Documents/Bruno_y_sus_cosas/Datasets/Vigia_rgb_original_COCOAndYoloFixed/dataset.yaml",
+            "epochs": 100,
+            "imgsz": 640
+          },
+          "dispositivo": "0",
+          "versiones": {
+            "python": "3.12.16",
+            "numpy": "2.3.5",
+            "opencv": "5.1.0",
+            "pandas": "3.1.1",
+            "plataforma": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+            "git": "909f53bf77d099c3fa0d4ef557c34c5d2a38feaf+cambios",
+            "ultralytics": "8.4.192",
+            "trackeval": "1.3.0",
+            "scipy": "1.18.1"
+          }
+        },
+        "clases": [],
+        "rango": [
+          1,
+          1050
+        ]
+      },
+      "rango": [
+        1,
+        1050
+      ],
+      "fps": 30.0,
+      "ucmc": {
+        "hfov_deg": 74,
+        "pitch_respaldo_deg": 45
+      },
+      "ms_mediana": {
+        "propio_kf": 17.26676314137876,
+        "bytetrack": 16.965505084954202,
+        "botsort": 20.30225843191147,
+        "ucmc_grupo_train": 17.072394024580717,
+        "ucmc": 17.196237458847463,
+        "ucmc_oraculo_seq": 17.075293930247426
+      },
+      "split": "test"
+    }
+  },
+  "hash_config": "494406f70fb5"
+}
