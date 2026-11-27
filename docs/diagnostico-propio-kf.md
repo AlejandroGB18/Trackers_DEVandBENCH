@@ -117,5 +117,6 @@ Lectura:
 **`propio_A4_tentativos`** gana. Ninguna otra variante se le acerca en AssA, así que no hay empate que desempatar.
 
 **Salvedad.** La ablación fue acumulativa, y A4 incluye H3, que por sí solo empeora. No se probó H1+H2+H4 sin H3, y es
-posible que sea igual o mejor que A4 con un cambio menos. Lo que se decida con eso sigue siendo elección en ajuste
-(D35.6), no toca test. Queda en [`DECISIONS.md`, D36](../benchmark/DECISIONS.md).
+posible que sea igual o mejor que A4 con un cambio menos. Por eso se corre una ablación complementaria, solo en ajuste
+(A6 = H1+H2+H4, A7 = H1+H4, A8 = H4), con la regla de elección fijada antes en
+[`DECISIONS.md`, D36.1](../benchmark/DECISIONS.md). Guía: [`guia-laboratorio-v2b.md`](guia-laboratorio-v2b.md).

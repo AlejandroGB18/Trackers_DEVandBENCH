@@ -184,6 +184,28 @@ BoT-SORT en ajuste.
 **Pendiente:** H3 sola empeora (A3: −1.8 HOTA), y la ablación acumulativa no probó H1+H2+H4 sin H3. Hay que decidir si
 se congela A4 tal cual o si antes se corren, solo en ajuste, las variantes sin H3.
 
+### D36.1 · Ablación complementaria sin H3 — fijada 2026-11-27, antes de correrla
+
+Se decidió probar sin H3 antes de congelar. Manifiesto `benchmark/diagnostico_v2b.yaml`, **solo ajuste**, run
+`diag_v2b`, mismas secuencias, umbrales y detecciones que `diag_v2`.
+
+| Variante | Cambios | Papel |
+|---|---|---|
+| `propio_A4_tentativos` | H1+H2+H3+H4 | Control repetido: debe salir idéntico byte a byte a `runs/diag_v2`. Candidato |
+| `propio_A6_sin_fusion` | H1+H2+H4 | Candidato |
+| `propio_A7_clase_tentativos` | H1+H4 | Candidato |
+| `propio_A8_solo_tentativos` | H4 (con compuerta de clase) | Solo informativo: no es candidato porque H1 es obligatoria (D7, D35) |
+
+**Regla de elección de la v2** (implementada en `benchmark/analisis/ablacion.py`):
+
+1. Entre los candidatos, el de mayor AssA combinado en ajuste es el "mejor".
+2. Un candidato es válido si su AssA no es significativamente peor que el del mejor (el IC 95 % pareado de la
+   diferencia incluye 0 o es positivo) y si su HOTA no es significativamente peor que el de `propio_v1`.
+3. De los válidos, se elige el de menos cambios. Si dos tienen los mismos cambios, gana el de mayor AssA.
+
+El elegido se congela como la configuración de `propio_kf` para la v2 (siguiente decisión). No se evalúa en el test de
+UAVDT.
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |
