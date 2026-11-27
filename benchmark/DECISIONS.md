@@ -166,6 +166,24 @@ porque sus tracks duplicados quedan más seguido como "?". No cambia ninguna con
 del detector son vehículos, así que ninguna pasa por el filtro (tampoco "?"): en UAVDT queda apagado. Para el sistema
 real, `parallax_skip` debe construirse desde las clases del detector y no escribirse a mano.
 
+### D35.8 · Resultado de la v1.1 — 2026-11-27
+
+Corrida en el laboratorio con `main` en `eecd6d0`. **D35.3 pasó:** los 6 que debían ser idénticos lo fueron (40/40
+archivos cada uno); solo cambió `propio_kf`. `propio_kf`: HOTA 40.3 → 40.7 (+0.4 [−0.04, +0.92], empate), IDF1 +1.0
+[+0.2, +2.0], IDSW 1 894 → 1 665. El ranking no cambia. El único veredicto que cambia es `propio_kf` contra ByteTrack
+en HOTA e IDF1: pasa de perder a empatar. P1 y P2 se mantienen. Detalle: [`docs/resultados-v1_1.md`](../docs/resultados-v1_1.md).
+**Las conclusiones del benchmark se toman de la v1.1.**
+
+## D36 · Resultado de la ablación de `propio_kf` en ajuste — 2026-11-27 (decisión de la v2 pendiente)
+
+Resultados en [`docs/diagnostico-propio-kf.md`, §6](../docs/diagnostico-propio-kf.md#6-resultado-de-la-ablación-en-ajuste).
+Con el criterio fijado antes de correr (mayor AssA en ajuste, HOTA no menor que la v1 con IC, menos cambios si
+empatan), gana `propio_A4_tentativos` (H1+H2+H3+H4): HOTA +2.5 [+1.6, +3.4], AssA +4.3, IDSW −84 %, empate con
+BoT-SORT en ajuste.
+
+**Pendiente:** H3 sola empeora (A3: −1.8 HOTA), y la ablación acumulativa no probó H1+H2+H4 sin H3. Hay que decidir si
+se congela A4 tal cual o si antes se corren, solo en ajuste, las variantes sin H3.
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |
