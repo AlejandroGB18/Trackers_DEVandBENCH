@@ -135,9 +135,36 @@ track sobre el mismo vehículo. El error se encontró **después de ver test**, 
 | D35.5 | **Reporte:** v1 y v1.1 lado a lado. Las conclusiones se basan en la v1.1, y se dice dónde cambian respecto a la v1 y por qué se corrió |
 | D35.6 | La ablación de `propio_kf` (H2–H5) se corre **solo en ajuste** y no entra a test en la v1.1 |
 
-Hallazgo que no se corrige en la v1.1 (regla D35.1): el filtro de paralaje del decisor de movimiento exime solo a
-"car", "truck" y "bus" (`parallax_skip`), así que sí se aplica a "van" y "freight car". Afecta por igual a los cuatro
-trackers en P2; queda para la v2.
+### D35.7 · Filtro de paralaje: hallazgo que no se corrige en la v1.1
+
+**Qué es.** El decisor de movimiento (P2, común a los cuatro trackers) apaga "se mueve" cuando el desplazamiento
+estabilizado de un track es proporcional al flujo acumulado del suelo, P(t) ≈ k·C(t). Ese es el patrón de algo alto y
+quieto (un poste) visto desde un dron que se traslada. Para no confundir un vehículo que avanza en la dirección del
+flujo, las clases de `parallax_skip` quedan exentas. Se diseñó en la etapa VIGIA, con objetos sin clase y postes.
+
+**El problema.** `parallax_skip` se escribió con los nombres de clase de los detectores de VIGIA ("car", "truck",
+"bus", "motorcycle", "small vehicle", "large vehicle"). El detector de la v1 usa "car", "truck", "van", "bus" y
+"freight car", así que **"van", "freight car" y los tracks sin clase ("?") pasan por el filtro**. Es un desajuste de
+nombres, no una decisión.
+
+**Cuánto pesó en la v1** (test; `benchmark/analisis/paralaje.py`):
+
+| | BoT-SORT | `propio_kf` |
+|---|---|---|
+| Frames en que el filtro actuó sobre un vehículo del GT | 866 | 1 252 |
+| …el vehículo sí se movía (el filtro se equivocó) | 96 % | 94 % |
+| Frames móviles de van/freight car apagados | 18.5 % | 15.9 % |
+| Frames móviles de car/truck/bus apagados | 0 % | 0 % |
+| **Total de frames móviles apagados** | **0.65 %** | **0.85 %** |
+
+En UAVDT el filtro no tiene nada que corregir: solo hay vehículos y las propuestas están apagadas. Por eso solo puede
+restar recall en P2. El efecto es menor al 1 % y parecido en todos. A `propio_kf` le pega un poco más (≈ 0.2 puntos)
+porque sus tracks duplicados quedan más seguido como "?". No cambia ninguna conclusión: P2 es un empate con IC de
+±5 puntos.
+
+**Decisión.** No se corrige en la v1.1 (D35.1: un solo cambio); se reporta como limitación. **v2:** todas las clases
+del detector son vehículos, así que ninguna pasa por el filtro (tampoco "?"): en UAVDT queda apagado. Para el sistema
+real, `parallax_skip` debe construirse desde las clases del detector y no escribirse a mano.
 
 ## Abiertas (decidir antes de anotar / reportar)
 

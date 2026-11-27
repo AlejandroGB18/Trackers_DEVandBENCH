@@ -251,6 +251,19 @@ queda en 7–10 px. Un detector a resolución completa o entrenado con UAVDT es 
 
 - **Detector débil en objetos chicos** (sección 6). Las conclusiones son sobre asociación con este detector; con uno
   mejor, las diferencias entre trackers podrían crecer o cambiar de orden.
+- **Filtro de paralaje mal configurado para este detector** (D35.7). El decisor de movimiento apaga "se mueve" cuando
+  el desplazamiento parece paralaje (algo alto y quieto, como un poste). Los vehículos deberían estar exentos, pero la
+  lista de exentos usaba nombres de otro detector, así que se aplicó a "van", "freight car" y a los tracks sin clase.
+  En test se equivocó en el 94–96 % de las veces que actuó sobre un vehículo, porque apagó vehículos que sí se movían:
+
+  | | BoT-SORT | `propio_kf` |
+  |---|---|---|
+  | Frames móviles de van/freight car apagados | 18.5 % | 15.9 % |
+  | Frames móviles de car/truck/bus apagados | 0 % | 0 % |
+  | Total de frames móviles apagados | 0.65 % | 0.85 % |
+
+  El efecto en P2 es menor a 1 punto de recall y casi igual en todos (≈ 0.2 puntos más en `propio_kf`). No cambia el
+  empate de P2. Se corrige en la v2.
 - **20 secuencias.** Los IC son anchos: diferencias menores de ~1 HOTA no se pueden resolver. Que no haya diferencia
   entre trackers en P1 es "no detectada", no "demostrada igual".
 - **Ego natural, no controlado.** UAVDT no trae ego-movimiento extremo: el P90 es 2.7 px por frame y el tramo alto
