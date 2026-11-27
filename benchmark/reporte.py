@@ -152,6 +152,31 @@ def p1(bins_seq, bins_comb, ranking_trackers):
     return tab, pd.DataFrame(filas)
 
 
+def p1_pares(bins_seq, ranking_trackers):
+    """P1 entre trackers: diferencia pareada de ΔAssA (alto − bajo) por secuencia, IC 95 % (D28).
+    Positivo = A pierde menos AssA que B al pasar de bajo a alto."""
+    bajo, alto = _extremos(bins_seq.bin.unique())
+    if bajo is None:
+        return pd.DataFrame()
+    x = bins_seq[bins_seq.tracker.isin(ranking_trackers)].pivot_table(index=["tracker", "secuencia"], columns="bin",
+                                                                       values=["AssA", "n_gt_dets"])
+    if ("AssA", bajo) not in x or ("AssA", alto) not in x:
+        return pd.DataFrame()
+    d = (x["AssA"][alto] - x["AssA"][bajo]).unstack("tracker")
+    w = np.minimum(x["n_gt_dets"][alto], x["n_gt_dets"][bajo]).unstack("tracker").min(axis=1)
+    filas = []
+    for i, ta in enumerate(ranking_trackers):
+        for tb in ranking_trackers[i + 1:]:
+            if ta not in d or tb not in d:
+                continue
+            dif = d[ta] - d[tb]
+            ok = dif.notna() & (w > 0)
+            est, lo, hi = _boot(dif[ok], w[ok])
+            ver = f"{ta} más estable" if lo > 0 else (f"{tb} más estable" if hi < 0 else "empate")
+            filas.append(dict(A=ta, B=tb, dif_dAssA=est, IC_inf=lo, IC_sup=hi, secuencias=int(ok.sum()), veredicto=ver))
+    return pd.DataFrame(filas)
+
+
 def _extremos(bins):
     orden = [b for b in ORDEN_TRAMOS if b in set(bins) and b != "H_no_fiable"]
     return (orden[0], orden[-1]) if len(orden) >= 2 else (None, None)
@@ -267,6 +292,12 @@ def generar_reporte(dir_run, manifiesto=None):
                _md(tab, ["tracker", "bin", "n_frames", "n_gt_dets", "secuencias", "HOTA", "AssA", "IDSW",
                          "IDSW_por_1000", "indicativo"]),
                "### ΔAssA (alto − bajo), IC 95 %\n", _md(d)]
+        pares = p1_pares(bs, rk)
+        if len(pares):
+            md += ["### ¿Qué tracker pierde menos? Diferencia pareada de ΔAssA (A − B), IC 95 %\n",
+                   "Positivo = A pierde menos AssA que B entre el tramo bajo y el alto. Gana solo si el IC excluye 0.\n",
+                   _md(pares)]
+            pares.to_csv(out / "p1_pares.csv", index=False)
         tab.to_csv(out / "p1_tramos.csv", index=False); d.to_csv(out / "p1_delta.csv", index=False)
         fig_p1(tab, out / "p1.png")
         md.append("![P1](p1.png)\n")
