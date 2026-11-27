@@ -1,0 +1,711 @@
+# Manifiesto de DIAGNÓSTICO de propio_kf (v2). Solo ajuste: python bench.py correr --split ajuste --manifiesto diagnostico_v2.yaml --run diag_v2
+# Derivado de secuencias.yaml (mismas secuencias, umbrales y correcciones); solo cambia la lista de trackers. NO usar con --split test.
+datos_raiz: ../datos
+detectores:
+  yolo8x: {tipo: archivo, carpeta: detecciones/yolo8x}
+  yolo8n: {tipo: archivo, carpeta: detecciones/yolo8n}
+trackers:
+- {nombre: propio_kf, etiqueta: propio_v1}
+- nombre: propio_kf
+  etiqueta: propio_A1_sin_clase
+  config: {gate_clase: false}
+- nombre: propio_kf
+  etiqueta: propio_A2_debil05
+  config: {gate_clase: false, match_iou_debil: 0.5}
+- nombre: propio_kf
+  etiqueta: propio_A3_fusion
+  config: {gate_clase: false, match_iou_debil: 0.5, fuse_score: true}
+- nombre: propio_kf
+  etiqueta: propio_A4_tentativos
+  config: {gate_clase: false, match_iou_debil: 0.5, fuse_score: true, confirmar_aparte: true}
+- nombre: propio_kf
+  etiqueta: propio_A5_sin_pad
+  config: {gate_clase: false, box_pad: 0.0}
+- bytetrack
+- botsort
+config_comun: {conf_entrada: 0.05, conf_high: 0.2, conf_low: 0.05, max_miss_sec: 1.0, min_hits: 4}
+evaluacion:
+  clases_evaluadas: [1]
+  clases_ignoradas: [0]
+  clases_distractoras: []
+  umbral_area_ignorada: 0.5
+  bins_ego_px: [0.5, 3.0]
+  tramos_ego:
+    cortes_px: [0.328, 1.241]
+    etiquetas: [bajo, medio, alto]
+  moving: {rel_mov: 0.3, rel_est: 0.1}
+  protocolos: [todos, moviles, estaticos, e2e_moviles]
+  bootstrap_n: 2000
+barrido:
+  singt_rho_min: 0.6
+  grupos:
+    cenital:
+      pitch: [0, 5, 10, 15, 20, 25]
+      altura: [15, 30, 50, 75, 100]
+      hfov: 74
+      punto: centro
+    oblicua_baja:
+      pitch: [25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+      altura: [10, 15, 20, 25, 30]
+      hfov: 74
+      punto: base
+    oblicua_alta:
+      pitch: [25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+      altura: [30, 45, 60, 80, 100]
+      hfov: 74
+      punto: base
+secuencias:
+- nombre: M0101
+  video: UAVDT/UAV-benchmark-M/M0101
+  detector: yolo8x
+  rango: [1, 407]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0101/gt.txt
+  gt_frames: {inicio: 1, fin: 407, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M0201
+  video: UAVDT/UAV-benchmark-M/M0201
+  detector: yolo8x
+  rango: [1, 1076]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0201/gt.txt
+  gt_frames: {inicio: 1, fin: 1076, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M0202
+  video: UAVDT/UAV-benchmark-M/M0202
+  detector: yolo8x
+  rango: [1, 291]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0202/gt.txt
+  gt_frames: {inicio: 1, fin: 291, paso: 1}
+  atributos: {luz: noche, altitud: baja, vista: lateral, largo: 0}
+- nombre: M0204
+  video: UAVDT/UAV-benchmark-M/M0204
+  detector: yolo8x
+  rango: [1, 350]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0204/gt.txt
+  gt_frames: {inicio: 1, fin: 350, paso: 1}
+  atributos: {luz: noche, altitud: baja, vista: lateral, largo: 0}
+- nombre: M0206
+  video: UAVDT/UAV-benchmark-M/M0206
+  detector: yolo8x
+  rango: [1, 562]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0206/gt.txt
+  gt_frames: {inicio: 1, fin: 562, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M0207
+  video: UAVDT/UAV-benchmark-M/M0207
+  detector: yolo8x
+  rango: [1, 571]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0207/gt.txt
+  gt_frames: {inicio: 1, fin: 571, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: lateral, largo: 0}
+- nombre: M0210
+  video: UAVDT/UAV-benchmark-M/M0210
+  detector: yolo8x
+  rango: [1, 583]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0210/gt.txt
+  gt_frames: {inicio: 1, fin: 583, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: cenital, largo: 0}
+- nombre: M0301
+  video: UAVDT/UAV-benchmark-M/M0301
+  detector: yolo8x
+  rango: [1, 325]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0301/gt.txt
+  gt_frames: {inicio: 1, fin: 325, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M0401
+  video: UAVDT/UAV-benchmark-M/M0401
+  detector: yolo8x
+  rango: [1, 613]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0401/gt.txt
+  gt_frames: {inicio: 1, fin: 613, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M0402
+  video: UAVDT/UAV-benchmark-M/M0402
+  detector: yolo8x
+  rango: [1, 410]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0402/gt.txt
+  gt_frames: {inicio: 1, fin: 410, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: lateral, largo: 0}
+- nombre: M0501
+  video: UAVDT/UAV-benchmark-M/M0501
+  detector: yolo8x
+  rango: [1, 352]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0501/gt.txt
+  gt_frames: {inicio: 1, fin: 352, paso: 1}
+  atributos: {luz: niebla, altitud: alta, vista: frontal, largo: 0}
+- nombre: M0603
+  video: UAVDT/UAV-benchmark-M/M0603
+  detector: yolo8x
+  rango: [1, 2035]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0603/gt.txt
+  gt_frames: {inicio: 1, fin: 2035, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: cenital, largo: 1}
+- nombre: M0604
+  video: UAVDT/UAV-benchmark-M/M0604
+  detector: yolo8x
+  rango: [1, 1079]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0604/gt.txt
+  gt_frames: {inicio: 1, fin: 1079, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal, largo: 0}
+- nombre: M0605
+  video: UAVDT/UAV-benchmark-M/M0605
+  detector: yolo8x
+  rango: [1, 787]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0605/gt.txt
+  gt_frames: {inicio: 1, fin: 787, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal, largo: 0}
+- nombre: M0702
+  video: UAVDT/UAV-benchmark-M/M0702
+  detector: yolo8x
+  rango: [1, 777]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0702/gt.txt
+  gt_frames: {inicio: 1, fin: 777, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: cenital, largo: 0}
+- nombre: M0703
+  video: UAVDT/UAV-benchmark-M/M0703
+  detector: yolo8x
+  rango: [1, 683]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0703/gt.txt
+  gt_frames: {inicio: 1, fin: 683, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: cenital, largo: 0}
+- nombre: M0704
+  video: UAVDT/UAV-benchmark-M/M0704
+  detector: yolo8x
+  rango: [1, 832]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0704/gt.txt
+  gt_frames: {inicio: 1, fin: 832, paso: 1}
+  atributos: {luz: niebla, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M0901
+  video: UAVDT/UAV-benchmark-M/M0901
+  detector: yolo8x
+  rango: [1, 1906]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0901/gt.txt
+  gt_frames: {inicio: 1, fin: 1906, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: cenital, largo: 1}
+- nombre: M0902
+  video: UAVDT/UAV-benchmark-M/M0902
+  detector: yolo8x
+  rango: [1, 384]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0902/gt.txt
+  gt_frames: {inicio: 1, fin: 384, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal, largo: 0}
+- nombre: M1002
+  video: UAVDT/UAV-benchmark-M/M1002
+  detector: yolo8x
+  rango: [1, 660]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1002/gt.txt
+  gt_frames: {inicio: 1, fin: 660, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M1003
+  video: UAVDT/UAV-benchmark-M/M1003
+  detector: yolo8x
+  rango: [1, 1346]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1003/gt.txt
+  gt_frames: {inicio: 1, fin: 1346, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal, largo: 0}
+- nombre: M1005
+  video: UAVDT/UAV-benchmark-M/M1005
+  detector: yolo8x
+  rango: [1, 537]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1005/gt.txt
+  gt_frames: {inicio: 1, fin: 537, paso: 1}
+  atributos: {luz: niebla, altitud: baja, vista: frontal+lateral, largo: 0}
+- nombre: M1006
+  video: UAVDT/UAV-benchmark-M/M1006
+  detector: yolo8x
+  rango: [1, 708]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1006/gt.txt
+  gt_frames: {inicio: 1, fin: 708, paso: 1}
+  atributos: {luz: niebla, altitud: baja, vista: frontal+lateral, largo: 0}
+- nombre: M1008
+  video: UAVDT/UAV-benchmark-M/M1008
+  detector: yolo8x
+  rango: [1, 569]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1008/gt.txt
+  gt_frames: {inicio: 1, fin: 569, paso: 1}
+  atributos: {luz: niebla, altitud: media, vista: cenital, largo: 0}
+- nombre: M1102
+  video: UAVDT/UAV-benchmark-M/M1102
+  detector: yolo8x
+  rango: [1, 967]
+  fps: 30.0
+  split: ajuste
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1102/gt.txt
+  gt_frames: {inicio: 1, fin: 967, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: cenital, largo: 0}
+- nombre: M1201
+  video: UAVDT/UAV-benchmark-M/M1201
+  detector: yolo8x
+  rango: [1, 1197]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1201/gt.txt
+  gt_frames: {inicio: 1, fin: 1197, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M1202
+  video: UAVDT/UAV-benchmark-M/M1202
+  detector: yolo8x
+  rango: [1, 472]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1202/gt.txt
+  gt_frames: {inicio: 1, fin: 472, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal+lateral, largo: 0}
+- nombre: M1304
+  video: UAVDT/UAV-benchmark-M/M1304
+  detector: yolo8x
+  rango: [1, 1550]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1304/gt.txt
+  gt_frames: {inicio: 1, fin: 1550, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: lateral, largo: 0}
+- nombre: M1305
+  video: UAVDT/UAV-benchmark-M/M1305
+  detector: yolo8x
+  rango: [1, 600]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1305/gt.txt
+  gt_frames: {inicio: 1, fin: 600, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M1306
+  video: UAVDT/UAV-benchmark-M/M1306
+  detector: yolo8x
+  rango: [1, 1200]
+  fps: 30.0
+  split: ajuste
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1306/gt.txt
+  gt_frames: {inicio: 1, fin: 1200, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal+lateral, largo: 0}
+- nombre: M0203
+  video: UAVDT/UAV-benchmark-M/M0203
+  detector: yolo8x
+  rango: [1, 1007]
+  fps: 30.0
+  split: test
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0203/gt.txt
+  gt_frames: {inicio: 1, fin: 1007, paso: 1}
+  atributos: {luz: noche, altitud: baja, vista: cenital, largo: 0}
+- nombre: M0205
+  video: UAVDT/UAV-benchmark-M/M0205
+  detector: yolo8x
+  rango: [1, 646]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0205/gt.txt
+  gt_frames: {inicio: 1, fin: 646, paso: 1}
+  atributos: {luz: noche, altitud: baja, vista: lateral, largo: 0}
+- nombre: M0208
+  video: UAVDT/UAV-benchmark-M/M0208
+  detector: yolo8x
+  rango: [1, 265]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0208/gt.txt
+  gt_frames: {inicio: 1, fin: 265, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M0209
+  video: UAVDT/UAV-benchmark-M/M0209
+  detector: yolo8x
+  rango: [1, 1576]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0209/gt.txt
+  gt_frames: {inicio: 1, fin: 1576, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal+lateral, largo: 1}
+- nombre: M0403
+  video: UAVDT/UAV-benchmark-M/M0403
+  detector: yolo8x
+  rango: [1, 514]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0403/gt.txt
+  gt_frames: {inicio: 1, fin: 514, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M0601
+  video: UAVDT/UAV-benchmark-M/M0601
+  detector: yolo8x
+  rango: [1, 319]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0601/gt.txt
+  gt_frames: {inicio: 1, fin: 319, paso: 1}
+  atributos: {luz: dia, altitud: alta, vista: frontal+lateral, largo: 0}
+- nombre: M0602
+  video: UAVDT/UAV-benchmark-M/M0602
+  detector: yolo8x
+  rango: [1, 480]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0602/gt.txt
+  gt_frames: {inicio: 1, fin: 480, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M0606
+  video: UAVDT/UAV-benchmark-M/M0606
+  detector: yolo8x
+  rango: [1, 1374]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0606/gt.txt
+  gt_frames: {inicio: 1, fin: 1374, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal+lateral, largo: 0}
+- nombre: M0701
+  video: UAVDT/UAV-benchmark-M/M0701
+  detector: yolo8x
+  rango: [1, 1308]
+  fps: 30.0
+  split: test
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0701/gt.txt
+  gt_frames: {inicio: 1, fin: 1308, paso: 1}
+  atributos: {luz: niebla, altitud: alta, vista: cenital, largo: 0}
+- nombre: M0801
+  video: UAVDT/UAV-benchmark-M/M0801
+  detector: yolo8x
+  rango: [1, 298]
+  fps: 30.0
+  split: test
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0801/gt.txt
+  gt_frames: {inicio: 1, fin: 298, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: cenital, largo: 0}
+- nombre: M0802
+  video: UAVDT/UAV-benchmark-M/M0802
+  detector: yolo8x
+  rango: [1, 1101]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M0802/gt.txt
+  gt_frames: {inicio: 1, fin: 1101, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: lateral, largo: 0}
+- nombre: M1001
+  video: UAVDT/UAV-benchmark-M/M1001
+  detector: yolo8x
+  rango: [1, 1859]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1001/gt.txt
+  gt_frames: {inicio: 1, fin: 1859, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal, largo: 1}
+- nombre: M1004
+  video: UAVDT/UAV-benchmark-M/M1004
+  detector: yolo8x
+  rango: [1, 269]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1004/gt.txt
+  gt_frames: {inicio: 1, fin: 269, paso: 1}
+  atributos: {luz: niebla, altitud: media, vista: frontal, largo: 0}
+- nombre: M1007
+  video: UAVDT/UAV-benchmark-M/M1007
+  detector: yolo8x
+  rango: [1, 659]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1007/gt.txt
+  gt_frames: {inicio: 1, fin: 659, paso: 1}
+  atributos: {luz: noche, altitud: media, vista: frontal, largo: 0}
+- nombre: M1009
+  video: UAVDT/UAV-benchmark-M/M1009
+  detector: yolo8x
+  rango: [1, 604]
+  fps: 30.0
+  split: test
+  toma: cenital
+  grupo: cenital
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 0}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1009/gt.txt
+  gt_frames: {inicio: 1, fin: 604, paso: 1}
+  atributos: {luz: niebla, altitud: media, vista: cenital, largo: 0}
+- nombre: M1101
+  video: UAVDT/UAV-benchmark-M/M1101
+  detector: yolo8x
+  rango: [1, 864]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1101/gt.txt
+  gt_frames:
+    inicio: 1
+    fin: 864
+    paso: 1
+    excluir: [322]
+  atributos: {luz: noche, altitud: baja, vista: frontal+lateral, largo: 0}
+- nombre: M1301
+  video: UAVDT/UAV-benchmark-M/M1301
+  detector: yolo8x
+  rango: [1, 1182]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1301/gt.txt
+  gt_frames: {inicio: 1, fin: 1182, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: frontal, largo: 0}
+- nombre: M1302
+  video: UAVDT/UAV-benchmark-M/M1302
+  detector: yolo8x
+  rango: [1, 719]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_alta
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1302/gt.txt
+  gt_frames: {inicio: 1, fin: 719, paso: 1}
+  atributos: {luz: dia, altitud: media, vista: lateral, largo: 0}
+- nombre: M1303
+  video: UAVDT/UAV-benchmark-M/M1303
+  detector: yolo8x
+  rango: [1, 445]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1303/gt.txt
+  gt_frames: {inicio: 1, fin: 445, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: lateral, largo: 0}
+- nombre: M1401
+  video: UAVDT/UAV-benchmark-M/M1401
+  detector: yolo8x
+  rango: [1, 1050]
+  fps: 30.0
+  split: test
+  toma: oblicua
+  grupo: oblicua_baja
+  ucmc: {hfov_deg: 74, pitch_respaldo_deg: 45}
+  camara_fuente: ficha
+  gt: UAVDT/gt_benchmark/M1401/gt.txt
+  gt_frames: {inicio: 1, fin: 1050, paso: 1}
+  atributos: {luz: dia, altitud: baja, vista: frontal, largo: 0}

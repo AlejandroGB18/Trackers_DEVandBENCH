@@ -100,6 +100,38 @@ altas son las más difíciles, por el tamaño de los vehículos (sección 6). De
 
 En vehículos detenidos, `propio_kf` y UCMC caen más que BoT-SORT y ByteTrack.
 
+### Por qué `propio_kf` cambia de identidad: ejemplos
+
+El detector a veces duda de la clase de un mismo vehículo (car ↔ van, car ↔ truck) de un frame a otro. `propio_kf` es
+el único de los cuatro que **no deja que una detección de otra clase continúe un track**. Entonces crea un segundo
+track encima del mismo vehículo, y desde ahí los dos compiten: la identidad de salida alterna frame a frame. BoT-SORT
+asocia sin mirar la clase y mantiene una sola identidad.
+
+![Cambio de clase en M0606](resultados-v1/ejemplos/cambio_clase_M0606.png)
+
+*M0606, frames 850–869. La camioneta blanca (caja blanca = GT) es "car" en unos frames y "van" en otros. `propio_kf`
+le asigna dos identidades (430 y 505) que se turnan; BoT-SORT la mantiene como 2634.*
+
+![Cambio de clase en M0802](resultados-v1/ejemplos/cambio_clase_M0802.png)
+
+*M0802, frames 82–88. `propio_kf` alterna entre 29 y 85 en el mismo auto; BoT-SORT lo mantiene como 42.*
+
+Los conteos de test, que son descriptivos, apuntan al mismo mecanismo. Se emparejó cada frame con el GT (IoU ≥ 0.5)
+y se contó cada vez que el vehículo del GT cambia de identidad. Es una cuenta más simple que el IDSW de TrackEval, así
+que los totales no coinciden, pero las proporciones sí se pueden comparar:
+
+| | propio_kf | BoT-SORT | ByteTrack | UCMC grupo |
+|---|---|---|---|---|
+| Cambios de identidad | 3 636 | 519 | 586 | 2 361 |
+| …con cambio de clase entre la identidad vieja y la nueva | 79 % | 52 % | 55 % | 52 % |
+| …sin ningún frame perdido entre las dos | 86 % | 46 % | 46 % | 90 % |
+| …que regresan a la identidad anterior en ≤ 10 frames (ida y vuelta) | 67 % | 30 % | 32 % | 76 % |
+
+En `propio_kf` domina la ida y vuelta entre dos tracks que ya existían, ligada al cambio de clase. UCMC también hace
+ida y vuelta, pero sin esa relación con la clase: es otro mecanismo, que no se estudió aquí. La corrección de
+`propio_kf` se diagnostica y se elige **en ajuste**, no en test
+([`diagnostico-propio-kf.md`](diagnostico-propio-kf.md)). Scripts: `benchmark/analisis/`.
+
 ---
 
 ## 3. P1 · ¿Qué tracker mantiene mejor la identidad cuando el dron se mueve?

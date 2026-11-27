@@ -52,6 +52,12 @@ class ConfigPropio(Config):
     # [ASOCIACION PROPIO] cómo se une una detección con un track
     match_iou: float = 0.20        # IoU mínimo (con cajas infladas) para asociar
     box_pad: float = 3.0           # px con que se inflan las cajas para el IoU (objetos pequeños)
+    # [DIAGNOSTICO v1 → v2] diferencias con ByteTrack/BoT-SORT; los valores por defecto reproducen la v1
+    gate_clase: bool = True        # True (v1): una detección de otra clase no continúa el track. ByteTrack/BoT-SORT: False
+    match_iou_debil: float = -1.0  # IoU mínimo en la ronda débil; < 0 = el mismo match_iou (v1). ByteTrack: 0.5
+    fuse_score: bool = False       # True: en la ronda fuerte se usa IoU × confianza (ByteTrack/BoT-SORT de Ultralytics)
+    confirmar_aparte: bool = False # True: tracks sin confirmar fuera de la 1.ª ronda, solo con fuertes sobrantes y mueren
+                                   # al primer fallo (ByteTrack). False (v1): compiten con los confirmados
     # [KALMAN] valores por defecto de ByteTrack/BoT-SORT. NO ajustarlos con los videos de evaluación
     kf_std_pos: float = 1 / 20     # ruido de posición, como fracción de la altura de la caja
     kf_std_vel: float = 1 / 160    # ruido de velocidad, como fracción de la altura de la caja
@@ -185,20 +191,36 @@ class TrackerPropio:
         self._predecir(H, H_ok)                                          # 4
         fuertes = dets[dets[:, 4] >= c.conf_high] if len(dets) else dets
         debiles = dets[(dets[:, 4] >= c.conf_low) & (dets[:, 4] < c.conf_high)] if len(dets) else dets
-        pares, sin_det, det_libres = self._asociar(self.tracks, fuertes)  # 5a. ronda fuerte
+        if c.confirmar_aparte:                                           # ByteTrack: los no confirmados van aparte
+            ronda1 = [t for t in self.tracks if t.hits >= c.min_hits]
+            tentativos = [t for t in self.tracks if t.hits < c.min_hits]
+        else:                                                            # v1: todos compiten juntos
+            ronda1, tentativos = self.tracks, []
+        pares, sin_det, det_libres = self._asociar(ronda1, fuertes, fusion=c.fuse_score)   # 5a. ronda fuerte
         for i, j in pares:
-            self._corregir(self.tracks[i], fuertes[j])                   # 6
-        resto = [self.tracks[i] for i in sin_det]
-        pares2, _, _ = self._asociar(resto, debiles)                     # 5b. ronda débil (solo tracks sin pareja)
+            self._corregir(ronda1[i], fuertes[j])                        # 6
+        resto = [ronda1[i] for i in sin_det]
+        umbral_debil = c.match_iou_debil if c.match_iou_debil >= 0 else c.match_iou
+        pares2, _, _ = self._asociar(resto, debiles, umbral=umbral_debil)  # 5b. ronda débil (solo tracks sin pareja)
         for i, j in pares2:
             self._corregir(resto[i], debiles[j])
-        con_det = {self.tracks[i].id for i, _ in pares} | {resto[i].id for i, _ in pares2}
+        con_det = {ronda1[i].id for i, _ in pares} | {resto[i].id for i, _ in pares2}
+        if tentativos:                                                   # 5c. no confirmados con las fuertes sobrantes
+            libres = fuertes[det_libres] if len(det_libres) else fuertes[:0]
+            pares3, _, libres3 = self._asociar(tentativos, libres, umbral=0.3, fusion=c.fuse_score)
+            for i, j in pares3:
+                self._corregir(tentativos[i], libres[j])
+            con_det |= {tentativos[i].id for i, _ in pares3}
+            det_libres = [det_libres[j] for j in libres3]
+            muertos = {t.id for t in tentativos if t.id not in con_det}  # un no confirmado sin pareja muere ya
+        else:
+            muertos = set()
         for t in self.tracks:
             if t.id not in con_det:
                 t.miss += 1                                              # sigue vivo con su predicción hasta max_miss
         for j in det_libres:
             self.tracks.append(self._nuevo(fuertes[j]))                  # nacen solo con detecciones fuertes
-        self.tracks = [t for t in self.tracks if t.miss <= self.max_miss]   # mueren los perdidos
+        self.tracks = [t for t in self.tracks if t.miss <= self.max_miss and t.id not in muertos]   # mueren los perdidos
         return [t for t in self.tracks if t.hits >= c.min_hits and t.miss == 0]
 
     # ---- paso 4 -------------------------------------------------------
@@ -212,18 +234,23 @@ class TrackerPropio:
             t.box = xyah_a_caja(t.kf[0][:4])
 
     # ---- paso 5 -------------------------------------------------------
-    def _asociar(self, tracks, dets):
-        """IoU (cajas infladas box_pad) + asignación óptima (húngaro). Solo valen parejas con IoU >= match_iou y clase
-        compatible. Devuelve (pares (i track, j det), tracks sin pareja, detecciones sin pareja)."""
+    def _asociar(self, tracks, dets, umbral=None, fusion=False):
+        """IoU (cajas infladas box_pad) + asignación óptima (húngaro). Solo valen parejas con IoU >= umbral (por defecto
+        match_iou) y, si gate_clase, clase compatible. fusion: IoU × confianza (fuse_score de Ultralytics).
+        Devuelve (pares (i track, j det), tracks sin pareja, detecciones sin pareja)."""
+        umbral = self.cfg.match_iou if umbral is None else umbral
         if not tracks or len(dets) == 0:
             return [], list(range(len(tracks))), list(range(len(dets)))
         iou = iou_pad(np.array([t.box for t in tracks]), dets[:, :4], self.cfg.box_pad)
-        for i, t in enumerate(tracks):
-            for j in range(len(dets)):
-                if not (t.cls < 0 or dets[j, 5] < 0 or t.cls == int(dets[j, 5])):
-                    iou[i, j] = 0                                        # un "car" no se une con un "truck"
+        if fusion:
+            iou = iou * dets[None, :, 4]
+        if self.cfg.gate_clase:
+            for i, t in enumerate(tracks):
+                for j in range(len(dets)):
+                    if not (t.cls < 0 or dets[j, 5] < 0 or t.cls == int(dets[j, 5])):
+                        iou[i, j] = 0                                    # un "car" no se une con un "truck"
         r, cc = linear_sum_assignment(1 - iou)
-        pares = [(i, j) for i, j in zip(r, cc) if iou[i, j] >= self.cfg.match_iou]
+        pares = [(i, j) for i, j in zip(r, cc) if iou[i, j] >= umbral]
         mi = {i for i, _ in pares}; mj = {j for _, j in pares}
         return pares, [i for i in range(len(tracks)) if i not in mi], [j for j in range(len(dets)) if j not in mj]
 
@@ -263,7 +290,14 @@ def selftest():
         Hf = np.array([[1, 0, 14 if f else 0], [0, 1, 0], [0, 0, 1]], np.float64)
         out = trk.seguir(d, Hf, True); trk.frame += 1
     assert trk.ids_emitidos == 1 and len(out) == 1, trk.ids_emitidos
-    print("tracker_propio OK | estabilización del Kalman (traslación y zoom) | objeto quieto, paneo de 14 px/frame -> 1 ID")
+    for gate, ids in ((True, 2), (False, 1)):                            # el detector duda car/van en el mismo auto
+        trk = TrackerPropio(30.0, ConfigPropio(use_proposals=False, gate_clase=gate))
+        for f in range(40):
+            d = np.array([[100 + f, 100, 130 + f, 120, 0.9, 0 if f < 20 or f % 2 else 2]], np.float32)
+            trk.seguir(d, np.eye(3), True); trk.frame += 1
+        assert trk.ids_emitidos == ids, (gate, trk.ids_emitidos)
+    print("tracker_propio OK | estabilización del Kalman (traslación y zoom) | objeto quieto, paneo de 14 px/frame -> 1 ID"
+          " | car/van alternado: 2 IDs con gate_clase (v1), 1 sin él")
 
 
 if __name__ == "__main__":
