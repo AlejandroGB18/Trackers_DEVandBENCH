@@ -1,5 +1,7 @@
-# Manifiesto de DIAGNÓSTICO de propio_kf (v2). Solo ajuste: python bench.py correr --split ajuste --manifiesto diagnostico_v2.yaml --run diag_v2
-# Derivado de secuencias.yaml (mismas secuencias, umbrales y correcciones); solo cambia la lista de trackers. NO usar con --split test.
+# Manifiesto de DIAGNÓSTICO de propio_kf (v2, D35.6). SOLO AJUSTE:
+#   python bench.py correr --split ajuste --manifiesto diagnostico_v2.yaml --run diag_v2
+# Derivado de secuencias.yaml (mismas secuencias, umbrales y correcciones); solo cambia la lista de trackers.
+# NUNCA con --split test.
 datos_raiz: ../datos
 detectores:
   yolo8x: {tipo: archivo, carpeta: detecciones/yolo8x}

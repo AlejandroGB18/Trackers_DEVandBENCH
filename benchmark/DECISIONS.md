@@ -115,6 +115,57 @@ automática + decisión humana por track (`bench.py aplicar-revision`), con el G
 Nota de proceso: la guía oral describió mal las teclas (A = "Propuesta OK", D = "No se puede"); la página mostraba los
 nombres correctos y las decisiones se tomaron con ellos.
 
+## D35 · v1.1: D7 aplicada también a la asociación — fijada 2026-11-27, antes de correrla
+
+**Qué pasó.** D7 ("evaluación agnóstica de clase; evita IDSW falsos por oscilación car↔truck") se implementó solo en
+la evaluación. Las detecciones llegaron a los trackers con las 5 clases del detector. ByteTrack, BoT-SORT y UCMC no
+usan la clase para asociar; `propio_kf` sí (compuerta de clase), y cuando el detector oscila car ↔ van crea un segundo
+track sobre el mismo vehículo. El error se encontró **después de ver test**, al diagnosticar el último lugar de
+`propio_kf` ([`docs/diagnostico-propio-kf.md`](../docs/diagnostico-propio-kf.md)).
+
+**Qué es la v1.1.** Una segunda y última corrida de test que corrige ese error de implementación. Se declara como
+**desviación del protocolo** (D29: test una vez).
+
+| # | Regla |
+|---|---|
+| D35.1 | **Único cambio:** la asociación de todos los trackers ignora la clase (`propio_kf`: `gate_clase: false`). Las detecciones conservan sus clases: el decisor de movimiento (P2) las sigue viendo igual que en la v1. Sin H2–H5 ni nada que salga de la ablación (eso es v2) |
+| D35.2 | **Todo lo demás, igual que en la v1:** umbrales (D32.1), tramos (D32.3), cámaras (D32.4, misma `seleccion.csv`), GT (D33), `moving` (D34), métricas y bootstrap (D28) |
+| D35.3 | **Comprobación antes de evaluar:** las salidas de ByteTrack, BoT-SORT, UCMC (las tres versiones) y de `propio_kf_v1` (la v1 corrida otra vez como referencia) tienen que ser idénticas byte a byte a las de `runs/v1` (`benchmark/analisis/comparar_runs.py`). Si alguna difiere, no se evalúa: se revisa antes |
+| D35.4 | **Ranking de la v1.1:** `propio_kf` (corregido), ByteTrack, BoT-SORT y `ucmc_grupo_train`. `propio_kf_v1` va como referencia, fuera del ranking |
+| D35.5 | **Reporte:** v1 y v1.1 lado a lado. Las conclusiones se basan en la v1.1, y se dice dónde cambian respecto a la v1 y por qué se corrió |
+| D35.6 | La ablación de `propio_kf` (H2–H5) se corre **solo en ajuste** y no entra a test en la v1.1 |
+
+### D35.7 · Filtro de paralaje: hallazgo que no se corrige en la v1.1
+
+**Qué es.** El decisor de movimiento (P2, común a los cuatro trackers) apaga "se mueve" cuando el desplazamiento
+estabilizado de un track es proporcional al flujo acumulado del suelo, P(t) ≈ k·C(t). Ese es el patrón de algo alto y
+quieto (un poste) visto desde un dron que se traslada. Para no confundir un vehículo que avanza en la dirección del
+flujo, las clases de `parallax_skip` quedan exentas. Se diseñó en la etapa VIGIA, con objetos sin clase y postes.
+
+**El problema.** `parallax_skip` se escribió con los nombres de clase de los detectores de VIGIA ("car", "truck",
+"bus", "motorcycle", "small vehicle", "large vehicle"). El detector de la v1 usa "car", "truck", "van", "bus" y
+"freight car", así que **"van", "freight car" y los tracks sin clase ("?") pasan por el filtro**. Es un desajuste de
+nombres, no una decisión.
+
+**Cuánto pesó en la v1** (test; `benchmark/analisis/paralaje.py`):
+
+| | BoT-SORT | `propio_kf` |
+|---|---|---|
+| Frames en que el filtro actuó sobre un vehículo del GT | 866 | 1 252 |
+| …el vehículo sí se movía (el filtro se equivocó) | 96 % | 94 % |
+| Frames móviles de van/freight car apagados | 18.5 % | 15.9 % |
+| Frames móviles de car/truck/bus apagados | 0 % | 0 % |
+| **Total de frames móviles apagados** | **0.65 %** | **0.85 %** |
+
+En UAVDT el filtro no tiene nada que corregir: solo hay vehículos y las propuestas están apagadas. Por eso solo puede
+restar recall en P2. El efecto es menor al 1 % y parecido en todos. A `propio_kf` le pega un poco más (≈ 0.2 puntos)
+porque sus tracks duplicados quedan más seguido como "?". No cambia ninguna conclusión: P2 es un empate con IC de
+±5 puntos.
+
+**Decisión.** No se corrige en la v1.1 (D35.1: un solo cambio); se reporta como limitación. **v2:** todas las clases
+del detector son vehículos, así que ninguna pasa por el filtro (tampoco "?"): en UAVDT queda apagado. Para el sistema
+real, `parallax_skip` debe construirse desde las clases del detector y no escribirse a mano.
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |
