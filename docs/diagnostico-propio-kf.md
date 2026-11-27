@@ -73,5 +73,11 @@ python bench.py evaluar  --split ajuste --manifiesto diagnostico_v2.yaml --run d
 Además, su HOTA no puede quedar por debajo del de la v1 con IC 95 % (bootstrap pareado por secuencia, D28). Si dos
 variantes empatan, se elige la de menos cambios. Se reportan todas.
 
-**Lo que falta para correrla:** las detecciones de `yolo8x` de ajuste, que viven en el laboratorio
-(`$BENCH_DATOS/detecciones/yolo8x/`). Con ellas, la ablación corre en la Mac.
+Se corre en el laboratorio junto con la v1.1: [`guia-laboratorio-v1_1.md`](guia-laboratorio-v1_1.md).
+`bench.py` rechaza este manifiesto con cualquier split que no sea `ajuste`.
+
+## 5. Relación con la v1.1 (D35)
+
+H1 no es solo un hallazgo de la ablación. Es un error de implementación de D7, que se decidió antes de ver test: la
+clase no debía influir. Por eso H1, y solo H1, se corrige en test como v1.1, declarada como desviación del protocolo
+([`benchmark/DECISIONS.md`, D35](../benchmark/DECISIONS.md)). H2–H5 se eligen en ajuste y quedan para la v2.

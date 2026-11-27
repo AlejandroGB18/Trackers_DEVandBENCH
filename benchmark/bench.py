@@ -193,6 +193,8 @@ def main():
     p.add_argument("--que", nargs="*", default=["det", "tramos"], help="ajuste: det y/o tramos")
     p.add_argument("--detector", default=None, help="detector del manifiesto para todas las secuencias")
     a = p.parse_args()
+    if "diagnostico" in Path(a.manifiesto).name and a.split != "ajuste" and a.comando not in ("detectar", "ego"):
+        p.error("un manifiesto de diagnóstico solo corre con --split ajuste (D35.6: test no se usa para elegir)")
     man = _filtrar(cargar_manifiesto(a.manifiesto), a)
     if a.comando in ("correr", "evaluar", "barrer", "ajuste", "reporte", "todo") and not a.run:
         p.error("--run es obligatorio para correr/evaluar/barrer")

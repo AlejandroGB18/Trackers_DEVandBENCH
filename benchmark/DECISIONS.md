@@ -115,6 +115,30 @@ automática + decisión humana por track (`bench.py aplicar-revision`), con el G
 Nota de proceso: la guía oral describió mal las teclas (A = "Propuesta OK", D = "No se puede"); la página mostraba los
 nombres correctos y las decisiones se tomaron con ellos.
 
+## D35 · v1.1: D7 aplicada también a la asociación — fijada 2026-11-27, antes de correrla
+
+**Qué pasó.** D7 ("evaluación agnóstica de clase; evita IDSW falsos por oscilación car↔truck") se implementó solo en
+la evaluación. Las detecciones llegaron a los trackers con las 5 clases del detector. ByteTrack, BoT-SORT y UCMC no
+usan la clase para asociar; `propio_kf` sí (compuerta de clase), y cuando el detector oscila car ↔ van crea un segundo
+track sobre el mismo vehículo. El error se encontró **después de ver test**, al diagnosticar el último lugar de
+`propio_kf` ([`docs/diagnostico-propio-kf.md`](../docs/diagnostico-propio-kf.md)).
+
+**Qué es la v1.1.** Una segunda y última corrida de test que corrige ese error de implementación. Se declara como
+**desviación del protocolo** (D29: test una vez).
+
+| # | Regla |
+|---|---|
+| D35.1 | **Único cambio:** la asociación de todos los trackers ignora la clase (`propio_kf`: `gate_clase: false`). Las detecciones conservan sus clases: el decisor de movimiento (P2) las sigue viendo igual que en la v1. Sin H2–H5 ni nada que salga de la ablación (eso es v2) |
+| D35.2 | **Todo lo demás, igual que en la v1:** umbrales (D32.1), tramos (D32.3), cámaras (D32.4, misma `seleccion.csv`), GT (D33), `moving` (D34), métricas y bootstrap (D28) |
+| D35.3 | **Comprobación antes de evaluar:** las salidas de ByteTrack, BoT-SORT, UCMC (las tres versiones) y de `propio_kf_v1` (la v1 corrida otra vez como referencia) tienen que ser idénticas byte a byte a las de `runs/v1` (`benchmark/analisis/comparar_runs.py`). Si alguna difiere, no se evalúa: se revisa antes |
+| D35.4 | **Ranking de la v1.1:** `propio_kf` (corregido), ByteTrack, BoT-SORT y `ucmc_grupo_train`. `propio_kf_v1` va como referencia, fuera del ranking |
+| D35.5 | **Reporte:** v1 y v1.1 lado a lado. Las conclusiones se basan en la v1.1, y se dice dónde cambian respecto a la v1 y por qué se corrió |
+| D35.6 | La ablación de `propio_kf` (H2–H5) se corre **solo en ajuste** y no entra a test en la v1.1 |
+
+Hallazgo que no se corrige en la v1.1 (regla D35.1): el filtro de paralaje del decisor de movimiento exime solo a
+"car", "truck" y "bus" (`parallax_skip`), así que sí se aplica a "van" y "freight car". Afecta por igual a los cuatro
+trackers en P2; queda para la v2.
+
 ## Abiertas (decidir antes de anotar / reportar)
 
 | # | Pregunta | Opciones |

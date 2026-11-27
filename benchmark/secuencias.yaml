@@ -15,14 +15,15 @@ detectores:
     carpeta: detecciones/yolo8n
 # Las 5 clases del detector (car, truck, van, bus, freight car) entran todas: evaluación agnóstica de clase (D7).
 
-trackers:                                # ranking = una entrada por tracker (D23)
-  - propio_kf
+trackers:                                # ranking = una entrada por tracker (D23). v1.1 (D35): la v1 es main@37d1bcf
+  - {nombre: propio_kf, config: {gate_clase: false}}                       # D35.1: asociación sin clase (D7)
   - bytetrack
   - botsort
   - {nombre: ucmc, etiqueta: ucmc_grupo_train, seleccion: runs/v1_ajuste/barrido/seleccion.csv, version: grupo_train}
   # fuera del ranking:
   - {nombre: ucmc, etiqueta: ucmc, en_ranking: false}                       # referencia: calibración automática
   - {nombre: ucmc, etiqueta: ucmc_oraculo_seq, seleccion: runs/v1_ajuste/barrido/seleccion.csv, version: oraculo_seq}
+  - {nombre: propio_kf, etiqueta: propio_kf_v1, en_ranking: false}         # D35.3/4: la v1 otra vez, como referencia
 
 config_comun:                            # los 4 con defaults (D22); umbrales del detector: CONGELADO 1 (D21, D32)
   conf_entrada: 0.05                     # = conf_low (D21)
