@@ -1,5 +1,9 @@
 # Resultados del benchmark v1 · trackers MOT para dron con ego-movimiento
 
+> **Versión vigente: [v1.1](resultados-v1_1.md)** (D35). Corrige que `propio_kf` usaba la clase para asociar. Solo
+> cambian los números de `propio_kf`: HOTA 40.7, IDSW 1 665. Ranking, P1 y P2 se mantienen. Este documento queda como
+> el registro de la v1.
+
 Corrida única de test sobre UAVDT-MOT (20 secuencias, 1217 identidades, 337 601 cajas del GT), hecha el
 2026-11-27 en el laboratorio con el código de `main` en `37d1bcf`, sin cambios locales. Todo lo que decide el resultado
 se congeló antes de correr: umbrales, tramos y exclusiones (congelado 1, D32), correcciones del GT (D33), etiquetas
@@ -128,7 +132,11 @@ que los totales no coinciden, pero las proporciones sí se pueden comparar:
 | …que regresan a la identidad anterior en ≤ 10 frames (ida y vuelta) | 67 % | 30 % | 32 % | 76 % |
 
 En `propio_kf` domina la ida y vuelta entre dos tracks que ya existían, ligada al cambio de clase. UCMC también hace
-ida y vuelta, pero sin esa relación con la clase: es otro mecanismo, que no se estudió aquí. La corrección de
+ida y vuelta, pero sin esa relación con la clase: es otro mecanismo, que no se estudió aquí.
+
+> **Actualización (v1.1 y ablación).** Quitar la compuerta de clase bajó los switches solo 12 %, y la ida y vuelta
+> siguió (71 %). El cambio de clase era el detonante. La causa principal es que los tracks tentativos compiten con los
+> establecidos ([`resultados-v1_1.md`, §4](resultados-v1_1.md#4-por-qué-ayudó-tan-poco)). La corrección de
 `propio_kf` se diagnostica y se elige **en ajuste**, no en test
 ([`diagnostico-propio-kf.md`](diagnostico-propio-kf.md)). Scripts: `benchmark/analisis/`.
 
