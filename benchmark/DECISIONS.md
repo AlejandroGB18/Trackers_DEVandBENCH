@@ -74,14 +74,13 @@ Nada de test se ha mirado. Valores escritos en `secuencias.yaml`.
 | D32.1 | Umbrales (D21) | `conf_high` **0.20**, `conf_low` **0.05**, `conf_entrada` **0.05**, iguales para los 4 | F1 máximo 0.808 en 0.20 (P 0.87, R 0.76); en 0.05 la precisión es 0.78 ≥ 0.5, así que `conf_low` queda en el piso de la caché |
 | D32.2 | Exclusión (D25) | **Ninguna**: entran los 3 grupos y las 3 iluminaciones | DetA global 54.0; cenital 71.0, oblicua_alta 46.0, oblicua_baja 41.8; día 58.7, noche 54.1, niebla 36.7 (todos ≥ 20) |
 | D32.3 | Tramos de ego (D26) | **Tres**: bajo < 0.328 ≤ medio < 1.241 ≤ alto (px/frame a 960) | P33 0.328, P50 0.75, P67 1.241, P90 2.68, máx 17.6. Tramo alto: 7 729 frames, 97 165 cajas del GT, 22 secuencias (cumple D28). H no fiable en 408 frames (1.7 %) |
-| D32.4 | Cámara de UCMC (D17) | Rejillas y regla de selección **sin cambios**. El valor de `ucmc_grupo_train` sale del `barrer` de todas las secuencias que se corre ya con estos umbrales (paso del README antes de `correr`), y solo usa filas de ajuste | El barrido del día 2 se corrió con los umbrales anteriores (0.35/0.10), no con los congelados. Selección provisional: cenital pitch 0 / 50 m (HOTA 74.4), oblicua_alta 40 / 60 m (54.6), oblicua_baja 65 / 30 m (48.8). Si el definitivo cambia, se anota aquí antes de evaluar |
+| D32.4 | Cámara de UCMC (D17) | Rejillas y regla de selección **sin cambios**. El valor de `ucmc_grupo_train` sale del `barrer` de todas las secuencias que se corre ya con estos umbrales (paso del README antes de `correr`), y solo usa filas de ajuste | El barrido del día 2 se corrió con los umbrales anteriores (0.35/0.10), no con los congelados. Selección provisional: cenital pitch 0 / 50 m (HOTA 74.4), oblicua_alta 40 / 60 m (54.6), oblicua_baja 65 / 30 m (48.8). **Definitiva (2026-11-27, barrido de las 50 con 0.20/0.05, antes de correr test):** cenital pitch **5° / 50 m** (HOTA de ajuste 73.5), oblicua_alta **40° / 80 m** (55.1), oblicua_baja **60° / 25 m** (48.7). Celdas vecinas de las provisionales y ninguna en el borde de su rejilla (se resuelve el borde de 30 m de oblicua_baja). `ucmc_singt` sigue no validado (rho −0.15) |
 | D32.5 | `ucmc_singt` (D17.6, D23) | Fuera: **no validado** | Spearman medio con HOTA = −0.15 (hace falta ≤ −0.6) |
 
 Observaciones (no cambian nada, van a limitaciones):
 - Tres secuencias de ajuste tienen DetA < 20 por sí solas: M0207 (9.6; precisión 0.10, probablemente autos sin anotar
   en el GT), M0902 (7.6, noche) y M0501 (19.7, niebla). D25 excluye por estrato, no por secuencia, así que se quedan.
-- Dos cámaras provisionales caen en el borde de su rejilla (cenital pitch 0; oblicua_baja 30 m, el tope de la banda).
-  El borde de pitch 0 es físico; el de 30 m se revisa con el barrido definitivo.
+- Dos cámaras provisionales caían en el borde de su rejilla (cenital pitch 0; oblicua_baja 30 m, el tope de la banda); las definitivas (D32.4) ya no.
 
 ## D33 · Correcciones al GT oficial de UAVDT (test) — 2026-11-26
 
